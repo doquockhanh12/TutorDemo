@@ -1,0 +1,11 @@
+body { min-width: 320px; background: var(--color-canvas); color: var(--color-ink); font-family: var(--font-ui); font-size: var(--text-body); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { color: inherit; }
+button { border: 0; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--color-terracotta); outline-offset: 3px; }
+::selection { background: var(--color-brand-light); color: var(--color-ink); }
+input, select, textarea { background: var(--color-surface); border: var(--border-default); border-radius: var(--radius-base); }
+input::placeholder, textarea::placeholder { color: var(--color-text-muted); opacity: 1; }
+select { cursor: pointer; }
+textarea { resize: vertical; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

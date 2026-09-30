@@ -1,0 +1,70 @@
+:root {
+  --color-canvas: #f6f4ee;
+  --color-surface: #fffefa;
+  --color-surface-muted: #efeee7;
+  --color-ink: #1f2b25;
+  --color-text-secondary: #47534c;
+  --color-text-muted: #647069;
+  --color-brand: #2e5b46;
+  --color-brand-dark: #214733;
+  --color-brand-light: #e8f0ea;
+  --color-terracotta: #a64f38;
+  --color-border: #d6dad2;
+  --color-border-strong: #aab4ab;
+  --color-success: #276246;
+  --color-success-bg: #e8f0ea;
+  --color-warning: #805400;
+  --color-warning-bg: #f7f0de;
+  --color-danger: #a33c35;
+  --color-danger-bg: #f7eae7;
+  --color-info: #355f70;
+  --color-info-bg: #eaf0f2;
+
+  --font-ui: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-display: 'Literata', Georgia, serif;
+  --text-display: 2.5rem;
+  --text-page: 2rem;
+  --text-section: 1.5rem;
+  --text-subsection: 1.25rem;
+  --text-lead: 1.125rem;
+  --text-body: 1rem;
+  --text-compact: .875rem;
+  --text-caption: .75rem;
+
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --border-default: 1px solid var(--color-border);
+  --container-learner: 1240px;
+  --sidebar-tutor: 228px;
+  --sidebar-admin: 216px;
+  --motion-fast: 160ms ease;
+}
+
+.density-comfortable { --page-padding: var(--space-8); --control-height: 48px; --section-gap: var(--space-10); }
+.density-standard { --page-padding: var(--space-6); --control-height: 42px; --section-gap: var(--space-8); }
+.density-compact { --page-padding: 20px; --control-height: 38px; --section-gap: var(--space-6); }
+
+@media (max-width: 1279px) {
+  .density-comfortable { --page-padding: var(--space-6); }
+  .density-standard { --page-padding: 20px; }
+  .density-compact { --page-padding: var(--space-4); }
+}
+
+@media (max-width: 767px) {
+  .density-comfortable, .density-standard { --page-padding: var(--space-4); }
+  .density-compact { --page-padding: var(--space-3); }
+  .density-compact { --control-height: 44px; }
+}
