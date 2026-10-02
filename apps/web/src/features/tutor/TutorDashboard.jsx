@@ -1,45 +1,17 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, BookOpen, CalendarDays, Check, ChevronRight, Clock3, ClipboardList, LayoutDashboard, Menu, MessageSquare, Settings2, UserRound, Users, Wallet, X } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, ChevronRight, Menu } from 'lucide-react';
 import Avatar from '../../components/Avatar.jsx';
 import Badge from '../../components/Badge.jsx';
 import Brand from '../../components/Brand.jsx';
 import Button from '../../components/Button.jsx';
 import RoleSwitcher from '../../components/RoleSwitcher.jsx';
 import SearchInput from '../../components/SearchInput.jsx';
-import SidebarItem from '../../components/SidebarItem.jsx';
 import StatItem from '../../components/StatItem.jsx';
+import useDemoStorage from '../../hooks/useDemoStorage.js';
+import TutorSidebar from './TutorSidebar.jsx';
 import { initialAvailability, initialLessons, initialRequests, tutorSummary, weeklyLessons } from '../../data/tutorDashboard.js';
 
-const navigation = [
-  { label: 'Tổng quan', icon: LayoutDashboard, to: '/tutor/dashboard' },
-  { label: 'Yêu cầu học', icon: ClipboardList },
-  { label: 'Lịch dạy', icon: CalendarDays },
-  { label: 'Lịch rảnh', icon: Clock3 },
-  { label: 'Học viên', icon: Users },
-  { label: 'Môn dạy', icon: BookOpen },
-  { label: 'Thu nhập', icon: Wallet },
-  { label: 'Hồ sơ gia sư', icon: UserRound },
-  { label: 'Tin nhắn', icon: MessageSquare },
-  { label: 'Cài đặt', icon: Settings2 },
-];
-
 const statusLabel = { pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', accepted: 'Đã nhận', rejected: 'Đã từ chối' };
-
-function TutorSidebar({ open, onClose, pendingCount }) {
-  return (
-    <aside className={`tutor-sidebar ${open ? 'is-open' : ''}`} aria-label="Điều hướng gia sư">
-      <div className="tutor-sidebar__brand"><Brand compact /><button className="icon-button tutor-sidebar__close" type="button" onClick={onClose} aria-label="Đóng điều hướng"><X size={21} /></button></div>
-      <div className="tutor-sidebar__workspace"><span className="eyebrow">KHÔNG GIAN GIA SƯ</span><strong>Mai Anh Nguyễn</strong><span>Hồ sơ đang hoạt động</span></div>
-      <nav className="tutor-sidebar__nav" aria-label="Các mục của gia sư">
-        <span className="sidebar-section-label">CÔNG VIỆC</span>
-        {navigation.slice(0, 6).map((item) => <SidebarItem key={item.label} {...item} active={Boolean(item.to)} badge={item.label === 'Yêu cầu học' ? pendingCount : undefined} />)}
-        <span className="sidebar-section-label">TÀI KHOẢN</span>
-        {navigation.slice(6).map((item) => <SidebarItem key={item.label} {...item} />)}
-      </nav>
-      <div className="tutor-sidebar__footer"><Avatar initials="MA" name="Mai Anh Nguyễn" tone="sage" size="sm" /><div><strong>Mai Anh Nguyễn</strong><span>Gia sư</span></div></div>
-    </aside>
-  );
-}
 
 function LessonAgenda({ lessons, search }) {
   const visible = lessons.filter((lesson) => `${lesson.subject} ${lesson.learner}`.toLocaleLowerCase('vi-VN').includes(search.toLocaleLowerCase('vi-VN')));
@@ -61,7 +33,7 @@ function RequestInbox({ requests, onDecision, search }) {
     <section className="tutor-section tutor-requests" aria-labelledby="requests-title">
       <div className="tutor-section__heading"><div><span className="eyebrow">CẦN PHẢN HỒI</span><h2 id="requests-title">Yêu cầu học mới</h2></div><span className="tutor-section__count">{requests.filter((item) => item.status === 'pending').length} đang chờ</span></div>
       {visible.length ? <div className="tutor-request-list">{visible.map((request) => <article className="tutor-request" key={request.id}>
-        <div className="tutor-request__header"><Avatar initials={request.initials} name={request.learner} tone="sand" size="sm" /><div><h3>{request.learner}</h3><span>{request.received}</span></div><Badge tone={request.status === 'accepted' ? 'success' : request.status === 'rejected' ? 'danger' : 'warning'}>{request.status === 'pending' ? 'Chờ phản hồi' : statusLabel[request.status]}</Badge></div>
+        <div className="tutor-request__header"><Avatar initials={request.initials} name={request.learner} tone="yellow" size="sm" /><div><h3>{request.learner}</h3><span>{request.received}</span></div><Badge tone={request.status === 'accepted' ? 'success' : request.status === 'rejected' ? 'danger' : 'warning'}>{request.status === 'pending' ? 'Chờ phản hồi' : statusLabel[request.status]}</Badge></div>
         <div className="tutor-request__details"><strong>{request.subject}</strong><span>{request.area} · {request.schedule}</span></div>
         <p className="tutor-request__note">“{request.note}”</p>
         {request.status === 'pending' && <div className="tutor-request__actions"><Button size="sm" onClick={() => onDecision(request.id, 'accepted')}><Check size={16} /> Nhận yêu cầu</Button><Button variant="quiet" size="sm" onClick={() => onDecision(request.id, 'rejected')}>Từ chối</Button></div>}
@@ -106,8 +78,8 @@ function AvailabilityPreview({ slots, onToggle }) {
 export default function TutorDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [requests, setRequests] = useState(initialRequests);
-  const [availability, setAvailability] = useState(initialAvailability);
+  const [requests, setRequests] = useDemoStorage('tnm.tutorRequests', initialRequests);
+  const [availability, setAvailability] = useDemoStorage('tnm.tutorAvailability', initialAvailability);
   const pendingCount = useMemo(() => requests.filter((item) => item.status === 'pending').length, [requests]);
   const summary = tutorSummary.map((item, index) => index === 0 ? { ...item, value: String(pendingCount).padStart(2, '0'), note: pendingCount ? 'Chọn một yêu cầu để phản hồi' : 'Đã xử lý hết yêu cầu' } : item);
   const decideRequest = (id, status) => setRequests((items) => items.map((item) => item.id === id ? { ...item, status } : item));
@@ -118,7 +90,7 @@ export default function TutorDashboard() {
       <TutorSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} pendingCount={pendingCount} />
       {sidebarOpen && <button className="workspace-scrim" type="button" onClick={() => setSidebarOpen(false)} aria-label="Đóng điều hướng" />}
       <div className="workspace__main">
-        <header className="workspace-topbar tutor-topbar"><button className="icon-button workspace-topbar__menu" type="button" onClick={() => setSidebarOpen(true)} aria-label="Mở điều hướng"><Menu size={22} /></button><span className="workspace-topbar__mobile-brand"><Brand compact /></span><div className="workspace-topbar__location">Không gian gia sư <ChevronRight size={15} /> <strong>Tổng quan</strong></div><label className="sr-only" htmlFor="tutor-search">Tìm trong dashboard</label><SearchInput id="tutor-search" className="workspace-topbar__search" value={search} onChange={setSearch} placeholder="Tìm buổi học, yêu cầu..." /><RoleSwitcher /><span className="workspace-topbar__user"><Avatar initials="MA" name="Mai Anh Nguyễn" tone="sage" size="sm" /></span></header>
+        <header className="workspace-topbar tutor-topbar"><button className="icon-button workspace-topbar__menu" type="button" onClick={() => setSidebarOpen(true)} aria-label="Mở điều hướng"><Menu size={22} /></button><span className="workspace-topbar__mobile-brand"><Brand compact /></span><div className="workspace-topbar__location">Không gian gia sư <ChevronRight size={15} /> <strong>Tổng quan</strong></div><label className="sr-only" htmlFor="tutor-search">Tìm trong dashboard</label><SearchInput id="tutor-search" className="workspace-topbar__search" value={search} onChange={setSearch} placeholder="Tìm buổi học, yêu cầu..." /><RoleSwitcher /><span className="workspace-topbar__user"><Avatar initials="MA" name="Mai Anh Nguyễn" tone="blue" size="sm" /></span></header>
         <main className="tutor-main">
           <div className="tutor-page-head"><div><span className="eyebrow">TỔNG QUAN CÔNG VIỆC</span><h1>Chào bạn, Mai Anh.</h1><p>Một ngày dạy học rõ ràng bắt đầu từ những việc cần chú ý.</p></div><a href="#weekly-preview" className="button button--secondary button--md"><CalendarDays size={18} /> Xem lịch tuần</a></div>
           <div className="tutor-summary" aria-label="Chỉ số nhanh">{summary.map((item) => <StatItem key={item.label} {...item} />)}</div>

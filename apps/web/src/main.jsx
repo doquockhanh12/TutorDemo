@@ -2,29 +2,34 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import '@fontsource/source-sans-3/latin-400.css';
-import '@fontsource/source-sans-3/latin-600.css';
-import '@fontsource/source-sans-3/latin-700.css';
-import '@fontsource/source-sans-3/vietnamese-400.css';
-import '@fontsource/source-sans-3/vietnamese-600.css';
-import '@fontsource/source-sans-3/vietnamese-700.css';
-import '@fontsource/literata/latin-500.css';
-import '@fontsource/literata/latin-600.css';
-import '@fontsource/literata/vietnamese-500.css';
-import '@fontsource/literata/vietnamese-600.css';
+import { DemoAuthProvider } from './features/auth/DemoAuthContext.jsx';
+import '@fontsource/nunito/latin-400.css';
+import '@fontsource/nunito/latin-700.css';
+import '@fontsource/nunito/latin-800.css';
+import '@fontsource/nunito/vietnamese-400.css';
+import '@fontsource/nunito/vietnamese-700.css';
+import '@fontsource/nunito/vietnamese-800.css';
+import '@fontsource/nunito-sans/latin-400.css';
+import '@fontsource/nunito-sans/latin-600.css';
+import '@fontsource/nunito-sans/latin-700.css';
+import '@fontsource/nunito-sans/vietnamese-400.css';
+import '@fontsource/nunito-sans/vietnamese-600.css';
+import '@fontsource/nunito-sans/vietnamese-700.css';
 import './styles/tokens.css';
 import './styles/reset.css';
 import './styles/global.css';
-import './styles/utilities.css';
 import './components/components.css';
 import './features/learner/learner.css';
 import './features/tutor/tutor.css';
 import './features/admin/admin.css';
+import './features/public/public.css';
+import './features/auth/auth.css';
+import './styles/flows.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <DemoAuthProvider><App /></DemoAuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

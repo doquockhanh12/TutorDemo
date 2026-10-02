@@ -17,7 +17,7 @@
 .tutor-page-head { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin-bottom: 26px; }
 .tutor-page-head h1 { margin: 5px 0 3px; font-size: clamp(1.7rem, 2.2vw, 2rem); line-height: 1.25; letter-spacing: -.035em; }
 .tutor-page-head p { margin: 0; color: var(--color-text-secondary); font-size: .93rem; }
-.tutor-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 32px; border-block: var(--border-default); background: rgba(255, 254, 250, .5); }
+.tutor-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 32px; border-block: var(--border-default); background: #ffffffb5; }
 .tutor-summary .stat-item:first-child { padding-left: 0; }
 .tutor-summary .stat-item:last-child { padding-right: 0; }
 .tutor-main__columns { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 28px; align-items: start; }
@@ -54,14 +54,14 @@
 .tutor-schedule__day.is-today .tutor-schedule__date strong { border-radius: 50%; background: var(--color-brand); color: var(--color-surface); }
 .tutor-schedule__events { display: grid; align-content: start; gap: 6px; padding: 7px 5px; }
 .tutor-schedule__event { display: grid; gap: 2px; min-width: 0; padding: 7px 6px; border-left: 2px solid var(--color-brand); border-radius: var(--radius-sm); background: var(--color-brand-light); }
-.tutor-schedule__event--clay { border-color: var(--color-terracotta); background: #f7ece5; }
-.tutor-schedule__event--sand { border-color: var(--color-warning); background: var(--color-warning-bg); }
+.tutor-schedule__event--coral { border-color: var(--brand-accent-red); background: #ffeaec; }
+.tutor-schedule__event--yellow { border-color: var(--status-warning); background: var(--status-warning-bg); }
 .tutor-schedule__event span { font-size: .76rem; font-variant-numeric: tabular-nums; }
 .tutor-schedule__event strong { overflow-wrap: anywhere; font-size: .81rem; line-height: 1.2; }
 .tutor-schedule__empty { color: var(--color-text-muted); font-size: .7rem; text-align: center; }
 .tutor-schedule__caption { margin: 8px 0 0; color: var(--color-text-muted); font-size: .73rem; }
 .tutor-availability__slot { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 62px; padding: 9px 0; border-bottom: var(--border-default); background: transparent; text-align: left; }
-.tutor-availability__slot:hover { background: rgba(232, 240, 234, .5); }
+.tutor-availability__slot:hover { background: var(--surface-light-blue); }
 .tutor-availability__check { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); color: transparent; }
 .tutor-availability__slot.is-active .tutor-availability__check { border-color: var(--color-brand); background: var(--color-brand); color: var(--color-surface); }
 .tutor-availability__slot > span:nth-child(2) { display: grid; gap: 1px; flex: 1; }

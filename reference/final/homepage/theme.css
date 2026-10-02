@@ -1,0 +1,432 @@
+/* VUS-inspired hierarchy, adapted to TutorNearMe's own content and palette.
+   All page styling is scoped to main so the existing header/footer stay intact. */
+
+main{
+  --blue:#263fbd;
+  --blue-deep:#1c2d98;
+  --navy:#17265b;
+  --orange:#d93645;
+  --yellow:#ffda3d;
+  --sky:#d9e7ff;
+  --mint:#bdebd1;
+  --peach:#ffd7c3;
+  --purple:#e2d7ff;
+  --pink:#ffd2df;
+  --off:#fff8ed;
+  --ink:#172143;
+  --muted:#4e5b72;
+  --line:#dfe3ed;
+  color:var(--ink);
+  font:500 16px/1.5 "Nunito","Nunito Sans",sans-serif;
+}
+
+main h1,main h2,main h3,
+main .proof-number,main .stat-card strong,
+main .tutor-price-row strong,main .offer-circle-main{
+  font-family:"Nunito","Nunito Sans",sans-serif !important;
+  letter-spacing:0 !important;
+  text-wrap:balance;
+}
+main p{font-size:16px;line-height:1.55 !important;letter-spacing:0}
+main .eyebrow{font:850 20px/1.4 "Nunito",sans-serif;letter-spacing:.08em;color:var(--blue)}
+main .eyebrow-light{color:#ffdc58}
+main .btn{font-family:"Nunito",sans-serif;font-size:15px;font-weight:800;letter-spacing:0;line-height:1.25 !important}
+main .btn-accent{background:#55eb0f;box-shadow:0 10px 24px rgba(217,54,69,.25)}
+main .btn-accent:hover{background:#7ccf34}
+main .btn-primary{background:var(--blue);box-shadow:0 10px 24px rgba(38,63,189,.22)}
+main .btn-primary:hover{background:var(--blue-deep)}
+
+/* Headlines use a clear sentence and one high-contrast point of emphasis. */
+main .finder-copy h2,main .section-head h2,main .community-copy h2,
+main .map-copy h2,main .consult-form h2,main .offer-copy h2,
+main .become-copy h2,main .final-row h2{
+  font-family:"Nunito","Nunito Sans",sans-serif !important;
+  font-size:clamp(32px,3.2vw,40px);
+  font-weight:700;
+  line-height:1.24 !important;
+  letter-spacing:0 !important;
+  max-width:840px;
+}
+main .section-head>p,main .finder-copy p,main .map-copy>p,
+main .consult-form>p,main .become-copy>p{
+  font-size:16px;
+  line-height:1.55 !important;
+  color:var(--muted);
+}
+main .section-head .section-link{font-size:14px}
+main .title-accent{
+  color:#dc3946;
+  box-shadow:inset 0 -.19em 0 rgba(255,193,68,.45);
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+main .title-chip{
+  display:inline;
+  padding:.01em .2em .08em;
+  border-radius:.25em;
+  color:#17265b;
+  background:#ffda3d;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+main .community .title-accent{
+  color:#ffdf58;
+  box-shadow: none;
+}
+main .become-tutor .title-accent{
+  color:#ffdf58;
+  box-shadow:inset 0 -.18em 0 rgba(255,255,255,.16);
+}
+main #map-section .title-accent{
+  color:#1c2d98;
+  box-shadow: none;
+}
+/* First screen: vivid color, softer rounded type, immediate reading order. */
+main .hero{
+  background:
+    radial-gradient(circle at 85% 12%,rgba(255,218,61,.34),transparent 24%),
+    radial-gradient(circle at 98% 78%,rgba(255,101,96,.28),transparent 23%),
+    linear-gradient(120deg,#173ab7 0%,#2733a2 54%,#552783 100%);
+}
+main .hero h1{
+  max-width:700px;
+  font-family:"Nunito","Nunito Sans",sans-serif !important;
+  font-size:clamp(46px,4.5vw,66px);
+  font-weight:700;
+  line-height:1.17 !important;
+  letter-spacing:-.012em !important;
+}
+main .hero h1 span{display:block;color:#fff;margin:0}
+main .hero h1 mark{
+  background:#ffda3d;
+  color:#17265b;
+  font-weight:800;
+  padding:.01em .18em .08em;
+  border-radius:.24em;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+main .hero-lead{font-size:18px;line-height:1.55 !important;color:#f0f3ff;max-width:580px;margin-top:26px}
+main .hero .eyebrow-light{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 12px}
+main .hero .btn-white{background:#ffda3d;color:#17265b;box-shadow:0 10px 24px rgba(19,28,86,.2)}
+main .hero .btn-white:hover{background:#ffe574}
+main .proof-number{font-size:28px;font-weight:800;line-height:1.1}
+main .proof-label{font-size:13px;color:#e0e8ff;line-height:1.35}
+main .float-pill b{font:800 16px/1.15 "Nunito",sans-serif}
+main .float-pill small{font-size:12px}
+
+/* Four bright shortcuts carry the palette into the rest of the page. */
+main .quick-blue{--quick-bg:#ffda3d;--quick-text:#1d2857}
+main .quick-mint{--quick-bg:#087d63;--quick-text:#fff}
+main .quick-yellow{--quick-bg:#c93443;--quick-text:#fff}
+main .quick-lilac{--quick-bg:#6542b5;--quick-text:#fff}
+main .quick-item{
+  background:var(--quick-bg);
+  color:var(--quick-text);
+  box-shadow:0 15px 30px rgba(16,30,95,.2);
+}
+main .quick-item:hover{background:var(--quick-bg);filter:brightness(1.06)}
+main .quick-icon{background:rgba(255,255,255,.2);color:inherit;box-shadow:none}
+main .quick-item b{font-size:16px;color:inherit;line-height:1.25}
+main .quick-item small{font-size:13px;color:inherit;line-height:1.3}
+
+/* Finder uses the strong blue search bar seen in the reference, with its own copy. */
+main .finder{background:#fff5e7}
+main .finder-panel{
+  background:linear-gradient(115deg,#203bb6 0%,#4633a5 100%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 24px 50px rgba(29,38,107,.2);
+  color:#fff;
+}
+main .finder-ribbon{background:#d93645;color:#fff;box-shadow:0 10px 22px rgba(159,27,49,.24)}
+main .finder-ribbon b{font-size:14px}
+main .finder-ribbon small{font-size:12px;color:#fff;opacity:.9}
+main .finder-copy .eyebrow{color:#ffe07a}
+main .finder-copy h2{color:#fff}
+main .finder-copy p{color:#e8eaff}
+main .finder-form label{background:#fff;border-color:transparent;box-shadow:0 7px 18px rgba(14,25,95,.12)}
+main .finder-form label span{font-size:13px;color:#5b6284}
+main .finder-form select{font-size:15px;color:#17265b}
+main .btn-search{background:#ffda3d;color:#17265b;font-size:15px;box-shadow:none}
+main .btn-search:hover{background:#ffe777}
+main .finder-result{font-size:13px;color:#edf0ff}
+
+/* Goal cards use solid surfaces like the vivid course cards on VUS. */
+main .needs{background:#fffaf0}
+main .need-card{border:0;box-shadow:0 16px 35px rgba(31,38,85,.14)}
+main .need-card-blue{background:#2349b9;color:#fff}
+main .need-card-yellow{background:#ffd242;color:#17265b}
+main .need-card-purple{background:#6842b5;color:#fff}
+main .need-card-mint{background:#087d63;color:#fff}
+main .need-chip{
+  align-self:flex-start;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.19);
+  font-size:12px;
+  letter-spacing:.05em;
+  line-height:1.25;
+}
+main .need-card-yellow .need-chip{background:rgba(24,38,91,.1)}
+main .need-body h3,main .tutor-title-row h3,main .steps h3,
+main .story-featured h3,main .tutor-mini h3,main .story-card h3{
+  font-family:"Nunito","Nunito Sans",sans-serif !important;
+  font-weight:700;
+  letter-spacing:0 !important;
+  line-height:1.28 !important;
+}
+main .need-body h3{font-size:25px}
+main .need-body p{font-size:16px;line-height:1.5 !important;color:inherit}
+main .need-body a{font-size:14px;color:inherit;text-decoration:underline;text-underline-offset:4px}
+
+/* Tutor profiles and social proof remain easy to scan at normal reading size. */
+main .tutors-section{background:#fff}
+main .tutor-large{background:#fff;border:2px solid #d9e2ff;box-shadow:0 18px 48px rgba(32,46,103,.12)}
+main .tutor-mini{background:#f7f9ff;border-color:#d9e2ff}
+main .save-btn.is-saved{color:#d93645;border-color:#f5b6bc;background:#fff3f4}
+main .spotlight{font-size:12px;color:#fff;background:#d93645}
+main .tutor-title-row h3{font-size:28px}
+main .tutor-title-row p{font-size:14px}
+main .verified{font-size:13px;color:#007b62}
+main .review-line strong{color:#b66e00}
+main .review-line span{font-size:13px}
+main .tutor-desc{font-size:16px;line-height:1.55 !important}
+main .tag-row span{font-size:12px;background:#fff2bb;border-color:#f4d781}
+main .availability span{font-size:12px;background:#d9f1e7}
+main .tutor-meta-row{font-size:13px}
+main .tutor-price-row strong{font-size:25px;font-weight:800;line-height:1.1}
+main .tutor-price-row small{font-size:13px}
+main .mini-rating{font-size:12px;color:#b66e00}
+main .tutor-mini h3{font-size:20px}
+main .tutor-mini p{font-size:14px}
+main .tutor-mini small{font-size:12px}
+main .tutor-mini strong{font-size:14px}
+
+main .community{background:linear-gradient(125deg,#1d3bb6 0%,#63309a 100%)}
+main .community-copy h2{color:#fff}
+main .community-copy p{font-size:17px;line-height:1.55 !important;color:#ecedff}
+main .stat-yellow{background:#ffda3d}
+main .stat-mint{background:#5cdbba}
+main .stat-pink{background:#ff98ad}
+main .stat-card strong{font-size:32px;font-weight:800;line-height:1.12}
+main .stat-card span{font-size:14px;color:#263455;line-height:1.4}
+main .learner-strip b{font-size:12px;color:#ffdf6a}
+main .learner-strip span{font-size:14px;line-height:1.45}
+
+main .map-section{background:linear-gradient(125deg,#c8f0d9,#d4e2ff 72%)}
+main .map-copy h2{max-width:600px}
+main .map-benefits b{font-size:16px}
+main .map-benefits small{font-size:14px}
+main .map-benefits>div>span{font-size:12px;background:#fff;color:var(--blue)}
+main .mock-map{background:#bce2df}
+main .map-water{background:#96cbdc}
+main .map-park{background:#89d4a7}
+main .district{font-size:12px;color:#39576d}
+main .map-pin{font-size:12px;background:#d93645}
+main .you-pin{font-size:12px}
+main .map-tooltip{font-size:13px}
+
+main .consultation{background:#fff3eb}
+main .consult-form{background:#fff;border:2px solid #ffd9ce;box-shadow:0 16px 42px rgba(94,49,57,.1)}
+main .consult-note>span{font-size:12px}
+main .consult-note strong{font:800 24px/1.28 "Nunito",sans-serif}
+main .consult-note p{font-size:15px;line-height:1.5 !important}
+main .consult-form label span{font-size:14px}
+main .consult-form input,main .consult-form select,main .consult-form textarea{font-size:15px}
+main .privacy-note{font-size:12px}
+main .form-success{font-size:13px}
+
+main .offer-section{background:#fff3eb}
+main .offer-banner{background:linear-gradient(110deg,#ffdb49 0%,#ffc246 52%,#f97959 100%)}
+main .offer-copy h2{color:#17265b}
+main .offer-highlight{
+  background:#213bb4;
+  color:#fff;
+  padding:0 .17em .05em;
+  border-radius:.2em;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+main .offer-copy p{font-size:17px;line-height:1.5 !important}
+main .offer-badge{font-size:12px;background:#fff;color:#8b2e2e}
+main .offer-copy>small{font-size:12px}
+main .offer-circle-main{color:#d93645;font-weight:800}
+
+main .how-section{background:#fffaf0}
+main .steps article:nth-child(1){background:#dae6ff;border-color:#c0d4ff}
+main .steps article:nth-child(2){background:#ffe0c8;border-color:#ffc9a4}
+main .steps article:nth-child(3){background:#ccf0dc;border-color:#ade2c4}
+main .step-number{font-family:"Nunito",sans-serif;color:rgba(34,52,101,.18)}
+main .steps h3{font-size:24px}
+main .steps p{font-size:16px;line-height:1.5 !important;color:#35425b}
+
+main .stories{background:#efebff}
+main .story-featured,main .story-card{border-color:#d6cbf7;box-shadow:0 12px 28px rgba(57,44,100,.08)}
+main .story-label,main .story-card span{font-size:12px;color:#d93d48}
+main .story-featured h3{font-size:25px}
+main .story-card h3{font-size:20px}
+main .story-featured p{font-size:16px;line-height:1.5 !important}
+main .story-featured a{font-size:14px;color:var(--blue)}
+
+main .become-tutor{background:linear-gradient(120deg,#1e2d89 0%,#453084 100%)}
+main .become-copy h2{color:#fff}
+main .become-copy>p{font-size:17px;line-height:1.55 !important;color:#edeaff}
+main .become-pill{font-size:13px}
+main .final-cta{background:#ffe6c8}
+main .final-row{border-color:rgba(48,52,102,.18)}
+
+.modal{font-family:"Nunito","Nunito Sans",sans-serif}
+.modal h2{font:800 30px/1.25 "Nunito",sans-serif;letter-spacing:0;font-family:"Nunito",sans-serif !important}
+.modal p{font-size:15px;line-height:1.55}
+
+@media(max-width:1050px){
+  main .finder-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  main .btn-search{min-width:0}
+}
+@media(max-width:720px){
+  main .hero h1{font-size:clamp(37px,9vw,45px);line-height:1.18 !important}
+  main .hero-lead{font-size:16px}
+  main .finder-form{grid-template-columns:1fr}
+  main .finder-copy h2,main .section-head h2,main .community-copy h2,
+  main .map-copy h2,main .consult-form h2,main .offer-copy h2,
+  main .become-copy h2,main .final-row h2{font-size:clamp(30px,8vw,36px)}
+  main .need-body h3{font-size:23px}
+  main .tutor-price-row{gap:12px;flex-wrap:wrap}
+  main .tutor-price-row .btn{width:auto;min-width:0}
+}
+
+/* Responsive repair layer: layout adjustments only; no desktop restyling. */
+@media(max-width:1050px){
+  .topbar .nav{gap:14px}
+  main .hero-grid{
+    grid-template-columns:minmax(0,1fr);
+    min-height:0;
+    gap:26px;
+    padding-bottom:40px;
+  }
+  main .hero-copy{width:100%;max-width:760px;margin-inline:auto;min-width:0}
+  main .hero-art{width:min(100%,700px);min-height:clamp(360px,52vw,510px);margin-inline:auto}
+  main .finder-panel{grid-template-columns:minmax(0,1fr);gap:22px}
+  main .finder-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  main .finder-result{grid-column:1/-1;margin-top:0;min-width:0}
+  main .tutor-showcase,main .community-grid,main .map-grid,
+  main .consultation-grid,main .become-grid{min-width:0}
+  main .tutor-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;gap:12px}
+  main .tutor-mini{min-width:0}
+  main .tutor-mini>div{min-width:0;overflow-wrap:anywhere}
+  main .community-grid{gap:40px}
+  main .map-grid{gap:36px}
+  main .consultation-grid{gap:28px}
+  main .consult-visual{min-height:clamp(360px,52vw,520px)}
+  main .learner-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  main .learner-strip article{grid-template-columns:minmax(90px,120px) minmax(0,1fr)}
+  main .offer-copy{min-width:0;padding:clamp(28px,4vw,54px)}
+  main .offer-art{min-width:0}
+  main .become-grid{gap:40px}
+  main .become-image{height:clamp(320px,42vw,430px)}
+}
+
+@media(max-width:900px){
+  main .tutor-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  main .tutor-mini{grid-template-columns:112px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  main .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  main .steps article:last-child{grid-column:1/-1}
+  main .learner-strip{grid-template-columns:1fr}
+  main .offer-banner{grid-template-columns:minmax(0,1fr)}
+  main .offer-art{min-height:320px}
+}
+
+@media(max-width:720px){
+  .container{width:min(1180px,calc(100% - 24px))}
+  .topbar .nav{min-height:68px;height:auto;gap:8px;padding:8px 2px}
+  .topbar .brand{flex:1;min-width:0;gap:8px}
+  .topbar .brand-mark{width:40px;height:40px;flex:none}
+  .topbar .brand-word{min-width:0}
+  .topbar .brand-word strong{font-size:16px;white-space:nowrap}
+  .topbar .nav-actions{flex:none;gap:6px}
+  .topbar .nav-actions .btn{width:auto;min-width:0;min-height:40px;padding:9px 13px}
+  .topbar .menu-btn{flex:none;padding:6px;font-size:24px;line-height:1}
+
+  main .hero-grid{grid-template-columns:minmax(0,1fr);min-height:0;gap:20px;padding:52px 0 34px}
+  main .hero-art{width:100%;min-height:clamp(300px,90vw,390px)}
+  main .image-frame-main{width:76%;height:72%;right:3%;top:6%;transform:rotate(1deg)}
+  main .image-frame-secondary{width:42%;height:38%;left:2%;bottom:1%;transform:rotate(-3deg)}
+  main .float-pill{max-width:calc(100% - 12px);gap:8px;padding:9px 11px}
+  main .float-rating{left:0;top:5%}
+  main .float-distance{right:0;bottom:11%}
+  main .float-verified{left:15%;bottom:0}
+  main .quick-actions{grid-template-columns:1fr;gap:8px}
+  main .quick-item{min-height:68px;padding:14px 16px}
+
+  main .finder{padding-top:68px;padding-bottom:56px}
+  main .finder-panel{grid-template-columns:minmax(0,1fr);gap:18px;padding:28px 20px 22px}
+  main .finder-ribbon{left:12px;right:12px;top:-19px;gap:8px;padding:0 10px;white-space:normal;text-align:center}
+  main .finder-ribbon small{display:none}
+  main .finder-form{grid-template-columns:minmax(0,1fr);gap:10px}
+  main .finder-form label{min-width:0}
+  main .finder-form select{min-width:0;max-width:100%}
+  main .btn-search{width:100%;min-width:0;min-height:58px;white-space:normal}
+  main .finder-result{grid-column:1/-1;margin:0;overflow-wrap:anywhere}
+
+  main .section{padding:64px 0}
+  main .section-head{margin-bottom:30px}
+  main .need-grid{grid-template-columns:minmax(0,1fr)}
+  main .need-card{grid-template-columns:minmax(0,1fr);min-width:0}
+  main .need-image{min-height:clamp(210px,62vw,280px)}
+  main .need-body{min-width:0;padding:22px}
+  main .tutor-showcase{grid-template-columns:minmax(0,1fr)}
+  main .tutor-large{grid-template-columns:minmax(0,1fr)}
+  main .tutor-photo{min-height:clamp(270px,74vw,390px)}
+  main .tutor-large-body{min-width:0;padding:24px}
+  main .tutor-title-row{min-width:0;gap:12px}
+  main .tutor-title-row>div{min-width:0}
+  main .tutor-title-row h3{overflow-wrap:anywhere}
+  main .tutor-mini-grid{grid-template-columns:minmax(0,1fr)}
+  main .tutor-mini{grid-template-columns:minmax(0,1fr);grid-template-rows:180px minmax(0,1fr)}
+  main .community-grid,main .map-grid,main .consultation-grid,main .become-grid{grid-template-columns:minmax(0,1fr)}
+  main .community-cards{grid-template-columns:minmax(0,1fr)}
+  main .learner-strip{grid-template-columns:minmax(0,1fr)}
+  main .learner-strip article{grid-template-columns:100px minmax(0,1fr)}
+  main .learner-strip img{min-width:0}
+  main .mock-map{min-height:clamp(300px,100vw,390px)}
+  main .map-tooltip{right:10px;top:10px;max-width:calc(100% - 20px);white-space:normal}
+  main .form-grid{grid-template-columns:minmax(0,1fr)}
+  main .consult-visual{min-height:clamp(280px,78vw,390px)}
+  main .consult-form{min-width:0;padding:28px 22px}
+  main .offer-banner{grid-template-columns:minmax(0,1fr)}
+  main .offer-copy{padding:30px 24px}
+  main .offer-art{min-height:290px}
+  main .steps{grid-template-columns:minmax(0,1fr)}
+  main .steps article{grid-column:auto;min-height:0}
+  main .story-grid{grid-template-columns:minmax(0,1fr)}
+  main .story-featured{grid-template-columns:minmax(0,1fr)}
+  main .story-featured img{height:clamp(220px,65vw,280px)}
+  main .become-image{height:clamp(260px,78vw,340px)}
+  main .pill-one{left:10px;top:20px}
+  main .pill-two{right:10px;bottom:18px}
+  main .final-row{align-items:flex-start;flex-direction:column;gap:22px}
+}
+
+@media(max-width:440px){
+  .topbar .nav{gap:6px;padding-inline:0}
+  .topbar .brand-mark{width:36px;height:36px;border-radius:12px}
+  .topbar .brand-word strong{font-size:15px}
+  .topbar .nav-actions{gap:4px}
+  .topbar .nav-actions .btn{padding:8px 10px;font-size:13px}
+  .topbar .menu-btn{font-size:22px;padding:5px}
+  main .hero h1{font-size:clamp(35px,10vw,40px)}
+  main .hero-art{min-height:clamp(290px,88vw,350px)}
+  main .float-pill{gap:6px;padding:8px 9px}
+  main .float-pill b{font-size:14px}
+  main .float-pill small{font-size:11px}
+  main .finder-panel{padding:26px 16px 20px}
+  main .finder-ribbon{left:10px;right:10px;padding-inline:8px}
+  main .finder-copy h2,main .section-head h2,main .community-copy h2,
+  main .map-copy h2,main .consult-form h2,main .offer-copy h2,
+  main .become-copy h2,main .final-row h2{font-size:clamp(28px,8.5vw,34px)}
+  main .tutor-large-body{padding:20px}
+  main .consult-form{padding:24px 18px}
+  main .offer-copy{padding:28px 20px}
+  main .offer-art{min-height:270px}
+  .modal{padding:26px 20px}
+}

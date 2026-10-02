@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#F06A35" />
+  <meta name="description" content="TutorNearMe — tìm gia sư sinh viên phù hợp theo môn học, khu vực, lịch rảnh và mức học phí." />
+  <title>TutorNearMe — Tìm gia sư phù hợp gần bạn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./theme.css" />
+  <link rel="stylesheet" href="./v2.css" />
+</head>
+<body>
+  <!-- HEADER GIỮ NGUYÊN TỪ HOMEPAGE GỐC -->
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="TutorNearMe">
+        <span class="brand-mark">TN</span>
+        <span class="brand-word">
+          <strong>TutorNearMe</strong>
+          <small>Gia sư gần bạn</small>
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Điều hướng chính">
+        <a href="#finder">Tìm gia sư</a>
+        <a href="#needs">Nhu cầu học</a>
+        <a href="#tutors">Gia sư nổi bật</a>
+        <a href="#offers">Ưu đãi</a>
+        <a href="#stories">Góc học tập</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="tutor-link tutor-link-cta" href="#become-tutor"><span>Trở thành gia sư</span></a>
+        <button class="btn btn-ghost hide-mobile" data-modal="login">Đăng nhập</button>
+        <button class="btn btn-primary" data-modal="register">Đăng ký</button>
+        <button class="menu-btn" id="menuBtn" aria-label="Mở menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#finder">Tìm gia sư</a>
+      <a href="#needs">Nhu cầu học</a>
+      <a href="#tutors">Gia sư nổi bật</a>
+      <a href="#offers">Ưu đãi</a>
+      <a href="#stories">Góc học tập</a>
+      <a href="#become-tutor">Trở thành gia sư</a>
+      <button class="btn btn-ghost" data-modal="login">Đăng nhập</button>
+    </div>
+  </header>
+
+  <main id="top" class="v2-main">
+    <section class="v2-hero">
+      <div class="v2-orbit v2-orbit-a" aria-hidden="true"></div>
+      <div class="v2-orbit v2-orbit-b" aria-hidden="true"></div>
+      <div class="container v2-hero-grid">
+        <div class="v2-hero-copy">
+          <span class="v2-kicker">TUTORNEARME · HỌC GẦN HƠN, HIỂU NHAU HƠN</span>
+          <h1>Bạn đau đầu để tìm gia sư tốt, <em>TutorNearMe sẽ giúp bạn.</em></h1>
+          <p>Tìm sinh viên gia sư theo đúng môn, khu vực, thời gian rảnh và mức phí gia đình mong muốn — tất cả trong một trải nghiệm rõ ràng, dễ so sánh.</p>
+          <div class="v2-hero-actions">
+            <a class="v2-btn v2-btn-yellow" href="#finder">Bắt đầu tìm gia sư <span>→</span></a>
+            <a class="v2-text-link" href="#how">Xem cách hoạt động <span>↘</span></a>
+          </div>
+          <div class="v2-hero-trust" aria-label="Điểm nổi bật">
+            <span><b>✓</b> Hồ sơ rõ ràng</span>
+            <span><b>✓</b> Lịch rảnh minh bạch</span>
+            <span><b>✓</b> Học phí dễ so sánh</span>
+          </div>
+        </div>
+        <div class="v2-hero-visual">
+          <div class="v2-photo-main">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=84" alt="Học sinh học tập cùng bạn bè" />
+          </div>
+          <div class="v2-photo-side">
+            <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=700&q=84" alt="Gia sư đang hướng dẫn bài học" />
+          </div>
+          <div class="v2-sticker v2-sticker-red"><strong>4.9/5</strong><small>từ hồ sơ nổi bật</small></div>
+          <div class="v2-sticker v2-sticker-yellow"><strong>Gần bạn</strong><small>ưu tiên khu vực phù hợp</small></div>
+          <div class="v2-doodle" aria-hidden="true">✦</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-finder-wrap" id="finder">
+      <div class="container">
+        <div class="v2-finder-card">
+          <div class="v2-finder-heading">
+            <span class="v2-index">01</span>
+            <div><small>TÌM THEO ĐIỀU QUAN TRỌNG NHẤT</small><h2>Cho TutorNearMe biết bạn đang cần gì.</h2></div>
+          </div>
+          <div class="v2-finder-grid">
+            <label><span>Môn học</span><select id="subject"><option>Tất cả môn</option><option>Toán</option><option>Tiếng Anh</option><option>Ngữ văn</option><option>Vật lý</option><option>Hóa học</option><option>IELTS</option></select></label>
+            <label><span>Khu vực</span><select id="district"><option>Tất cả khu vực</option><option>Bình Thạnh</option><option>Thủ Đức</option><option>Quận 3</option><option>Phú Nhuận</option></select></label>
+            <label><span>Thời gian học</span><select id="schedule"><option>Mọi khung giờ</option><option>Buổi sáng</option><option>Buổi chiều</option><option>Buổi tối</option><option>Cuối tuần</option></select></label>
+            <label><span>Học phí tối đa</span><select id="budget"><option value="all">Không giới hạn</option><option value="160000">160.000đ / buổi</option><option value="180000">180.000đ / buổi</option><option value="200000">200.000đ / buổi</option><option value="220000">220.000đ / buổi</option></select></label>
+            <button class="v2-search-btn" id="finderBtn" type="button"><span>Tìm gia sư</span><b>→</b></button>
+          </div>
+          <div class="v2-finder-status" id="finderResult">Bộ lọc sẽ hiển thị hồ sơ gia sư TutorNearMe khi dữ liệu hệ thống được kết nối.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-needs" id="needs">
+      <div class="container">
+        <div class="v2-split-head">
+          <div><span class="v2-dot-label">BẮT ĐẦU TỪ NHU CẦU THẬT</span><h2>Hôm nay bạn muốn cải thiện điều gì?</h2></div>
+          <p>Không cần biết chính xác tên khóa học. Chỉ cần chọn vấn đề đang gặp, TutorNearMe sẽ giúp thu hẹp lựa chọn.</p>
+        </div>
+        <div class="v2-needs-grid">
+          <button class="v2-need-card tone-blue" data-subject="Toán"><span class="v2-need-no">01</span><h3>Củng cố kiến thức</h3><p>Lấp phần kiến thức còn hổng và học lại theo nhịp dễ hiểu hơn.</p><span class="v2-need-arrow">↗</span></button>
+          <button class="v2-need-card tone-red" data-subject="Tiếng Anh"><span class="v2-need-no">02</span><h3>Nâng điểm trên lớp</h3><p>Ôn đúng trọng tâm, luyện bài đều và theo sát tiến độ ở trường.</p><span class="v2-need-arrow">↗</span></button>
+          <button class="v2-need-card tone-yellow" data-subject="Ngữ văn"><span class="v2-need-no">03</span><h3>Chuẩn bị kỳ thi</h3><p>Lập kế hoạch học rõ ràng theo mục tiêu và thời gian còn lại.</p><span class="v2-need-arrow">↗</span></button>
+          <button class="v2-need-card tone-cyan" data-subject="IELTS"><span class="v2-need-no">04</span><h3>Học theo mục tiêu riêng</h3><p>Chọn gia sư phù hợp với mục tiêu ngoại ngữ hoặc kỹ năng cụ thể.</p><span class="v2-need-arrow">↗</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-tutors" id="tutors">
+      <div class="container">
+        <div class="v2-tutor-head">
+          <div>
+            <span class="v2-pill-label">NHỮNG GƯƠNG MẶT GIÁO DỤC</span>
+            <h2>Học cùng người truyền cảm hứng.</h2>
+            <p>Tham khảo hồ sơ công khai của các thầy cô được nhiều học viên biết đến. Đây là ví dụ minh họa bố cục; hồ sơ đặt lịch sẽ được thay bằng dữ liệu gia sư TutorNearMe.</p>
+          </div>
+        </div>
+        <div class="v2-tutor-grid v2-featured-teachers" id="tutorGrid">
+          <article class="v2-tutor-card">
+            <div class="v2-avatar-wrap"><img src="https://hocmai.vn/file.php/1/Le_Ba_Phuong/4.png" alt="Thầy Lê Bá Trần Phương, giáo viên Toán" loading="lazy" /><span class="v2-verified">HOCMAI · Giáo viên Toán</span></div>
+            <div class="v2-tutor-body"><div class="v2-name-row"><div><h3>Lê Bá Trần Phương</h3><p>Tiến sĩ · Giảng viên Đại học Công nghiệp Hà Nội</p></div></div><div class="v2-tags"><span>Toán</span><span>Tiến sĩ</span></div><div class="v2-tutor-facts"><span>Giảng viên Khoa học Cơ bản</span><span>Hồ sơ giới thiệu phương pháp dạy học chi tiết, logic</span></div><div class="v2-price-row"><div><small>Hồ sơ công khai</small><strong>HOCMAI</strong></div><a class="v2-profile-btn" href="https://hocmai.vn/giao-vien/91/thay-le-ba-tran-phuong.html" target="_blank" rel="noopener noreferrer">Xem hồ sơ ↗</a></div></div>
+          </article>
+          <article class="v2-tutor-card">
+            <div class="v2-avatar-wrap"><img src="https://hocmai.vn/file.php/1/Thay_Ngoc/2.png" alt="Thầy Vũ Khắc Ngọc, giáo viên Hóa học" loading="lazy" /><span class="v2-verified">HOCMAI · Giáo viên Hóa</span></div>
+            <div class="v2-tutor-body"><div class="v2-name-row"><div><h3>Vũ Khắc Ngọc</h3><p>Giáo viên Hóa học · được nhiều học sinh biết đến qua các khóa học trực tuyến</p></div></div><div class="v2-tags"><span>Hóa học</span><span>Luyện thi</span></div><div class="v2-tutor-facts"><span>Từng tham gia đội tuyển học sinh giỏi Hóa học quốc gia</span><span>Tác giả sách phương pháp giải nhanh Hóa học</span></div><div class="v2-price-row"><div><small>Hồ sơ công khai</small><strong>HOCMAI</strong></div><a class="v2-profile-btn" href="https://hocmai.vn/home_page/giaovien/chitietgiaovien.php?act=view&id=90" target="_blank" rel="noopener noreferrer">Xem hồ sơ ↗</a></div></div>
+          </article>
+          <article class="v2-tutor-card">
+            <div class="v2-avatar-wrap"><img src="https://hocmai.vn/file.php/1/Thay_Dang_Viet_Hung/Dang_Viet_Hung_new_20112023/370x370_1.png" alt="Thầy Đặng Việt Hùng, giáo viên Toán và Vật lí" loading="lazy" /><span class="v2-verified">HOCMAI · Giáo viên Toán</span></div>
+            <div class="v2-tutor-body"><div class="v2-name-row"><div><h3>Đặng Việt Hùng</h3><p>Thạc sĩ · Giáo viên Toán và Vật lí</p></div></div><div class="v2-tags"><span>Toán</span><span>Vật lí</span><span>Thạc sĩ</span></div><div class="v2-tutor-facts"><span>Giảng dạy và luyện thi cùng HOCMAI</span><span>Hồ sơ công khai có thông tin chuyên môn</span></div><div class="v2-price-row"><div><small>Hồ sơ công khai</small><strong>HOCMAI</strong></div><a class="v2-profile-btn" href="https://hocmai.vn/home_page/giaovien/chitietgiaovien.php?act=view&id=85" target="_blank" rel="noopener noreferrer">Xem hồ sơ ↗</a></div></div>
+          </article>
+          <article class="v2-tutor-card">
+            <div class="v2-avatar-wrap"><img src="https://hocmai.vn/file.php/1/Bao_Van/Bao_Van_3.jpg" alt="Cô Đặng Bảo Vân, giáo viên Tiếng Anh" loading="lazy" /><span class="v2-verified">HOCMAI · Giáo viên Tiếng Anh</span></div>
+            <div class="v2-tutor-body"><div class="v2-name-row"><div><h3>Đặng Bảo Vân</h3><p>Giáo viên Tiếng Anh · được nhiều học viên biết đến qua các khóa học</p></div></div><div class="v2-tags"><span>Tiếng Anh</span><span>HOCMAI</span></div><div class="v2-tutor-facts"><span>Tốt nghiệp Đại học Hà Nội</span><span>Kinh nghiệm giảng dạy và đồng hành cùng học sinh</span></div><div class="v2-price-row"><div><small>Hồ sơ công khai</small><strong>HOCMAI</strong></div><a class="v2-profile-btn" href="https://hocmai.vn/giao-vien/253/co-dang-bao-van.html" target="_blank" rel="noopener noreferrer">Xem hồ sơ ↗</a></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-confidence">
+      <div class="container v2-confidence-grid">
+        <div class="v2-confidence-copy"><span>VÌ SAO DỄ QUYẾT ĐỊNH HƠN?</span><h2>Thông tin cần thiết được trình bày trước khi bạn gửi yêu cầu.</h2><p>TutorNearMe ưu tiên sự rõ ràng thay vì bắt phụ huynh phải nhắn hỏi từng thông tin cơ bản.</p><a href="#tutors">Xem cách hồ sơ được trình bày →</a></div>
+        <div class="v2-confidence-list">
+          <div><b>01</b><span><strong>Môn & kinh nghiệm</strong><small>Biết gia sư phù hợp phần kiến thức nào.</small></span></div>
+          <div><b>02</b><span><strong>Khu vực hoạt động</strong><small>Ưu tiên kết nối thuận tiện cho việc học trực tiếp.</small></span></div>
+          <div><b>03</b><span><strong>Lịch rảnh</strong><small>So sánh trước khi gửi yêu cầu, hạn chế lệch lịch.</small></span></div>
+          <div><b>04</b><span><strong>Học phí</strong><small>Dễ dự trù ngân sách và so sánh lựa chọn.</small></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-nearby">
+      <div class="container v2-nearby-grid">
+        <div class="v2-map-card" aria-label="Bản đồ minh họa khu vực gia sư">
+          <div class="v2-map-lines" aria-hidden="true"></div>
+          <span class="v2-map-label label-a">Bình Thạnh</span><span class="v2-map-label label-b">Quận 3</span><span class="v2-map-label label-c">Phú Nhuận</span><span class="v2-map-label label-d">Thủ Đức</span>
+          <button class="v2-pin pin-a active" data-map="Mai Anh · Toán · Bình Thạnh">MA</button><button class="v2-pin pin-b" data-map="Hà Linh · Ngữ văn · Quận 3">HL</button><button class="v2-pin pin-c" data-map="Đức Minh · Toán · Phú Nhuận">ĐM</button><button class="v2-pin pin-d" data-map="Quốc Bảo · IELTS · Thủ Đức">QB</button>
+          <div class="v2-map-tip" id="mapTooltip"><strong>Mai Anh</strong><span>Toán · Bình Thạnh</span></div>
+        </div>
+        <div class="v2-nearby-copy"><span class="v2-outline-label">TUTORNEARME MAP</span><h2>Học gần hơn để việc duy trì lịch học nhẹ nhàng hơn.</h2><p>Với lớp trực tiếp, khu vực là một phần quan trọng của sự phù hợp. Chọn khu vực giúp thu hẹp phạm vi tìm kiếm và ưu tiên những gia sư thuận tiện hơn cho việc học trực tiếp.</p><div class="v2-privacy"><b>⌖</b><span><strong>Tôn trọng riêng tư</strong><small>Prototype chỉ biểu diễn khu vực, không hiển thị địa chỉ nhà cụ thể.</small></span></div></div>
+      </div>
+    </section>
+
+    <section class="v2-how" id="how">
+      <div class="container">
+        <div class="v2-centered-head"><small>MỘT LUỒNG RÕ RÀNG</small><h2>Từ nhu cầu đến buổi học đầu tiên</h2><p>Không cần vòng vo qua nhiều bước không cần thiết.</p></div>
+        <div class="v2-steps">
+          <div class="v2-step step-blue"><b>1</b><h3>Chọn điều bạn cần</h3><p>Môn, khu vực, thời gian và ngân sách.</p></div>
+          <div class="v2-step step-yellow"><b>2</b><h3>So sánh hồ sơ</h3><p>Xem năng lực, lịch rảnh, phí và đánh giá.</p></div>
+          <div class="v2-step step-red"><b>3</b><h3>Gửi yêu cầu học</h3><p>Chia sẻ mục tiêu và khung giờ mong muốn.</p></div>
+          <div class="v2-step step-cyan"><b>4</b><h3>Theo dõi & đánh giá</h3><p>Xem trạng thái buổi học và phản hồi sau học.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-offers" id="offers">
+      <div class="container v2-offer-shell">
+        <div class="v2-offer-copy"><span>QUYỀN LỢI KHI BẮT ĐẦU</span><h2>Đủ thông tin để thử một lựa chọn mà không bị áp lực.</h2><p>Bắt đầu bằng việc xem và so sánh đầy đủ thông tin trước khi gửi yêu cầu học — không cần cam kết khi bạn còn đang cân nhắc.</p></div>
+        <div class="v2-offer-points"><div><b>01</b><span><strong>So sánh miễn phí</strong><small>Xem các hồ sơ minh họa trước khi quyết định.</small></span></div><div><b>02</b><span><strong>Không ẩn học phí</strong><small>Mức phí tham khảo đặt ngay trên hồ sơ.</small></span></div><div><b>03</b><span><strong>Tự chọn lịch phù hợp</strong><small>Chủ động theo lịch gia đình và lịch rảnh của gia sư.</small></span></div></div>
+      </div>
+    </section>
+
+    <section class="v2-stories" id="stories">
+      <div class="container">
+        <div class="v2-story-head"><div><span>GÓC PHỤ HUYNH & HỌC SINH</span><h2>Những câu hỏi nên được trả lời trước khi chọn gia sư.</h2></div><p>Nội dung ở đây tập trung hỗ trợ quyết định tìm gia sư, thay vì blog chung chung không liên quan trực tiếp đến trải nghiệm.</p></div>
+        <div class="v2-story-grid">
+          <article class="v2-feature-story"><img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1000&q=84" alt="Học sinh đang học cùng gia sư" /><div><span>HƯỚNG DẪN CHỌN GIA SƯ</span><h3>Nên nhìn vào điều gì ngoài điểm số và trường đại học?</h3><p>Một hồ sơ phù hợp còn nằm ở cách giao tiếp, lịch rảnh, mức phí và khả năng theo sát mục tiêu học.</p><a href="#tutors">Xem hồ sơ mẫu →</a></div></article>
+          <article class="v2-mini-story"><span class="v2-mini-icon">⌚</span><div><small>LỊCH HỌC</small><h3>Lịch nào thực tế để duy trì trong nhiều tuần?</h3><p>Chọn khung giờ học viên còn đủ năng lượng, không chỉ chọn giờ trống.</p></div></article>
+          <article class="v2-mini-story"><span class="v2-mini-icon">◎</span><div><small>MỤC TIÊU</small><h3>Làm sao mô tả mục tiêu học để gia sư hiểu nhanh?</h3><p>Nêu phần đang yếu, kết quả mong muốn và mốc thời gian cụ thể.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="v2-testimonials">
+      <div class="container v2-testimonial-shell">
+        <div class="v2-testimonial-title"><span>ĐIỀU GIA ĐÌNH THƯỜNG CÂN NHẮC</span><h2>Một lựa chọn tốt bắt đầu từ những câu hỏi rất thực tế.</h2></div>
+        <div class="v2-quote"><p>“Gia sư có rảnh đúng buổi con học được không, và mức phí có phù hợp nếu học đều mỗi tuần?”</p><div><span class="v2-quote-avatar">01</span><span><strong>Lịch học & ngân sách</strong><small>Thông tin nên thấy trước khi liên hệ</small></span></div></div>
+        <div class="v2-quote"><p>“Cách dạy của gia sư có hợp với phần kiến thức con đang yếu, và khoảng cách có thuận tiện để duy trì lâu dài không?”</p><div><span class="v2-quote-avatar">02</span><span><strong>Cách học & khu vực</strong><small>Hai yếu tố ảnh hưởng trực tiếp đến sự phù hợp</small></span></div></div>
+      </div>
+    </section>
+
+    <section class="v2-final">
+      <div class="container v2-final-inner">
+        <div><span>BẮT ĐẦU TỪ 4 THÔNG TIN</span><h2>Môn học. Khu vực. Lịch rảnh. Mức phí.</h2><p>Đó là đủ để bạn bắt đầu thu hẹp lựa chọn phù hợp hơn.</p></div>
+        <a href="#finder" class="v2-btn v2-btn-yellow">Tìm gia sư phù hợp <span>→</span></a>
+      </div>
+    </section>
+
+    <!-- Không có section “Trở thành gia sư” trong homepage người học. Anchor chỉ phục vụ giữ nguyên header. -->
+    <span id="become-tutor" class="v2-hidden-anchor" aria-hidden="true"></span>
+  </main>
+
+  <footer class="v2-footer">
+    <div class="container v2-footer-grid">
+      <div><div class="v2-footer-brand"><span>TN</span><strong>TutorNearMe</strong></div><p>Kết nối người học, phụ huynh và gia sư sinh viên theo môn học, khu vực, lịch rảnh và mức phí phù hợp.</p></div>
+      <div><strong>Người học</strong><a href="#finder">Tìm gia sư</a><a href="#tutors">Xem hồ sơ</a><a href="#stories">Góc học tập</a></div>
+      <div><strong>Thông tin</strong><a href="#how">Cách hoạt động</a><a href="#offers">Quyền lợi</a><a href="#needs">Nhu cầu học</a></div>
+      <div><strong>Hỗ trợ</strong><a href="#how">Hướng dẫn bắt đầu</a><a href="#stories">Kinh nghiệm chọn gia sư</a><a href="#finder">Tìm theo nhu cầu</a></div>
+    </div>
+    <div class="container v2-footer-bottom"><span>© 2026 TutorNearMe</span><span>Kết nối đúng người · Học theo cách phù hợp</span></div>
+  </footer>
+
+  <div class="v2-modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <section class="v2-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="v2-modal-close" id="modalClose" aria-label="Đóng">×</button>
+      <span id="modalEyebrow">TUTORNEARME</span><h2 id="modalTitle">Thông tin prototype</h2><p id="modalText">Luồng này sẽ được nối vào screen tương ứng khi chuyển sang React.</p>
+      <div class="v2-modal-actions"><button class="v2-modal-secondary" id="modalCancel">Đóng</button><button class="v2-modal-primary" id="modalPrimary">Tiếp tục</button></div>
+    </section>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

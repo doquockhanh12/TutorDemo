@@ -1,12 +1,14 @@
 # Screen Inventory
 
+> **Auth implementation note:** L01, T01 and A01 all use the same shared `/login` route. There are no role-specific login pages. L02 uses `/register`; T02 uses `/tutor/register`. These pages simulate authentication in local frontend state only.
+
 Mục tiêu của file này là ngăn AI tự đoán thiếu/đúp màn hình. ID màn hình giữ ổn định dù tên route có thể thay đổi.
 
 ## Learner / Parent
 
 | ID | Screen | MVP |
 |---|---|---|
-| L01 | Login | Yes |
+| L01 | Login (shared route `/login`) | Yes |
 | L02 | Register | Yes |
 | L03 | Tutor Search / Discovery | Yes |
 | L04 | Tutor Search Filters | Yes, có thể nằm trong L03 |
@@ -23,7 +25,7 @@ Mục tiêu của file này là ngăn AI tự đoán thiếu/đúp màn hình. I
 
 | ID | Screen | MVP |
 |---|---|---|
-| T01 | Login | Yes |
+| T01 | Login (shared route `/login`) | Yes |
 | T02 | Register / Tutor Onboarding | Yes |
 | T03 | Tutor Dashboard | Yes |
 | T04 | Edit Tutor Profile | Yes |
@@ -42,7 +44,7 @@ Mục tiêu của file này là ngăn AI tự đoán thiếu/đúp màn hình. I
 
 | ID | Screen | MVP |
 |---|---|---|
-| A01 | Admin Login | Yes |
+| A01 | Admin Login (shared route `/login`) | Yes |
 | A02 | Dashboard | Yes |
 | A03 | User List | Yes |
 | A04 | User Detail / Account Status | Yes |

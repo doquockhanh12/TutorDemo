@@ -4,6 +4,14 @@ export const tutorSummary = [
   { label: 'Giờ trống còn lại', value: '12', note: 'Trong 7 ngày tới' },
 ];
 
+export const initialTutorProfile = {
+  name: 'Mai Anh Nguyễn',
+  subjects: 'Toán, Vật lý',
+  area: 'Bình Thạnh',
+  fee: '180000',
+  bio: 'Giúp học sinh củng cố nền tảng bằng lộ trình rõ ràng và bài tập phù hợp.',
+};
+
 export const initialLessons = [
   { id: 'lesson-1', day: 'Hôm nay', date: 'Thứ tư', time: '16:00 – 17:30', subject: 'Toán lớp 9', learner: 'Minh Khang', place: 'Bình Thạnh · Tại nhà', status: 'confirmed' },
   { id: 'lesson-2', day: 'Ngày mai', date: 'Thứ năm', time: '18:30 – 20:00', subject: 'Vật lý lớp 10', learner: 'Ngọc Hà', place: 'Trực tuyến', status: 'confirmed' },
@@ -17,12 +25,12 @@ export const initialRequests = [
 ];
 
 export const weeklyLessons = [
-  { day: 'T2', date: '28', items: [{ time: '18:00', label: 'Toán · Khang', tone: 'pine' }] },
-  { day: 'T3', date: '29', items: [{ time: '16:30', label: 'Lý · Ngọc Hà', tone: 'clay' }] },
-  { day: 'T4', date: '30', items: [{ time: '16:00', label: 'Toán · Khang', tone: 'pine' }, { time: '19:00', label: 'Tư vấn mới', tone: 'sand' }] },
-  { day: 'T5', date: '01', items: [{ time: '18:30', label: 'Lý · Ngọc Hà', tone: 'clay' }] },
+  { day: 'T2', date: '28', items: [{ time: '18:00', label: 'Toán · Khang', tone: 'blue' }] },
+  { day: 'T3', date: '29', items: [{ time: '16:30', label: 'Lý · Ngọc Hà', tone: 'coral' }] },
+  { day: 'T4', date: '30', items: [{ time: '16:00', label: 'Toán · Khang', tone: 'blue' }, { time: '19:00', label: 'Tư vấn mới', tone: 'yellow' }] },
+  { day: 'T5', date: '01', items: [{ time: '18:30', label: 'Lý · Ngọc Hà', tone: 'coral' }] },
   { day: 'T6', date: '02', items: [] },
-  { day: 'T7', date: '03', items: [{ time: '09:00', label: 'Toán · Gia Bảo', tone: 'sand' }] },
+  { day: 'T7', date: '03', items: [{ time: '09:00', label: 'Toán · Gia Bảo', tone: 'yellow' }] },
   { day: 'CN', date: '04', items: [] },
 ];
 

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ArrowRight, BadgeCheck, BookOpenCheck, ChevronDown, Menu, Search, SlidersHorizontal, Sparkles, Star, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Brand from '../../components/Brand.jsx';
 import Avatar from '../../components/Avatar.jsx';
 import Badge from '../../components/Badge.jsx';
@@ -9,23 +9,21 @@ import RoleSwitcher from '../../components/RoleSwitcher.jsx';
 import SearchInput from '../../components/SearchInput.jsx';
 import { availabilityOptions, locationOptions, subjectOptions, tutors } from '../../data/tutors.js';
 import TutorCard from './TutorCard.jsx';
+import useDialogFocus from '../../hooks/useDialogFocus.js';
+import useDemoStorage from '../../hooks/useDemoStorage.js';
 
 const money = (value) => new Intl.NumberFormat('vi-VN').format(value);
 
 function TutorQuickView({ tutor, onClose }) {
+  const navigate = useNavigate();
   const [subject, setSubject] = useState(tutor.subjects[0]);
   const [message, setMessage] = useState('');
-  const [sent, setSent] = useState(false);
 
-  useEffect(() => {
-    const onKeyDown = (event) => { if (event.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  const dialogRef = useDialogFocus(onClose);
 
   return (
     <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <section className="quick-view" role="dialog" aria-modal="true" aria-labelledby="quick-view-title">
+      <section ref={dialogRef} tabIndex={-1} className="quick-view" role="dialog" aria-modal="true" aria-labelledby="quick-view-title">
         <button className="icon-button quick-view__close" type="button" onClick={onClose} aria-label="Đóng hồ sơ"><X size={20} /></button>
         <div className="quick-view__heading">
           <Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone} size="xl" />
@@ -37,18 +35,14 @@ function TutorQuickView({ tutor, onClose }) {
           <strong>{money(tutor.price)}đ / buổi</strong>
         </div>
         <p className="quick-view__intro">{tutor.intro}</p>
-        {sent ? (
-          <div className="quick-view__success" role="status"><BadgeCheck size={24} /><div><strong>Đã ghi nhận yêu cầu trong bản demo</strong><p>Yêu cầu học {subject} với {tutor.name} đang ở trạng thái chờ phản hồi.</p></div></div>
-        ) : (
-          <form className="quick-view__form" onSubmit={(event) => { event.preventDefault(); setSent(true); }}>
+          <form className="quick-view__form" onSubmit={(event) => { event.preventDefault(); navigate(`/requests/new?tutor=${tutor.id}&subject=${encodeURIComponent(subject)}&goal=${encodeURIComponent(message)}`); }}>
             <h3>Gửi yêu cầu học</h3>
             <label htmlFor="quick-subject">Môn học</label>
             <select id="quick-subject" value={subject} onChange={(event) => setSubject(event.target.value)}>{tutor.subjects.map((item) => <option key={item}>{item}</option>)}</select>
             <label htmlFor="quick-message">Lời nhắn cho gia sư</label>
             <textarea id="quick-message" rows="3" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Chia sẻ mục tiêu học và thời gian phù hợp..." />
-            <Button type="submit">Gửi yêu cầu demo <ArrowRight size={17} aria-hidden="true" /></Button>
+            <Button type="submit">Tiếp tục gửi yêu cầu <ArrowRight size={17} aria-hidden="true" /></Button>
           </form>
-        )}
       </section>
     </div>
   );
@@ -63,7 +57,7 @@ export default function LearnerSearch() {
   const [sortBy, setSortBy] = useState('recommended');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [savedIds, setSavedIds] = useState([]);
+  const [savedIds, setSavedIds] = useDemoStorage('tnm.savedTutors', []);
   const [selectedTutor, setSelectedTutor] = useState(null);
 
   const results = useMemo(() => {
@@ -94,7 +88,7 @@ export default function LearnerSearch() {
           <nav className={`learner-header__nav ${menuOpen ? 'is-open' : ''}`} aria-label="Điều hướng người học">
             <a className="is-current" href="#ket-qua" onClick={() => setMenuOpen(false)}>Tìm gia sư</a>
             <a href="#vi-sao" onClick={() => setMenuOpen(false)}>Vì sao chọn chúng tôi</a>
-            <Link to="/tutor/dashboard">Dành cho gia sư</Link>
+            <Link to="/tutor">Dành cho gia sư</Link>
             <div className="learner-header__demo"><RoleSwitcher /></div>
           </nav>
           <div className="learner-header__right"><span className="learner-header__place">TP. Hồ Chí Minh <ChevronDown size={14} /></span><RoleSwitcher /></div>
@@ -139,7 +133,7 @@ export default function LearnerSearch() {
             </section>
 
             <aside className="learner-support" id="vi-sao" aria-label="Thông tin hỗ trợ">
-              <div className="learner-support__block"><span className="eyebrow">CHỌN CÓ CƠ SỞ</span><h3>Hồ sơ đủ rõ để bạn yên tâm.</h3><p>Xem môn dạy, khu vực, lịch rảnh, học phí và đánh giá trước khi gửi yêu cầu.</p><div className="learner-support__avatars"><Avatar initials="MA" name="Mai Anh" tone="sage" size="sm" /><Avatar initials="QB" name="Quốc Bảo" tone="clay" size="sm" /><Avatar initials="HL" name="Hà Linh" tone="moss" size="sm" /><span>Gia sư phù hợp đang ở gần bạn</span></div></div>
+              <div className="learner-support__block"><span className="eyebrow">CHỌN CÓ CƠ SỞ</span><h3>Hồ sơ đủ rõ để bạn yên tâm.</h3><p>Xem môn dạy, khu vực, lịch rảnh, học phí và đánh giá trước khi gửi yêu cầu.</p><div className="learner-support__avatars"><Avatar initials="MA" name="Mai Anh" tone="blue" size="sm" /><Avatar initials="QB" name="Quốc Bảo" tone="coral" size="sm" /><Avatar initials="HL" name="Hà Linh" tone="yellow" size="sm" /><span>Gia sư phù hợp đang ở gần bạn</span></div></div>
               <div className="learner-support__block learner-support__block--line"><span className="eyebrow">BẮT ĐẦU ĐƠN GIẢN</span><h3>Ba bước để bắt đầu</h3><ol><li><span>01</span>Chọn môn và khu vực</li><li><span>02</span>So sánh hồ sơ gia sư</li><li><span>03</span>Gửi yêu cầu học phù hợp</li></ol></div>
               <div className="learner-support__note"><BadgeCheck size={20} /><p><strong>Thông tin minh bạch</strong><br />Bạn luôn thấy mức phí và lịch rảnh trước khi quyết định.</p></div>
             </aside>

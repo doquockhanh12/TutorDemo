@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#155EEF" />
+  <meta name="description" content="TutorNearMe — tìm gia sư phù hợp theo môn học, khu vực, lịch học và mục tiêu." />
+  <title>TutorNearMe — Học đúng người, tiến bộ gần hơn</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./theme.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="TutorNearMe">
+        <span class="brand-mark">TN</span>
+        <span class="brand-word">
+          <strong>TutorNearMe</strong>
+          <small>Gia sư gần bạn</small>
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Điều hướng chính">
+        <a href="#finder">Tìm gia sư</a>
+        <a href="#needs">Nhu cầu học</a>
+        <a href="#tutors">Gia sư nổi bật</a>
+        <a href="#offers">Ưu đãi</a>
+        <a href="#stories">Góc học tập</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="tutor-link tutor-link-cta" href="#become-tutor"><span>Trở thành gia sư</span></a>
+        <button class="btn btn-ghost hide-mobile" data-modal="login">Đăng nhập</button>
+        <button class="btn btn-primary" data-modal="register">Đăng ký</button>
+        <button class="menu-btn" id="menuBtn" aria-label="Mở menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#finder">Tìm gia sư</a>
+      <a href="#needs">Nhu cầu học</a>
+      <a href="#tutors">Gia sư nổi bật</a>
+      <a href="#offers">Ưu đãi</a>
+      <a href="#stories">Góc học tập</a>
+      <a href="#become-tutor">Trở thành gia sư</a>
+      <button class="btn btn-ghost" data-modal="login">Đăng nhập</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-shape hero-shape-a"></div>
+      <div class="hero-shape hero-shape-b"></div>
+      <div class="hero-shape hero-shape-c"></div>
+
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow eyebrow-light">HỌC ĐÚNG NGƯỜI · HỌC ĐÚNG CÁCH</span>
+
+          <h1>
+            Tìm đúng gia sư.
+            <span>Học đúng cách.</span>
+            <span>Tiến bộ rõ ràng.</span>
+          </h1>
+          <p class="hero-lead">
+            Chọn gia sư theo môn học, khu vực, lịch rảnh và ngân sách.
+            Xem hồ sơ rõ ràng trước khi kết nối.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#finder" class="btn btn-white btn-xl">Tìm gia sư ngay</a>
+            <button class="btn btn-outline-white btn-xl" data-modal="consult">Nhận tư vấn miễn phí</button>
+          </div>
+
+          <div class="hero-proof">
+            <div class="proof-item">
+              <span class="proof-number">1.200+</span>
+              <span class="proof-label">hồ sơ gia sư minh họa</span>
+            </div>
+            <div class="proof-item">
+              <span class="proof-number">4.9/5</span>
+              <span class="proof-label">điểm đánh giá demo</span>
+            </div>
+            <div class="proof-item">
+              <span class="proof-number">20+</span>
+              <span class="proof-label">môn học</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-art" aria-label="Minh họa trải nghiệm học cùng gia sư">
+          <div class="image-frame image-frame-main">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1000&q=84" alt="Gia sư đang hướng dẫn học viên" />
+          </div>
+
+          <div class="image-frame image-frame-secondary">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=84" alt="Nhóm học viên học tập" />
+          </div>
+
+          <div class="float-pill float-rating">
+            <span class="pill-icon pill-yellow">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.6 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L2.9 9.2l6.3-.9L12 2.6Z"/></svg>
+            </span>
+            <span><b>4.9</b><small>đánh giá nổi bật</small></span>
+          </div>
+
+          <div class="float-pill float-distance">
+            <span class="pill-icon pill-orange">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Zm0-8.6a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
+            </span>
+            <span><b>1.8 km</b><small>gia sư gần bạn</small></span>
+          </div>
+
+          <div class="float-pill float-verified">
+            <span class="pill-icon pill-mint">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.4 16.2-4.2-4.1 1.7-1.7 2.5 2.5 7.7-7.7 1.7 1.7-9.4 9.3Z"/></svg>
+            </span>
+            <span><b>Đã xác minh</b><small>thông tin minh bạch</small></span>
+          </div>
+
+          <div class="scribble scribble-one"></div>
+          <div class="scribble scribble-two"></div>
+        </div>
+      </div>
+
+      <!-- VUS-like quick utility row adapted to TutorNearMe -->
+      <div class="container quick-actions">
+        <a href="#finder" class="quick-item quick-blue">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24"><path d="M10.8 4a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 10.8 4Zm0 2.2a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2Zm5.9 10.3 3.4 3.4-1.6 1.6-3.4-3.4 1.6-1.6Z"/></svg>
+          </span>
+          <span><b>Tìm gia sư</b><small>Theo môn, khu vực, lịch</small></span>
+        </a>
+
+        <a href="#map-section" class="quick-item quick-mint">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24"><path d="m3 5 5-2 8 2 5-2v16l-5 2-8-2-5 2V5Zm5 .4-2.8 1.1v11.3L8 16.7V5.4Zm2.2.2v11.2l4.7 1.2V6.8l-4.7-1.2Zm6.9 1.1v11.5l1.7-.7V6l-1.7.7Z"/></svg>
+          </span>
+          <span><b>Gia sư gần bạn</b><small>Xem theo khoảng cách</small></span>
+        </a>
+
+        <a href="#offers" class="quick-item quick-yellow">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 12.7 12.7 21a2.3 2.3 0 0 1-3.2 0L3 14.5V3h11.5L21 9.5a2.3 2.3 0 0 1 0 3.2ZM7.5 6.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"/></svg>
+          </span>
+          <span><b>Ưu đãi học viên</b><small>Khám phá chương trình demo</small></span>
+        </a>
+
+        <a href="#stories" class="quick-item quick-lilac">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 3h13a3 3 0 0 1 3 3v15l-4-2.5L12 21l-4-2.5L4 21V3Zm3 4v2h10V7H7Zm0 4v2h8v-2H7Z"/></svg>
+          </span>
+          <span><b>Góc học tập</b><small>Mẹo học và tài liệu</small></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FINDER -->
+    <section class="finder section-compact" id="finder">
+      <div class="container">
+        <div class="finder-panel">
+          <div class="finder-ribbon">
+            <b>Tìm nhanh trong 30 giây</b>
+            <small>Chọn vài thông tin — TutorNearMe lo phần còn lại.</small>
+          </div>
+          <div class="finder-copy">
+            <span class="eyebrow">TÌM NHANH THEO NHU CẦU</span>
+            <h2>Tìm gia sư <span class="title-chip">đúng nhu cầu</span></h2>
+            <p>Chọn trình độ, mục tiêu và khu vực để bắt đầu với nhóm gia sư phù hợp.</p>
+          </div>
+
+          <div class="finder-form">
+            <label>
+              <span>Bạn đang học</span>
+              <select id="level">
+                <option>THCS · Lớp 6–9</option>
+                <option>THPT · Lớp 10–12</option>
+                <option>Đại học</option>
+                <option>Người đi làm</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Mục tiêu</span>
+              <select id="goal">
+                <option>Củng cố kiến thức</option>
+                <option>Luyện thi</option>
+                <option>Mất gốc</option>
+                <option>Nâng cao</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Khu vực</span>
+              <select id="district">
+                <option>Bình Thạnh</option>
+                <option>Thủ Đức</option>
+                <option>Quận 1</option>
+                <option>Gò Vấp</option>
+              </select>
+            </label>
+
+            <button class="btn btn-accent btn-search" id="finderBtn">Khám phá gia sư</button>
+          </div>
+
+          <div class="finder-result" id="finderResult">
+            Gợi ý: THCS · Củng cố kiến thức · Bình Thạnh
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEED CARDS inspired by VUS "courses for all ages", adapted -->
+    <section class="section needs" id="needs">
+      <div class="container">
+        <div class="section-head section-head-stacked">
+          <div>
+            <span class="eyebrow">GIA SƯ CHO MỌI MỤC TIÊU</span>
+            <h2>Mỗi mục tiêu, <span class="title-accent">một cách học phù hợp.</span></h2>
+          </div>
+          <p>
+            Không chỉ lọc theo môn học. Hãy bắt đầu từ vấn đề thực tế:
+            mất gốc, luyện thi, nâng cao, ngoại ngữ hoặc kỹ năng.
+          </p>
+        </div>
+
+        <div class="need-grid">
+          <article class="need-card need-card-blue">
+            <div class="need-image">
+              <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=82" alt="Học sinh trung học học tập" />
+            </div>
+            <div class="need-body">
+              <span class="need-chip">THCS · THPT</span>
+              <h3>Mất gốc & củng cố nền tảng</h3>
+              <p>Học theo nhịp độ riêng, tập trung vào phần kiến thức còn yếu.</p>
+              <a href="#tutors">Tìm gia sư phù hợp →</a>
+            </div>
+          </article>
+
+          <article class="need-card need-card-yellow">
+            <div class="need-image">
+              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=82" alt="Học viên ôn luyện tập trung" />
+            </div>
+            <div class="need-body">
+              <span class="need-chip">ÔN THI</span>
+              <h3>Luyện thi vào 10 & THPT</h3>
+              <p>Ôn trọng tâm, giải đề và theo dõi tiến độ theo từng giai đoạn.</p>
+              <a href="#tutors">Xem gia sư luyện thi →</a>
+            </div>
+          </article>
+
+          <article class="need-card need-card-purple">
+            <div class="need-image">
+              <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=900&q=82" alt="Học viên học ngoại ngữ" />
+            </div>
+            <div class="need-body">
+              <span class="need-chip">NGOẠI NGỮ</span>
+              <h3>Tiếng Anh & IELTS</h3>
+              <p>Luyện kỹ năng, phản xạ, ngữ pháp hoặc chuẩn bị kỳ thi quốc tế.</p>
+              <a href="#tutors">Khám phá gia sư ngoại ngữ →</a>
+            </div>
+          </article>
+
+          <article class="need-card need-card-mint">
+            <div class="need-image">
+              <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=900&q=82" alt="Học nâng cao cùng gia sư" />
+            </div>
+            <div class="need-body">
+              <span class="need-chip">NÂNG CAO</span>
+              <h3>Học sinh khá giỏi</h3>
+              <p>Mở rộng kiến thức, rèn tư duy và chinh phục bài tập nâng cao.</p>
+              <a href="#tutors">Tìm gia sư nâng cao →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TUTORS -->
+    <section class="section tutors-section" id="tutors">
+      <div class="container">
+        <div class="section-head section-head-stacked section-head-center">
+          <div>
+            <span class="eyebrow">GIA SƯ TIÊU BIỂU</span>
+            <h2>Hồ sơ rõ ràng. <span class="title-accent">Chọn gia sư tự tin hơn.</span></h2>
+          </div>
+          <p>Dữ liệu dưới đây là nội dung minh họa cho prototype giao diện.</p>
+        </div>
+
+        <div class="tutor-showcase">
+          <article class="tutor-large">
+            <div class="tutor-photo">
+              <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=84" alt="Gia sư Nguyễn Minh Anh" />
+              <span class="spotlight">NỔI BẬT</span>
+            </div>
+
+            <div class="tutor-large-body">
+              <div class="tutor-title-row">
+                <div>
+                  <span class="verified">✓ Hồ sơ đã xác minh</span>
+                  <h3>Nguyễn Minh Anh</h3>
+                  <p>ĐH Sư phạm TP.HCM · 4 năm kinh nghiệm</p>
+                </div>
+                <button class="save-btn" aria-label="Lưu gia sư" aria-pressed="false">♡</button>
+              </div>
+
+              <div class="review-line">
+                <strong>★ 4.9</strong>
+                <span>128 đánh giá · 240+ buổi học</span>
+              </div>
+
+              <p class="tutor-desc">
+                Chuyên Toán THCS, luyện thi vào 10 và xây lại nền tảng cho học sinh mất gốc.
+              </p>
+
+              <div class="tag-row">
+                <span>Toán</span><span>THCS</span><span>Luyện thi vào 10</span>
+              </div>
+
+              <div class="availability">
+                <span><b>T3</b> 18:00</span>
+                <span><b>T5</b> 19:30</span>
+                <span><b>T7</b> 09:00</span>
+              </div>
+
+              <div class="tutor-meta-row">
+                <span>📍 1.8 km</span>
+                <span>🏠 Tại nhà</span>
+                <span>💻 Online</span>
+              </div>
+
+              <div class="tutor-price-row">
+                <div><strong>200.000đ</strong><small>/ 90 phút</small></div>
+                <button class="btn btn-primary">Xem hồ sơ</button>
+              </div>
+            </div>
+          </article>
+
+          <div class="tutor-mini-grid">
+            <article class="tutor-mini">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=82" alt="Gia sư Trần Ngọc Hà" />
+              <div>
+                <span class="mini-rating">★ 4.8</span>
+                <h3>Trần Ngọc Hà</h3>
+                <p>Tiếng Anh · IELTS</p>
+                <small>📍 2.4 km · Online & tại nhà</small>
+                <strong>220k / 90 phút</strong>
+              </div>
+            </article>
+
+            <article class="tutor-mini">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=82" alt="Gia sư Phạm Quốc Bảo" />
+              <div>
+                <span class="mini-rating">★ 4.9</span>
+                <h3>Phạm Quốc Bảo</h3>
+                <p>Vật lý · Toán</p>
+                <small>📍 3.1 km · Tại nhà</small>
+                <strong>190k / 90 phút</strong>
+              </div>
+            </article>
+
+            <article class="tutor-mini tutor-mini-horizontal">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=82" alt="Gia sư Lê Gia Hân" />
+              <div>
+                <span class="mini-rating">★ 4.9</span>
+                <h3>Lê Gia Hân</h3>
+                <p>Ngữ văn · Kỹ năng viết</p>
+                <small>📍 1.2 km · Tại nhà</small>
+                <strong>180k / 90 phút</strong>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section class="community">
+      <div class="container community-grid">
+        <div class="community-copy">
+          <span class="eyebrow eyebrow-light">CỘNG ĐỒNG HỌC TẬP</span>
+          <h2>Mỗi buổi học tốt là <span class="title-accent">một bước tiến.</span></h2>
+          <p>
+            Thay vì chỉ khoe những con số lớn, TutorNearMe tập trung vào
+            trải nghiệm học thật: đúng mục tiêu, đúng nhịp độ và đúng người đồng hành.
+          </p>
+        </div>
+
+        <div class="community-cards">
+          <div class="stat-card stat-yellow">
+            <strong>15.000+</strong>
+            <span>buổi học minh họa đã kết nối</span>
+          </div>
+          <div class="stat-card stat-mint">
+            <strong>20+</strong>
+            <span>môn học có thể tìm kiếm</span>
+          </div>
+          <div class="stat-card stat-pink">
+            <strong>5 km</strong>
+            <span>bán kính tìm gia sư mẫu</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container learner-strip">
+        <article>
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=82" alt="Nhóm học viên học tập" />
+          <div><b>Minh họa mục tiêu</b><span>“Củng cố Toán 9 trước kỳ thi vào 10”</span></div>
+        </article>
+        <article>
+          <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=800&q=82" alt="Học viên học ngoại ngữ" />
+          <div><b>Minh họa mục tiêu</b><span>“Nâng IELTS từ 5.5 lên 6.5”</span></div>
+        </article>
+        <article>
+          <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=82" alt="Học viên trong môi trường đại học" />
+          <div><b>Minh họa mục tiêu</b><span>“Lấy lại nền tảng Vật lý trong 8 tuần”</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section class="section map-section" id="map-section">
+      <div class="container map-grid">
+        <div class="map-copy">
+          <span class="eyebrow">TUTORNEARME MAP</span>
+          <h2>Tìm gia sư giỏi <span class="title-accent">ngay gần bạn.</span></h2>
+          <p>
+            Vị trí chỉ hiển thị ở mức khu vực gần đúng để hỗ trợ so sánh khoảng cách,
+            không hiển thị địa chỉ nhà chính xác của gia sư.
+          </p>
+
+          <div class="map-benefits">
+            <div><span>01</span><p><b>Khoảng cách</b><small>Ưu tiên những lựa chọn thuận tiện.</small></p></div>
+            <div><span>02</span><p><b>Hình thức</b><small>Tại nhà, online hoặc kết hợp.</small></p></div>
+            <div><span>03</span><p><b>Lịch rảnh</b><small>So sánh trước khi gửi yêu cầu.</small></p></div>
+          </div>
+
+          <button class="btn btn-navy">Xem gia sư gần tôi</button>
+        </div>
+
+        <div class="mock-map" role="img" aria-label="Bản đồ minh họa vị trí gia sư">
+          <div class="map-water"></div>
+          <div class="map-park map-park-a"></div>
+          <div class="map-park map-park-b"></div>
+          <div class="road road-1"></div>
+          <div class="road road-2"></div>
+          <div class="road road-3"></div>
+
+          <span class="district district-1">Bình Thạnh</span>
+          <span class="district district-2">Thủ Đức</span>
+          <span class="district district-3">Quận 2</span>
+
+          <button class="map-pin pin-1" data-tutor="Nguyễn Minh Anh · 200k">200k</button>
+          <button class="map-pin pin-2" data-tutor="Trần Ngọc Hà · 220k">220k</button>
+          <button class="map-pin pin-3" data-tutor="Phạm Quốc Bảo · 190k">190k</button>
+          <button class="map-pin pin-4" data-tutor="Lê Gia Hân · 180k">180k</button>
+
+          <div class="you-pin">Bạn</div>
+          <div class="map-tooltip" id="mapTooltip">Chọn một pin để xem gia sư</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSULTATION like VUS consultation block, adapted -->
+    <section class="section consultation">
+      <div class="container consultation-grid">
+        <div class="consult-visual">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1100&q=82" alt="Phụ huynh và học viên trao đổi kế hoạch học tập" />
+          <div class="consult-note">
+            <span>GỢI Ý</span>
+            <strong>Chưa biết nên chọn gia sư thế nào?</strong>
+            <p>Hãy để lại nhu cầu, TutorNearMe sẽ mô phỏng bước gợi ý phù hợp.</p>
+          </div>
+        </div>
+
+        <form class="consult-form" id="consultForm">
+          <span class="eyebrow">NHẬN TƯ VẤN TÌM GIA SƯ</span>
+          <h2>Chia sẻ nhu cầu. <span class="title-accent">Nhận gợi ý phù hợp.</span></h2>
+          <p>Form này chỉ minh họa giao diện, không gửi dữ liệu thật.</p>
+
+          <div class="form-grid">
+            <label>
+              <span>Họ và tên</span>
+              <input type="text" placeholder="Nguyễn Văn A" />
+            </label>
+            <label>
+              <span>Số điện thoại</span>
+              <input type="tel" placeholder="09xx xxx xxx" />
+            </label>
+            <label>
+              <span>Môn học</span>
+              <select><option>Toán</option><option>Tiếng Anh</option><option>Vật lý</option><option>Hóa học</option></select>
+            </label>
+            <label>
+              <span>Khu vực</span>
+              <select><option>Bình Thạnh</option><option>Thủ Đức</option><option>Quận 1</option><option>Gò Vấp</option></select>
+            </label>
+          </div>
+
+          <label class="full-field">
+            <span>Nhu cầu học tập</span>
+            <textarea rows="4" placeholder="Ví dụ: Học sinh lớp 9, cần củng cố Toán và luyện thi vào 10..."></textarea>
+          </label>
+
+          <button class="btn btn-primary btn-xl" type="submit">Nhận gợi ý phù hợp</button>
+          <small class="privacy-note">Prototype UI — chưa có backend và không lưu dữ liệu.</small>
+          <div class="form-success" id="formSuccess">Đã ghi nhận dữ liệu demo trên giao diện.</div>
+        </form>
+      </div>
+    </section>
+
+    <!-- OFFER -->
+    <section class="section offer-section" id="offers">
+      <div class="container">
+        <div class="offer-banner">
+          <div class="offer-copy">
+            <span class="offer-badge">ƯU ĐÃI DEMO · HỌC VIÊN MỚI</span>
+            <h2>Buổi đầu nhẹ nhàng hơn.<br><span class="offer-highlight">Khởi đầu tự tin hơn.</span></h2>
+            <p>
+              Minh họa chương trình <strong>giảm 20%</strong> cho buổi học đầu tiên
+              khi kết nối qua TutorNearMe.
+            </p>
+            <button class="btn btn-navy btn-xl">Khám phá ưu đãi</button>
+            <small>* Nội dung khuyến mãi là dữ liệu demo, không phải chương trình thật.</small>
+          </div>
+
+          <div class="offer-art">
+            <span class="offer-circle offer-circle-main">20%</span>
+            <span class="offer-circle offer-circle-blue">★</span>
+            <span class="offer-circle offer-circle-mint">+</span>
+            <div class="offer-ticket">
+              <span>TUTOR</span><span>NEAR</span><span>ME</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section how-section">
+      <div class="container">
+        <div class="section-head section-head-stacked section-head-center">
+          <div>
+            <span class="eyebrow">3 BƯỚC ĐỂ BẮT ĐẦU</span>
+            <h2>Từ nhu cầu đến <span>buổi học đầu tiên.</span></h2>
+          </div>
+          <p>Quy trình rõ ràng giúp phụ huynh, học viên và gia sư dễ phối hợp hơn.</p>
+        </div>
+
+        <div class="steps">
+          <article>
+            <span class="step-number">01</span>
+            <div class="step-icon step-blue">
+              <svg viewBox="0 0 24 24"><path d="M10.8 4a6.8 6.8 0 1 0 0 13.6A6.8 6.8 0 0 0 10.8 4Zm0 2.2a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2Zm5.9 10.3 3.4 3.4-1.6 1.6-3.4-3.4 1.6-1.6Z"/></svg>
+            </div>
+            <h3>Tìm</h3>
+            <p>Chọn môn học, khu vực, lịch, hình thức và ngân sách phù hợp.</p>
+          </article>
+
+          <article>
+            <span class="step-number">02</span>
+            <div class="step-icon step-orange">
+              <svg viewBox="0 0 24 24"><path d="M12 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm-8 17c.6-3.5 3.4-5.5 8-5.5s7.4 2 8 5.5H4Z"/></svg>
+            </div>
+            <h3>Kết nối</h3>
+            <p>Xem hồ sơ, đánh giá, lịch trống và gửi yêu cầu tới gia sư phù hợp.</p>
+          </article>
+
+          <article>
+            <span class="step-number">03</span>
+            <div class="step-icon step-mint">
+              <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.2 8 11 4.6-1.8 8-6 8-11V5l-8-3Zm-1.2 14.2-3.6-3.6 1.6-1.6 2 2 4.6-4.6L17 10l-6.2 6.2Z"/></svg>
+            </div>
+            <h3>Bắt đầu học</h3>
+            <p>Thống nhất lịch học và bắt đầu buổi đầu tiên theo hình thức đã chọn.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORIES / BLOG -->
+    <section class="section stories" id="stories">
+      <div class="container">
+        <div class="section-head section-head-stacked">
+          <div>
+            <span class="eyebrow">GÓC HỌC TẬP</span>
+            <h2>Mẹo học dễ áp dụng <span class="title-accent">mỗi ngày.</span></h2>
+          </div>
+          <a class="section-link" href="#">Xem tất cả bài viết →</a>
+        </div>
+
+        <div class="story-grid">
+          <article class="story-featured">
+            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1000&q=82" alt="Ghi chép kế hoạch học tập" />
+            <div>
+              <span class="story-label">PHƯƠNG PHÁP HỌC</span>
+              <h3>5 câu hỏi nên đặt ra trước khi chọn một gia sư.</h3>
+              <p>Đừng chỉ nhìn học phí. Hãy xem mục tiêu, cách dạy, lịch và mức độ phù hợp.</p>
+              <a href="#">Đọc bài viết →</a>
+            </div>
+          </article>
+
+          <article class="story-card">
+            <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=700&q=82" alt="Học viên tự học" />
+            <div><span>ÔN THI</span><h3>Cách chia lộ trình 8 tuần trước kỳ thi.</h3></div>
+          </article>
+
+          <article class="story-card">
+            <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=700&q=82" alt="Học tiếng Anh" />
+            <div><span>NGOẠI NGỮ</span><h3>Học 1-1 khác gì lớp nhóm?</h3></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BECOME TUTOR -->
+    <section class="become-tutor" id="become-tutor">
+      <div class="container become-grid">
+        <div class="become-copy">
+          <span class="eyebrow eyebrow-light">DÀNH CHO GIA SƯ</span>
+          <h2>Bạn giỏi một môn học?<br><span>Có người đang cần bạn.</span></h2>
+          <p>
+            Xây hồ sơ chuyên môn, chủ động lịch dạy và kết nối với học viên
+            có nhu cầu phù hợp trong khu vực của bạn.
+          </p>
+          <button class="btn btn-accent btn-xl" data-modal="tutor">Trở thành gia sư</button>
+        </div>
+
+        <div class="become-image">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1000&q=82" alt="Gia sư TutorNearMe" />
+          <span class="become-pill pill-one">Chủ động lịch dạy</span>
+          <span class="become-pill pill-two">Kết nối học viên gần bạn</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final-cta">
+      <div class="container final-row">
+        <div>
+          <span class="eyebrow">BẮT ĐẦU NGAY HÔM NAY</span>
+          <h2>Sẵn sàng tìm <span class="title-accent">gia sư phù hợp?</span></h2>
+        </div>
+        <a href="#finder" class="btn btn-primary btn-xl">Tìm gia sư ngay</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand brand-footer" href="#top">
+          <span class="brand-mark">TN</span>
+          <span class="brand-word">
+            <strong>TutorNearMe</strong>
+            <small>Gia sư gần bạn</small>
+          </span>
+        </a>
+        <p>
+          Prototype giao diện cho nền tảng kết nối học viên và gia sư
+          theo nhu cầu, lịch học và vị trí.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Người học</h4>
+        <a href="#finder">Tìm gia sư</a>
+        <a href="#needs">Nhu cầu học</a>
+        <a href="#offers">Ưu đãi</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Gia sư</h4>
+        <a href="#become-tutor">Trở thành gia sư</a>
+        <a href="#">Đăng nhập gia sư</a>
+        <a href="#">Hỗ trợ</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>TutorNearMe</h4>
+        <a href="#stories">Góc học tập</a>
+        <a href="#">Về chúng tôi</a>
+        <a href="#">Liên hệ</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© 2026 TutorNearMe · Giao diện demo phục vụ tham khảo thiết kế.</span>
+      <span>Bright Learning Marketplace V2</span>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Đóng">×</button>
+      <span class="eyebrow" id="modalEyebrow">TUTORNEARME</span>
+      <h2 id="modalTitle">Đăng ký TutorNearMe</h2>
+      <p id="modalText">Đây là modal giao diện demo.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary">Tiếp tục</button>
+        <button class="btn btn-ghost" id="modalCancel">Để sau</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

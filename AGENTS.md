@@ -1,5 +1,11 @@
 # AGENTS.md – Quy tắc cho Codex / coding agent
 
+## Auth V4 implementation guardrails
+
+- Keep one shared `/login` route; do not add role-specific login pages.
+- Preserve and validate internal `redirect` through login and registration; reject external destinations.
+- Provider-prefill only fields present in the explicit mock payload. Never invent Facebook email or phone data.
+
 ## Phạm vi hiện tại
 
 TutorNearMe hiện là FRONTEND-ONLY interactive prototype.
@@ -22,12 +28,10 @@ không được tự coi là backend business rules cuối cùng.
 Luôn đọc theo thứ tự:
 
 1. `PROJECT_BRIEF.md`
-2. `DESIGN.md`
+2. `DESIGN.md` và reference tương ứng trong `reference/final/`
 3. `docs/design/FIGMA_ANALYSIS.md`
-4. `docs/planning/MVP_SCOPE.md`
+4. `docs/planning/PRODUCT_SPEC.md`, nhất là flow của role đang làm
 5. `docs/screens/SCREEN_INVENTORY.md`
-6. Flow tương ứng trong `docs/flows/`
-7. `DESIGN.md` của role đang làm trong `apps/web/src/features/<role>/`
 
 Nếu các tài liệu có mâu thuẫn, không tự đoán.
 Hãy báo rõ conflict trước khi implementation.
@@ -39,11 +43,13 @@ Sử dụng nguồn theo thứ tự ưu tiên:
 
 1. Yêu cầu mới nhất của user.
 2. `AGENTS.md`
-3. `DESIGN.md`
-4. `docs/design/FIGMA_ANALYSIS.md`
-5. `docs/screens/SCREEN_INVENTORY.md`
-6. Role flow trong `docs/flows/`
+3. `reference/final/homepage/`, `reference/final/learner/`, `reference/final/tutor/` cho appearance của các trang tương ứng.
+4. `DESIGN.md` hiện hành.
+5. `docs/design/FIGMA_ANALYSIS.md` cho cấu trúc Figma đã xác nhận.
+6. `docs/screens/SCREEN_INVENTORY.md` và role flow trong `docs/planning/PRODUCT_SPEC.md`.
 7. Các tài liệu planning/reference khác.
+
+Editorial Utility xanh rêu được bảo tồn trong `docs/archive/PROJECT_HISTORY.md` và là tài liệu lịch sử **DEPRECATED**. Finalized reference quy định hệ visual xanh/đỏ/vàng/cyan/violet/kem, Nunito/Nunito Sans. Không dùng lại xanh rêu làm brand. Green ngữ nghĩa cho success/verified/available vẫn hợp lệ.
 
 `docs/design/FIGMA_ANALYSIS.md` là nguồn lưu trữ lâu dài
 cho những gì đã đọc được từ Figma MCP và Figma exports.
@@ -126,7 +132,7 @@ không ép sang dashboard sidebar nếu không cần thiết.
 - dễ xử lý request, lịch và học viên;
 - information density vừa phải.
 
-Tutor sử dụng workspace/sidebar pattern.
+Tutor workspace sử dụng sidebar pattern. Trang public `/tutor` là landing tuyển gia sư theo `reference/final/tutor/`, không dùng workspace shell.
 
 
 ### Admin

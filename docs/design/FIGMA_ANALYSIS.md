@@ -1,5 +1,7 @@
 # TutorNearMe — Preserved Figma Analysis for Codex
 
+> **Evidence archive:** this file preserves findings from the original structural Figma. Section 14 records an earlier proposed next step and is superseded by the approved finalized references and implementation instructions. Use `reference/final/*` and root `DESIGN.md` for current appearance; do not reinterpret the older Figma palette as active. The former `DESIGN_SOURCE_OF_TRUTH.md` is preserved verbatim in `docs/archive/PROJECT_HISTORY.md`.
+
 ## Evidence labels
 
 Use these labels to distinguish what each finding is based on:
@@ -16,6 +18,8 @@ Existing Admin findings below are `DIRECT_FIGMA_MCP`. Learner and Tutor visual f
 > Persistence rule: this file is intended to preserve Figma findings across Codex sessions.
 > Codex should read this file before any future UI/design work and should not rely on session memory alone.
 > If new Figma evidence is obtained later, append or revise this file with source/confidence notes instead of replacing verified findings silently.
+
+The user-provided exported frame images are preserved under `reference/figma/{learner,tutor,admin}/`. The original brief and three-role flow image are under `reference/brief/`; finalized visual references remain under `reference/final/`.
 
 > Source priority for this document:
 > 1. `DIRECT_FIGMA_MCP` for page IDs, confirmed frame names/dimensions, and measured Admin styles.
