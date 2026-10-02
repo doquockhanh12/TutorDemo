@@ -1,0 +1,3 @@
+TutorNearMe Vercel Preview smoke test
+Date: 2026-10-02
+Purpose: trigger a non-production preview deployment only.
