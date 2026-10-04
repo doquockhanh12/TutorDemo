@@ -15,16 +15,22 @@
 .income-legend { display: flex; gap: var(--space-4); font-size: .85rem; font-weight: 700; }
 .income-legend span::before { content: ''; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: currentColor; }
 .income-chart__svg { width: 100%; height: auto; max-height: 320px; margin-top: var(--space-4); overflow: visible; }
-.income-chart__svg text { fill: var(--color-text-secondary); font: 13px var(--font-ui); }
+.income-chart__svg text { fill: var(--color-text-secondary); font: 13px var(--font-ui); pointer-events: none; }
 .income-chart__grid { stroke: var(--color-border); stroke-dasharray: 4 4; }
 .income-chart__line { fill: none; stroke: var(--color-brand); stroke-width: 3; }
-.income-chart__point { fill: var(--color-brand); stroke: var(--color-surface); stroke-width: 2; }
+.income-chart__point-control { cursor: pointer; outline: none; }
+.income-chart__hit { fill: transparent; pointer-events: all; }
+.income-chart__selection { fill: none; stroke: transparent; stroke-width: 2; pointer-events: none; }
+.income-chart__point-control[aria-pressed="true"] .income-chart__selection { stroke: var(--color-brand); }
+.income-chart__point-control:focus-visible .income-chart__selection { stroke: var(--color-ink); stroke-width: 3; }
+.income-chart__point { fill: var(--brand-accent-yellow); stroke: var(--color-surface); stroke-width: 2; pointer-events: none; }
 .tutor-income [data-tone="maximum"] { color: var(--brand-accent-red); }
 .tutor-income [data-tone="minimum"] { color: var(--color-success); }
 .income-chart__point[data-tone="maximum"] { fill: var(--brand-accent-red); }
 .income-chart__point[data-tone="minimum"] { fill: var(--color-success); }
 .income-chart__values { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); padding: 0; margin: var(--space-3) 0 0; list-style: none; gap: var(--space-2); }
-.income-chart__values li { display: grid; gap: 4px; padding: var(--space-3); border-top: 2px solid var(--color-border); font-size: .875rem; }
+.income-chart__values li { display: grid; gap: 4px; padding: var(--space-3); border-top: 2px solid var(--color-border); border-radius: var(--radius-sm); font-size: .875rem; }
+.income-chart__values li[data-selected="true"] { background: var(--color-brand-light); border-top-color: var(--color-brand); }
 .income-chart__values span { color: var(--color-text-secondary); }
 .income-chart__values strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .income-chart__values small { font-size: .8rem; }
@@ -37,11 +43,13 @@
 .income-empty { padding: var(--space-10) var(--space-4); text-align: center; color: var(--color-text-secondary); }
 .income-empty h3 { color: var(--color-ink); margin: var(--space-3) 0 var(--space-2); }
 .income-note { margin: 0; color: var(--color-text-secondary); font-size: .875rem; }
+
 @media (max-width: 1279px) {
   .income-summary section { padding: var(--space-4); }
   .income-summary strong { font-size: 1.6rem; }
   .income-chart__values { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
 @media (max-width: 767px) {
   .income-chart__svg text { display: none; }
   .income-summary { grid-template-columns: 1fr; }
