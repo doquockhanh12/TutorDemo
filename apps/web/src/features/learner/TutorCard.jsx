@@ -1,11 +1,14 @@
 import { ArrowUpRight, BadgeCheck, Bookmark, Clock3, MapPin, Star } from 'lucide-react';
 import Avatar from '../../components/Avatar.jsx';
 import Badge from '../../components/Badge.jsx';
-import Button from '../../components/Button.jsx';
+import { Link } from 'react-router-dom';
+import { usePublicTutorSchedule } from '../tutor/TutorWorkspaceState.jsx';
+import { rangesSummary } from '../../data/tutorSchedule.js';
 
 const money = (value) => new Intl.NumberFormat('vi-VN').format(value);
 
-export default function TutorCard({ tutor, saved, onSave, onOpen }) {
+export default function TutorCard({ tutor, saved, onSave }) {
+  const { ranges } = usePublicTutorSchedule(tutor);
   return (
     <article className={`tutor-card ${tutor.featured ? 'tutor-card--featured' : ''}`}>
       <div className="tutor-card__top">
@@ -21,7 +24,7 @@ export default function TutorCard({ tutor, saved, onSave, onOpen }) {
       </div>
 
       <div className="tutor-card__meta">
-        <span className="tutor-card__rating"><Star size={15} fill="currentColor" aria-hidden="true" /> <strong>{tutor.rating}</strong> <span>({tutor.reviews} đánh giá)</span></span>
+        {Number.isFinite(tutor.rating) ? <span className="tutor-card__rating"><Star size={15} fill="currentColor" aria-hidden="true" /> <strong>{tutor.rating}</strong> <span>({tutor.reviews} đánh giá)</span></span> : <span>Chưa có đánh giá</span>}
         {tutor.verified && <span className="tutor-card__verified"><BadgeCheck size={15} aria-hidden="true" /> Đã xác minh</span>}
       </div>
 
@@ -31,12 +34,12 @@ export default function TutorCard({ tutor, saved, onSave, onOpen }) {
 
       <div className="tutor-card__facts">
         <span><MapPin size={16} aria-hidden="true" />{tutor.location}</span>
-        <span><Clock3 size={16} aria-hidden="true" />{tutor.availability.join(' · ')}</span>
+        <span><Clock3 size={16} aria-hidden="true" />{rangesSummary(ranges)}</span>
       </div>
 
       <div className="tutor-card__bottom">
         <div className="tutor-card__fee"><strong>{money(tutor.price)}đ</strong><span>/ buổi</span></div>
-        <Button variant={tutor.featured ? 'primary' : 'secondary'} size="sm" onClick={() => onOpen(tutor)}>Xem hồ sơ <ArrowUpRight size={16} aria-hidden="true" /></Button>
+        <Link className={`button button--${tutor.featured ? 'primary' : 'secondary'} button--sm`} to={`/tutors/${tutor.id}`}>Xem hồ sơ <ArrowUpRight size={16} aria-hidden="true" /></Link>
       </div>
     </article>
   );

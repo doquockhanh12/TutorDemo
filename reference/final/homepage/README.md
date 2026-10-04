@@ -1,5 +1,7 @@
 # TutorNearMe Homepage
 
+This README describes the preserved static reference only. For the current React app, use root `DESIGN.md` (Nunito headings, Nunito Sans body/UI) and `docs/architecture/ARCHITECTURE.md` for routes and runtime behavior. Static font loading and script navigation below are not implementation instructions.
+
 The main page now uses a more readable, vivid visual system inspired by the
 hierarchy of the VUS homepage. TutorNearMe keeps its own copy, images and brand.
 

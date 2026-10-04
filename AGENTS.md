@@ -37,17 +37,40 @@ Nếu các tài liệu có mâu thuẫn, không tự đoán.
 Hãy báo rõ conflict trước khi implementation.
 
 
-## Source of truth cho UI
+## Source of truth cho UI theo role
 
-Sử dụng nguồn theo thứ tự ưu tiên:
+Policy Figma phụ thuộc role; không áp một thứ tự nguồn duy nhất cho cả ba khu vực. Các guardrail frontend/auth trong AGENTS vẫn áp dụng cho mọi role.
 
-1. Yêu cầu mới nhất của user.
-2. `AGENTS.md`
-3. `reference/final/homepage/`, `reference/final/learner/`, `reference/final/tutor/` cho appearance của các trang tương ứng.
-4. `DESIGN.md` hiện hành.
-5. `docs/design/FIGMA_ANALYSIS.md` cho cấu trúc Figma đã xác nhận.
-6. `docs/screens/SCREEN_INVENTORY.md` và role flow trong `docs/planning/PRODUCT_SPEC.md`.
-7. Các tài liệu planning/reference khác.
+### Learner / Tutor — current implementation
+
+Thứ tự ưu tiên:
+
+1. Latest explicit user instruction.
+2. Current batch prompt, trong phạm vi yêu cầu user mới nhất.
+3. `docs/planning/PRODUCT_SPEC.md` hiện hành.
+4. `docs/architecture/ARCHITECTURE.md` hiện hành.
+5. Current React implementation và current product behavior.
+6. `DESIGN.md` và finalized visual references hiện hành.
+7. Learner/Tutor Figma: historical/reference evidence trong `docs/design/FIGMA_ANALYSIS.md`.
+
+Current Learner/Tutor implementation wins unless user explicitly asks to return a specific screen or part to Figma parity. Figma không còn là structural contract mặc định cho hai role này. Không tự restore layout, navigation, sidebar, scheduling split, section hierarchy, interaction hoặc mock data cũ chỉ vì Figma khác React hiện tại. Yêu cầu parity cụ thể chỉ có hiệu lực trong phạm vi user chỉ định; không tự áp sang các màn khác.
+
+### Admin — future implementation
+
+Thứ tự ưu tiên:
+
+1. Latest user instruction.
+2. AGENTS và current product requirements.
+3. `docs/screens/SCREEN_INVENTORY.md` / `docs/planning/PRODUCT_SPEC.md`.
+4. Admin Figma structural evidence đã lưu trong `docs/design/FIGMA_ANALYSIS.md`.
+5. Current TutorNearMe visual system trong `DESIGN.md`.
+6. Existing Admin React implementation ở những phần tương thích.
+
+Admin Figma vẫn là primary structural reference cho future Admin screens chưa có newer user-approved Admin structure/reference. Dùng evidence cho sidebar/topbar, hierarchy, grouping, table/filter, detail panel và composition của moderation/approval workflows. Không bỏ hoặc invalidate Admin evidence vì Learner/Tutor đã vượt qua Figma cũ. Chỉ thay thế policy này khi user duyệt Admin structure/reference mới; không tự suy parity thành route/feature đã implement.
+
+### Final visual references
+
+`reference/final/homepage/`, `reference/final/learner/`, `reference/final/tutor/`, `reference/final/auth-v4/` tiếp tục quyết định appearance của homepage, Learner landing, Tutor landing và Auth tương ứng theo yêu cầu hiện hành. README reference chỉ mô tả bản static; routes/scope/behavior React lấy từ tài liệu hiện hành. Đây không phải Learner/Tutor Figma cũ.
 
 Editorial Utility xanh rêu được bảo tồn trong `docs/archive/PROJECT_HISTORY.md` và là tài liệu lịch sử **DEPRECATED**. Finalized reference quy định hệ visual xanh/đỏ/vàng/cyan/violet/kem, Nunito/Nunito Sans. Không dùng lại xanh rêu làm brand. Green ngữ nghĩa cho success/verified/available vẫn hợp lệ.
 
@@ -70,20 +93,20 @@ Không phụ thuộc vào session memory để nhớ Figma.
 
 ## Quy tắc Figma
 
-- Figma là nguồn tham chiếu chính về bố cục, hierarchy, information grouping
-  và navigation pattern.
+- Learner/Tutor Figma chỉ là historical/reference evidence, trừ yêu cầu parity cụ thể của user; Admin Figma vẫn là active structural evidence cho future Admin work cho đến khi user duyệt reference mới.
+- Không restore old Learner/Tutor Figma tự động, không invalidate Admin Figma, không suy Figma policy của một role sang role khác.
 - `docs/design/FIGMA_ANALYSIS.md` lưu lại những findings đã được xác nhận.
 - Không gọi lại Figma MCP trừ khi user yêu cầu hoặc thực sự cần thông tin chưa có.
 - Không chuyển x/y tuyệt đối thành CSS absolute một cách máy móc.
 - Dùng Flexbox/Grid/containers/responsive layout.
 - Không coi exact pixel dimensions trong Figma là responsive specification.
 - Bảng màu Figma hiện tại không phải final.
-- Typography hiện tại không bắt buộc giữ nếu design direction mới tốt hơn.
+- Font/icon/palette Figma cũ không khóa implementation: dùng Nunito/Nunito Sans, Lucide, semantic tokens và current brand colors; không tự thay current visual system.
 - Placeholder icon, emoji, glyph và decoration trong Figma không phải final.
 - Không được suy rộng thông tin từ một role sang role khác nếu chưa có evidence.
 - Nội dung được đánh dấu `UNKNOWN` phải tiếp tục là UNKNOWN cho đến khi có nguồn xác nhận.
 
-Ưu tiên giữ từ Figma:
+Với future Admin implementation, ưu tiên cấu trúc từ Admin Figma:
 
 - layout structure;
 - information hierarchy;
@@ -92,7 +115,7 @@ Không phụ thuộc vào session memory để nhớ Figma.
 - data grouping;
 - useful interaction patterns.
 
-Được phép redesign:
+Admin Figma không khóa các treatment sau; dùng current visual system và responsive/accessibility rules:
 
 - palette;
 - typography;
@@ -154,11 +177,12 @@ Chỉ chỉnh role được yêu cầu trừ khi cần thay đổi shared design
 
 Nếu shared component thay đổi, phải kiểm tra ảnh hưởng tới cả 3 role.
 
-Khi tạo màn hình chưa có trong Figma:
+Khi tạo màn hình chưa có implementation:
 
-- dùng role shell hiện có;
+- Learner/Tutor dùng role shell hiện có; Admin reuse shell hiện có ở phần tương thích với Admin Figma/current requirements;
 - dùng screen inventory và flow để xác định chức năng;
-- dùng pattern gần nhất trong `FIGMA_ANALYSIS.md`;
+- Learner/Tutor: dùng pattern current React và current product behavior; Figma chỉ tham khảo hoặc parity cụ thể khi user yêu cầu;
+- Admin: dùng pattern Admin Figma gần nhất trong `FIGMA_ANALYSIS.md` cho cấu trúc, current visual system cho appearance;
 - không tự thêm chức năng ngoài scope chỉ để làm màn hình đầy hơn.
 
 
@@ -206,6 +230,8 @@ Các table/calendar/filter/sidebar phải có responsive strategy riêng.
 
 
 ## Verification
+
+Trong tổng kiểm duyệt frontend, đọc `docs/quality/FRONTEND_REGRESSION_NOTES.md` và thực hiện checklist QA đã duyệt. Kiểm tra cả fresh seed và persisted state sau reconciliation; cuộn hết vùng bên trong timetable, kiểm tra khung/hit target đè nhau ở giờ thu gọn/mở rộng và đối chiếu Lesson với Income qua ranh giới tháng. Không coi test overflow toàn trang hoặc ảnh đầu khung cuộn là đủ để xác nhận calendar không chồng khung.
 
 Trước khi kết thúc một batch UI:
 

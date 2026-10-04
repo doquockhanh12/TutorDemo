@@ -1,3 +1,4 @@
+import { demoReferenceData } from '../../data/demoReferenceData.js';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, BadgeCheck } from 'lucide-react';
@@ -8,12 +9,12 @@ import useDemoAuth, { MOCK_PROVIDER_PAYLOADS } from './DemoAuthContext.jsx';
 import { authPath, normalizePhone } from './authUtils.js';
 import { authSuccessTarget } from './AuthNavigation.jsx';
 
-const subjects = ['Toán', 'Ngữ văn', 'Tiếng Anh', 'Vật lý', 'Hóa học', 'Sinh học', 'Lịch sử', 'Địa lý', 'Tin học', 'Giáo dục Kinh tế & Pháp luật', 'Tiếng Trung', 'Tiếng Nhật', 'IELTS', 'TOEIC', 'SAT', 'Cấu trúc dữ liệu và giải thuật', 'Khác'];
+const subjects = demoReferenceData.subjects;
 const availability = ['Sáng ngày thường', 'Chiều ngày thường', 'Tối ngày thường', 'Sáng cuối tuần', 'Chiều cuối tuần', 'Tối cuối tuần'];
 
 export default function RegistrationPage({ role = 'learner' }) {
   const tutor = role === 'tutor'; const location = useLocation(); const navigate = useNavigate(); const { register, loginProvider } = useDemoAuth();
-  const [values, setValues] = useState({ fullName: '', accountType: '', username: '', phone: '', email: '', address: '', university: '', area: '', fee: '', duration: '60', customDuration: '', otherSubject: '', password: '', confirmPassword: '' });
+  const [values, setValues] = useState({ fullName: '', accountType: '', username: '', phone: '', email: '', address: '', university: '', area: '', fee: '', duration: '45', otherSubject: '', password: '', confirmPassword: '' });
   const [selectedSubjects, setSubjects] = useState([]); const [selectedAvailability, setAvailability] = useState([]); const [provider, setProvider] = useState(''); const [verified, setVerified] = useState({ email: false, phone: false }); const [needsVerification, setNeedsVerification] = useState({ email: false, phone: false }); const [quickVisible, setQuickVisible] = useState(true); const [phoneOpen, setPhoneOpen] = useState(false); const [showPassword, setShowPassword] = useState(false); const [showConfirm, setShowConfirm] = useState(false); const [error, setError] = useState(''); const [notice, setNotice] = useState('');
   const redirect = new URLSearchParams(location.search).get('redirect');
   const setField = (key, value) => setValues((current) => ({ ...current, [key]: value }));
@@ -51,9 +52,8 @@ export default function RegistrationPage({ role = 'learner' }) {
     if (tutor && (!selectedSubjects.length || !selectedAvailability.length)) { setError('Gia sư cần chọn ít nhất một môn và một khung giờ rảnh.'); return; }
     if (tutor && (!Number.isFinite(Number(values.fee)) || Number(values.fee) < 10000)) { setError('Mức phí cần từ 10.000đ mỗi buổi.'); return; }
     if (tutor && selectedSubjects.includes('Khác') && !values.otherSubject.trim()) { setError('Vui lòng nhập môn / kỹ năng khác.'); return; }
-    if (tutor && values.duration === 'other' && !values.customDuration.trim()) { setError('Vui lòng nhập thời lượng buổi học.'); return; }
     const { confirmPassword, ...accountFields } = values;
-    const result = register(role, { ...accountFields, phone, subjects: selectedSubjects.filter((s) => s !== 'Khác').concat(selectedSubjects.includes('Khác') ? [values.otherSubject.trim()] : []), availability: selectedAvailability, duration: values.duration === 'other' ? values.customDuration : values.duration, emailVerified: verified.email, phoneVerified: verified.phone }, provider);
+    const result = register(role, { ...accountFields, phone, subjects: selectedSubjects.filter((s) => s !== 'Khác').concat(selectedSubjects.includes('Khác') ? [values.otherSubject.trim()] : []), availability: selectedAvailability, duration: values.duration, emailVerified: verified.email, phoneVerified: verified.phone }, provider);
     if (result.error) { setError(result.error); return; }
     navigate(authSuccessTarget(location.search, role), { replace: true });
   };
@@ -69,7 +69,7 @@ export default function RegistrationPage({ role = 'learner' }) {
       {!tutor && field('address', 'Địa chỉ đang sinh sống', { autoComplete: 'street-address', placeholder: 'Nhập địa chỉ dạng văn bản' })}
       {tutor && <>{field('university', 'Trường đại học / Cơ sở đào tạo', { placeholder: 'Nhập tên cơ sở đào tạo' })}{field('area', 'Địa chỉ / Khu vực có thể dạy', { placeholder: 'Nhập khu vực có thể dạy' })}</>}
       {tutor && <div className="auth-field auth-field--full"><span>Môn học *</span><div className="auth-check-grid">{subjects.map((subject) => <label className="auth-check" key={subject}><input type="checkbox" checked={selectedSubjects.includes(subject)} onChange={() => toggle(selectedSubjects, setSubjects, subject)}/>{subject}</label>)}</div>{selectedSubjects.includes('Khác') && <div className="auth-field auth-field--nested"><label htmlFor="auth-otherSubject">Môn / kỹ năng khác *</label><input id="auth-otherSubject" value={values.otherSubject} onChange={(e) => setField('otherSubject', e.target.value)} placeholder="Nhập môn hoặc kỹ năng"/></div>}</div>}
-      {tutor && <>{field('fee', 'Mức phí mong muốn / buổi', { type: 'number', inputMode: 'numeric', placeholder: 'Ví dụ: 200000' })}<label className="auth-field"><span>Thời lượng buổi học</span><select value={values.duration} onChange={(e) => setField('duration', e.target.value)}><option value="60">60 phút</option><option value="90">90 phút</option><option value="120">120 phút</option><option value="other">Khác / Thỏa thuận</option></select>{values.duration === 'other' && <input className="auth-nested-input" value={values.customDuration} onChange={(e) => setField('customDuration', e.target.value)} placeholder="Nhập thời lượng hoặc thỏa thuận"/>}</label><div className="auth-field auth-field--full"><span>Khung giờ thường rảnh *</span><div className="auth-check-grid">{availability.map((slot) => <label className="auth-check" key={slot}><input type="checkbox" checked={selectedAvailability.includes(slot)} onChange={() => toggle(selectedAvailability, setAvailability, slot)}/>{slot}</label>)}</div></div></>}
+      {tutor && <>{field('fee', 'Mức phí mong muốn / buổi', { type: 'number', inputMode: 'numeric', placeholder: 'Ví dụ: 200000' })}<label className="auth-field"><span>Thời lượng buổi học</span><select value={values.duration} onChange={(e) => setField('duration', e.target.value)}><option value="45">45 phút</option><option value="90">90 phút</option></select></label><div className="auth-field auth-field--full"><span>Khung giờ thường rảnh *</span><div className="auth-check-grid">{availability.map((slot) => <label className="auth-check" key={slot}><input type="checkbox" checked={selectedAvailability.includes(slot)} onChange={() => toggle(selectedAvailability, setAvailability, slot)}/>{slot}</label>)}</div></div></>}
       {passwordField('password', 'Mật khẩu', showPassword, setShowPassword)}{passwordField('confirmPassword', 'Xác nhận mật khẩu', showConfirm, setShowConfirm)}</div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}<button className="auth-button auth-button--primary" type="submit">Tạo tài khoản {tutor ? 'gia sư' : 'người học'}</button>
       <p className="auth-form__foot">Đã có tài khoản? <Link to={authPath('/login', redirect)}>Đăng nhập</Link></p>

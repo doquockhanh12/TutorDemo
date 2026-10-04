@@ -20,15 +20,8 @@ Static HTML/CSS/JS prototype dành cho phía Gia sư, được thiết kế cùn
 7. Chất lượng hồ sơ
 8. Câu chuyện/công cụ hỗ trợ gia sư
 
-## Future routes đề xuất cho Codex
-- `/tutor/register`
-- `/tutor/login`
-- `/tutor/dashboard`
-- `/tutor/profile`
-- `/tutor/availability`
-- `/tutor/requests`
-- `/tutor/requests/:id`
-- `/tutor/lessons`
+## Phạm vi reference
+Đây là appearance của landing `/tutor`, không phải route specification. App dùng shared `/login`, Tutor register ở `/tutor/register`; lịch chung ở `/tutor/timetable`. Route hiện hành xem [`ARCHITECTURE.md`](../../../docs/architecture/ARCHITECTURE.md). Script static không quyết định auth/navigation của React app.
 
 ## Visual system
 - Blue `#1346A0`

@@ -61,6 +61,6 @@ Phụ huynh hoặc người học cần tìm **gia sư sinh viên ở gần**, �
 
 - Bản gốc đề tài: [`reference/brief/IE104_Quan_ly_du_an.xlsm`](reference/brief/IE104_Quan_ly_du_an.xlsm), sheet `2_Goi_y_de_tai`, STT 4. [Google Drive gốc](https://docs.google.com/spreadsheets/d/1oGQ0ZR9oTIpDFqdmPBf0LzaFDlwbgHy9/edit?gid=698143046#gid=698143046).
 - Sơ đồ ba role: [`reference/brief/workflow-3-roles.png`](reference/brief/workflow-3-roles.png).
-- [Figma UI_Web](https://www.figma.com/design/1moupOCQHM6eiB7jUgUk6S/UI_Web?node-id=0-1&t=fImKdVKi6IxMeIEs-0): dùng cho bố cục, grouping, hierarchy và navigation. Các phát hiện đã xác nhận và giới hạn bằng chứng nằm trong [`docs/design/FIGMA_ANALYSIS.md`](docs/design/FIGMA_ANALYSIS.md). Không khóa palette Figma hoặc chuyển x/y tuyệt đối thành layout responsive.
+- [Figma UI_Web](https://www.figma.com/design/1moupOCQHM6eiB7jUgUk6S/UI_Web?node-id=0-1&t=fImKdVKi6IxMeIEs-0): Learner/Tutor hiện là historical/reference evidence, không tự ghi đè current implementation; Admin vẫn là active structural reference cho future Admin work đến khi user duyệt reference mới. Findings và giới hạn evidence nằm trong [`docs/design/FIGMA_ANALYSIS.md`](docs/design/FIGMA_ANALYSIS.md); policy theo role tại AGENTS/DESIGN. Không khóa palette/font/icon cũ hoặc lấy x/y làm responsive layout.
 
 Đây là **đề bài gốc**, gồm cả gợi ý mở rộng và công nghệ của môn học. Phạm vi thực hiện hiện tại là frontend-only theo [`docs/planning/PRODUCT_SPEC.md`](docs/planning/PRODUCT_SPEC.md); không diễn giải danh sách entity thành database schema đang triển khai.

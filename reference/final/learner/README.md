@@ -24,14 +24,7 @@ Bản V2 được dựng lại từ homepage gốc của nhóm N07 với các ng
 - Light blue: `#EAF6FF`
 - Cream: `#FFF8E8`
 
-## Handoff cho Codex
-Ưu tiên route sau khi React hóa:
-- `/` → homepage này
-- `/learner/search`
-- `/tutors/:id`
-- `/requests/new`
-- `/requests`
-- `/login`
-- `/register`
+## Phạm vi reference
+Đây là visual reference cho landing `/learner`; `/` dùng reference homepage riêng. React routes và behavior hiện hành nằm trong [`ARCHITECTURE.md`](../../../docs/architecture/ARCHITECTURE.md) và [`PRODUCT_SPEC.md`](../../../docs/planning/PRODUCT_SPEC.md). Script static không quyết định auth/navigation của app.
 
 Dữ liệu hiện chỉ là mock để đánh giá UI/UX.

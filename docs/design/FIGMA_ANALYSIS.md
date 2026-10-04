@@ -1,6 +1,12 @@
 # TutorNearMe — Preserved Figma Analysis for Codex
 
-> **Evidence archive:** this file preserves findings from the original structural Figma. Section 14 records an earlier proposed next step and is superseded by the approved finalized references and implementation instructions. Use `reference/final/*` and root `DESIGN.md` for current appearance; do not reinterpret the older Figma palette as active. The former `DESIGN_SOURCE_OF_TRUTH.md` is preserved verbatim in `docs/archive/PROJECT_HISTORY.md`.
+> **Evidence archive — role-dependent Figma usage:** this file preserves the confirmed Figma findings for all three roles. Learner/Tutor findings are historical/reference evidence unless the user explicitly requests parity for a specific screen or part. Admin findings remain active structural evidence for future Admin implementation until superseded by a newer user-approved Admin structure/reference. The archive preserves evidence; its role-specific authority is defined by current `AGENTS.md`, `DESIGN.md`, `PRODUCT_SPEC.md` and `ARCHITECTURE.md`.
+
+## Current policy note
+
+- **Learner / Tutor:** current React + current product behavior, governed by latest user requirements, current PRODUCT_SPEC and ARCHITECTURE, take precedence over old Figma structure. Do not automatically restore old layout, navigation, sidebar, scheduling split, section hierarchy, interaction or mock data. Older “Preserve”, “Use”, structural recommendations and component suggestions in these findings are historical reasoning, not active implementation instructions. Use them for reference/comparison or explicitly requested, scoped Figma parity only.
+- **Admin:** preserve and use the Admin evidence as the primary structural reference for future screens without a newer approved Admin reference. It guides sidebar/topbar, hierarchy/grouping, table/filter patterns, detail panels, moderation/approval workflow composition and operational patterns. Do not invalidate it based on the Learner/Tutor policy.
+- Admin Figma does not lock old palette, typography, placeholder icons, exact coordinates/desktop dimensions or outdated mock content. Use current TutorNearMe Nunito/Nunito Sans, Lucide, semantic tokens and brand colors. Structural evidence does not establish implemented routes or final backend business rules.
 
 ## Evidence labels
 
@@ -21,15 +27,14 @@ Existing Admin findings below are `DIRECT_FIGMA_MCP`. Learner and Tutor visual f
 
 The user-provided exported frame images are preserved under `reference/figma/{learner,tutor,admin}/`. The original brief and three-role flow image are under `reference/brief/`; finalized visual references remain under `reference/final/`.
 
-> Source priority for this document:
+> Evidence-confidence priority for this document (not implementation source-of-truth order):
 > 1. `DIRECT_FIGMA_MCP` for page IDs, confirmed frame names/dimensions, and measured Admin styles.
 > 2. `EXPORTED_FIGMA_IMAGE` for visual compositions and details not preserved by the metadata reads.
 > 3. `PROJECT_DOCS` for intended flows, screen IDs, and constraints.
 > 4. `UNKNOWN` for anything not established by these sources; do not infer it.
 >
-> Important: the existing Figma is a **structural reference**, not a final visual specification.
-> Preserve layout hierarchy, information grouping, navigation patterns, and useful interaction patterns.
-> Do **not** treat current colors, typography, icon placeholders, decoration, or exact pixel dimensions as locked.
+> Learner/Tutor Figma: historical/reference evidence; no default structural contract or automatic restore. Admin Figma: active structural reference until a newer Admin structure is user-approved.
+> For future Admin work, use hierarchy, grouping, navigation, table/detail and workflow patterns within current product requirements. Do not treat old colors, typography, icon placeholders, decoration or exact pixel dimensions as locked.
 
 ---
 
@@ -667,176 +672,11 @@ Sidebar labels may reference some of these areas, but a navigation label is not 
 
 ---
 
-# 7. What must be kept from current Figma
+# 7. Implementation guidance
 
-Treat the following as high-value structural reference:
-
-1. Role-specific navigation model.
-2. Overall information hierarchy.
-3. Section order.
-4. Main-vs-secondary column relationships.
-5. Tutor comparison structure.
-6. Tutor profile + request panel split.
-7. State-driven request cards.
-8. Tutor dashboard information grouping.
-9. Weekly calendar geometry.
-10. Filter-before-results pattern.
-11. Status/CTA placement close to the related entity.
-12. Desktop information density differences between Learner and Tutor.
+Current role-aware rules live in [`AGENTS.md`](../../AGENTS.md), [`DESIGN.md`](../../DESIGN.md), [`PRODUCT_SPEC.md`](../planning/PRODUCT_SPEC.md) and [`ARCHITECTURE.md`](../architecture/ARCHITECTURE.md). Learner/Tutor implementation wins unless user explicitly requests scoped Figma parity. Admin evidence remains the structural reference for future Admin work until superseded by a newer user-approved Admin structure; existing Admin React is reused where compatible. No Figma finding overrides runtime routes or locks the old visual styling.
 
 ---
-
-# 8. What Codex is allowed and encouraged to redesign
-
-Codex may redesign:
-
-- complete color palette;
-- exact typography;
-- icon set;
-- shadows;
-- borders;
-- border radius;
-- exact spacing values;
-- card styling;
-- decorative surfaces;
-- illustrations;
-- visual treatment of status chips;
-- input appearance;
-- exact sidebar/header dimensions;
-- micro-interactions;
-- hover/focus states;
-- responsive behavior.
-
-It may also simplify visual clutter where current Figma has too many equally weighted cards/tags.
-
-However, redesign must not remove important information or change the functional hierarchy without a reason documented in the implementation.
-
----
-
-# 9. Visual direction constraints
-
-The final implementation should avoid generic AI/SaaS styling.
-
-Avoid defaulting to:
-- purple/blue gradient SaaS look;
-- glassmorphism;
-- every section inside a rounded card;
-- oversized marketing typography everywhere;
-- heavy shadows;
-- random gradient backgrounds;
-- generic unmodified component-library appearance;
-- excessive badges/colors.
-
-Prefer:
-- distinct TutorNearMe identity;
-- educational but not childish;
-- trustworthy;
-- approachable for Learner/Parent;
-- professional for Tutor;
-- operational and clear for Admin;
-- strong typography hierarchy;
-- deliberate spacing;
-- accessible color contrast;
-- one coherent icon family;
-- clear semantic states.
-
----
-
-# 10. Responsive interpretation
-
-The exported Figma screens are desktop references.
-
-Do not translate absolute Figma coordinates directly into CSS.
-
-Implementation should use:
-- responsive containers;
-- CSS Grid / Flexbox;
-- reusable layout primitives;
-- breakpoint-aware navigation;
-- content reflow rather than simple scaling.
-
-Expected behavior:
-
-### Learner
-Desktop:
-- multi-column search/result layout.
-
-Tablet:
-- reduce supporting column;
-- filters may become drawer/sheet.
-
-Mobile:
-- stacked tutor cards;
-- filter sheet/modal;
-- request panel becomes inline/full-width.
-
-### Tutor
-Desktop:
-- persistent sidebar + full calendar.
-
-Tablet:
-- collapsible sidebar;
-- reduced dashboard columns.
-
-Mobile:
-- drawer/bottom navigation as appropriate;
-- calendar should switch to a readable day/agenda or horizontally scrollable representation rather than shrinking text to unreadable size.
-
----
-
-# 11. Frontend-only prototype rules
-
-Current project scope is frontend-only.
-
-Use:
-- mock data;
-- local state;
-- prototype navigation;
-- mock status transitions.
-
-Do NOT design or implement:
-- real database;
-- ORM;
-- backend API;
-- server auth;
-- server authorization;
-- migrations;
-- transaction logic.
-
-Example prototype transitions are acceptable:
-- Learner request: pending → cancelled.
-- Tutor request: pending → accepted/rejected.
-- Accepted request may expose a confirmed lesson in mock state.
-- Tutor lesson: confirmed → completed.
-- Completed lesson may expose Learner review UI.
-
-These transitions are for UI demonstration only, not final backend business rules.
-
----
-
-# 12. Instructions for missing screens
-
-When generating a missing screen:
-
-1. Identify which role owns it.
-2. Reuse that role's shell/navigation.
-3. Reuse the closest existing structural pattern.
-4. Preserve the information hierarchy from project requirements.
-5. Do not invent unnecessary functionality.
-6. Use mock content realistic enough to demonstrate states.
-7. Keep visual language consistent with the selected final design system.
-8. Do not copy placeholder styling/glyphs from Figma.
-9. Include loading/empty/error states where useful for UI completeness.
-10. Ensure desktop structure can reasonably collapse to tablet/mobile.
-
-Examples:
-
-- Missing Learner screen → derive from Learner header, content width, form/card language.
-- Missing Tutor screen → derive from Tutor sidebar/topbar, page header, dashboard/list/calendar patterns.
-- Missing Admin screen → derive from the existing Admin table/detail/status patterns already analyzed in the project.
-
----
-
 # 13. Source-confidence note
 
 The Learner and Tutor conclusions above come directly from the two exported Figma images supplied by the user.
@@ -848,25 +688,6 @@ This document does **not** claim:
 - that screens not visible in the exports are absent from the original Figma file.
 
 For exact inventory of unseen frames, rely on a later export or Figma MCP if quota becomes available.
-
----
-
-# 14. Recommended next Codex step
-
-Do **not** start application implementation yet.
-
-Next task:
-
-1. Read this document.
-2. Read `DESIGN.md`.
-3. Read the Learner/Tutor/Admin flow docs and screen inventory.
-4. Propose **three distinct visual directions** for the shared TutorNearMe design system.
-5. Each direction must explain how the same system adapts to:
-   - Learner / Parent
-   - Tutor
-   - Admin
-6. Do not select a winner automatically.
-7. Do not write application code until the user approves a visual direction.
 
 ---
 

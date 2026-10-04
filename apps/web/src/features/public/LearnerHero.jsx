@@ -1,0 +1,6 @@
+import { ArrowRight } from 'lucide-react';
+import { photo } from '../../data/public.js';
+
+export default function LearnerHero({ searchTarget = '#finder', howTarget = '#how' }) {
+  return (<section className="public-hero public-hero--learner"><div className="public-wrap public-hero__grid"><div className="public-hero__copy"><span className="public-hero__eyebrow">TUTORNEARME · HỌC GẦN HƠN, HIỂU NHAU HƠN</span><h1>Bạn đau đầu để<br/>tìm gia sư tốt,<br/><em>TutorNearMe<br/>sẽ giúp bạn.</em></h1><p>Tìm sinh viên gia sư theo đúng môn, khu vực, thời gian rảnh và mức phí gia đình mong muốn — tất cả trong một trải nghiệm rõ ràng, dễ so sánh.</p><div className="public-hero__actions"><a className="public-btn public-btn--yellow" href={searchTarget}>Tìm gia sư phù hợp <ArrowRight size={18}/></a><a className="public-hero__text-link" href={howTarget}>Xem cách hoạt động ↘</a></div></div><div className="public-hero__visual"><img className="public-hero__photo-main" src={photo.learnerHero} alt="Học sinh học tập cùng bạn bè"/><img className="public-hero__photo-side" src={photo.learnerSide} alt="Gia sư đang hướng dẫn bài học"/><span className="public-float public-float--yellow"><b>Gần bạn</b><small>ưu tiên khu vực phù hợp</small></span><span className="public-float public-float--location"><b>4.9/5</b><small>đánh giá demo</small></span></div></div></section>);
+}

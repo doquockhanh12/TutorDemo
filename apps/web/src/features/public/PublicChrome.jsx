@@ -10,7 +10,7 @@ const tutorLinks = [
   ['Cơ hội dạy', '#opportunities'], ['Thu nhập tháng', '#income'], ['Tạo hồ sơ', '#profile'], ['Xem lớp hiện có', '#opportunities'],
 ];
 
-export function PublicHeader({ kind = 'home', onInfo }) {
+export function PublicHeader({ kind = 'home', onInfo, navigation, actions }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
@@ -26,10 +26,10 @@ export function PublicHeader({ kind = 'home', onInfo }) {
     <div className="public-header__inner">
       <Link className="public-brand" to="/" aria-label="TutorNearMe — trang chủ"><span className="public-brand__mark">TN</span><span><strong>TutorNearMe</strong><small>{tutor ? 'Không gian gia sư' : 'Gia sư gần bạn'}</small></span></Link>
       <nav className={`public-nav ${open ? 'is-open' : ''}`} aria-label="Điều hướng chính">
-        {(tutor ? tutorLinks : learnerLinks).map(([label, href]) => <a key={label} href={pathname === landingPath ? href : `${landingPath}${href}`} onClick={() => setOpen(false)}>{label}</a>)}
-        <div className="public-nav__mobile"><Link to={tutor ? '/learner' : '/tutor'}>{tutor ? 'Dành cho người học' : 'Trở thành gia sư'}</Link><Link to={tutor ? '/tutor/register' : '/learner/search'}>{tutor ? 'Tạo hồ sơ gia sư' : 'Khám phá gia sư'}</Link><Link to="/login" onClick={() => setOpen(false)}>Đăng nhập</Link><Link to="/register" onClick={() => setOpen(false)}>Đăng ký</Link></div>
+        {(navigation || (tutor ? tutorLinks : learnerLinks)).map(([label, href]) => navigation ? <Link key={label} to={href} onClick={() => setOpen(false)}>{label}</Link> : <a key={label} href={pathname === landingPath ? href : `${landingPath}${href}`} onClick={() => setOpen(false)}>{label}</a>)}
+        <div className="public-nav__mobile" onClick={() => setOpen(false)}>{actions || <><Link to={tutor ? '/learner' : '/tutor'}>{tutor ? 'Dành cho người học' : 'Trở thành gia sư'}</Link><Link to={tutor ? '/tutor/register' : '/learner/search'}>{tutor ? 'Tạo hồ sơ gia sư' : 'Khám phá gia sư'}</Link><Link to="/login">Đăng nhập</Link><Link to="/register">Đăng ký</Link></>}</div>
       </nav>
-      <div className="public-header__actions"><Link className="public-header__yellow" to={tutor ? '/learner' : '/tutor/register'}>{tutor ? 'Dành cho người học' : 'Trở thành gia sư'}</Link><Link className="public-header__plain" to="/login">Đăng nhập</Link><Link className="public-header__blue" to={tutor ? '/tutor/register' : '/register'}>{tutor ? 'Tạo hồ sơ' : 'Đăng ký'}</Link></div>
+      <div className="public-header__actions">{actions || <><Link className="public-header__yellow" to={tutor ? '/learner' : '/tutor/register'}>{tutor ? 'Dành cho người học' : 'Trở thành gia sư'}</Link><Link className="public-header__plain" to="/login">Đăng nhập</Link><Link className="public-header__blue" to={tutor ? '/tutor/register' : '/register'}>{tutor ? 'Tạo hồ sơ' : 'Đăng ký'}</Link></>}</div>
       <button className="public-header__menu" type="button" aria-label={open ? 'Đóng menu' : 'Mở menu'} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23} /> : <Menu size={23} />}</button>
     </div>
   </header>;

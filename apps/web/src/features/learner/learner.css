@@ -39,7 +39,8 @@
 .learner-section-heading > p { max-width: 325px; margin: 0; color: var(--color-text-secondary); font-size: .88rem; }
 .learner-layout { display: grid; grid-template-columns: 215px minmax(0, 1fr) 210px; align-items: start; gap: 24px; }
 
-.filter-panel { padding: 22px 18px; border: var(--border-default); border-radius: var(--radius-base); background: var(--color-surface); }
+.filter-panel,
+.learner-search-page .learner-support { padding: 22px 18px; border: var(--border-default); border-radius: var(--radius-base); background: var(--color-surface); }
 .filter-panel__heading, .filter-panel__heading > div { display: flex; align-items: center; gap: 8px; }
 .filter-panel__heading { justify-content: space-between; margin-bottom: 18px; }
 .filter-panel__heading h3 { margin: 0; font-size: 1.05rem; }
@@ -89,7 +90,6 @@
 .learner-empty h3 { margin: 12px 0 5px; }
 .learner-empty p { max-width: 360px; color: var(--color-text-secondary); }
 
-.learner-support { padding-top: 10px; }
 .learner-support__block { padding: 10px 0 22px; }
 .learner-support__block--line { padding-top: 22px; border-top: var(--border-default); }
 .learner-support h3 { margin: 8px 0 9px; font-family: var(--font-display); font-size: 1.22rem; font-weight: 500; line-height: 1.35; letter-spacing: -.03em; }

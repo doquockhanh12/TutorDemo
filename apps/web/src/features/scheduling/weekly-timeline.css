@@ -1,0 +1,604 @@
+.weekly-timeline-scroll {
+  overflow: auto;
+  width: min(100%, 990px);
+  max-height: 650px;
+  margin-inline: auto;
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-white);
+  min-width: 0;
+}
+
+.weekly-timeline {
+  display: grid;
+  grid-template-columns: var(--timeline-columns, 74px repeat(7, 128px));
+  grid-template-rows: 70px var(--timeline-height);
+  width: var(--timeline-width, 970px);
+  min-width: var(--timeline-width, 970px);
+  padding-bottom: 16px;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.weekly-timeline-corner,
+.weekly-timeline-day-head {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface-white);
+  border-bottom: var(--border-default);
+}
+
+.weekly-timeline-corner {
+  left: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.weekly-timeline-day-head {
+  position: sticky;
+  padding: 10px 40px 10px 10px;
+  border-left: var(--border-default);
+}
+
+.weekly-timeline-day-head strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.weekly-timeline-day-head small {
+  color: var(--text-muted);
+}
+
+.weekly-timeline-day-head button {
+  position: absolute;
+  right: 8px;
+  top: 18px;
+
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  background: var(--surface-light-blue);
+  color: var(--brand-primary);
+
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+/* =========================
+   TIME AXIS
+   ========================= */
+
+.weekly-timeline-axis {
+  position: sticky;
+  left: 0;
+  z-index: 12;
+
+  background: var(--surface-page);
+  border-right: var(--border-default);
+}
+
+.weekly-timeline-axis-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  border-top: var(--border-default);
+}
+
+.weekly-timeline-axis-main {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+
+  padding: 0 5px;
+
+  background: var(--surface-page);
+
+  color: var(--text-muted);
+  font-size: var(--text-caption);
+}
+
+.weekly-timeline-axis-main.is-first {
+  transform: none;
+  top: 6px;
+}
+
+.weekly-timeline-axis-main button {
+  width: 24px;
+  height: 24px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  background: var(--surface-white);
+  color: var(--brand-primary);
+
+  border: var(--border-default);
+  border-radius: 5px;
+}
+
+.weekly-timeline-minor-label {
+  position: absolute;
+  right: 8px;
+
+  transform: translateY(-50%);
+
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.weekly-timeline-end {
+  position: absolute;
+  right: 8px;
+
+  transform: translateY(-100%);
+
+  padding-bottom: 4px;
+
+  font-size: var(--text-caption);
+}
+
+/* =========================
+   TIMELINE COLUMNS
+   ========================= */
+
+.weekly-timeline-column {
+  position: relative;
+
+  border-left: var(--border-default);
+}
+
+.weekly-timeline-hour {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  z-index: 2;
+
+  border-top: var(--border-default);
+}
+
+.weekly-timeline-hour:not(.is-expanded) {
+  pointer-events: none;
+}
+
+.weekly-timeline-hour.is-expanded {
+  background: transparent;
+}
+
+.weekly-timeline-time-target {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 20px;
+
+  padding: 0 6px;
+
+  border: 0;
+  border-top: 1px dashed var(--color-border-strong);
+
+  background: transparent;
+  color: var(--brand-primary);
+
+  text-align: right;
+}
+
+.weekly-timeline-time-target span {
+  font-size: 10px;
+  opacity: 0;
+}
+
+.weekly-timeline-time-target:hover,
+.weekly-timeline-time-target:focus-visible {
+  background: var(--surface-warm);
+}
+
+.weekly-timeline-time-target:hover span,
+.weekly-timeline-time-target:focus-visible span {
+  opacity: 1;
+}
+
+/* =========================
+   SCHEDULE BLOCK
+   ========================= */
+
+.weekly-timeline-block {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+
+  z-index: 8;
+
+  overflow: hidden;
+
+  border: 1px solid var(--status-success);
+  border-radius: var(--radius-sm);
+
+  background: var(--status-success-bg);
+  color: var(--status-success);
+
+  user-select: none;
+  touch-action: none;
+}
+
+/*
+ * 3 vùng độc lập:
+ *
+ * start time       -> trên cùng
+ * title/subtitle   -> chính giữa
+ * end time         -> dưới cùng
+ *
+ * Vì vậy block càng cao thì hai mốc giờ
+ * càng được giãn xa nhau.
+ */
+.weekly-timeline-block-content {
+  position: absolute;
+  inset: 0;
+
+  display: grid;
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  padding: 7px 8px;
+
+  border: 0;
+
+  background: transparent;
+  color: inherit;
+
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1;
+}
+
+.weekly-timeline-block-start {
+  display: block;
+
+  width: 100%;
+
+  align-self: start;
+
+  color: inherit;
+
+  font-size: 10.5px;
+  line-height: 1;
+
+  font-variant-numeric: tabular-nums;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+.weekly-timeline-block-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  align-self: stretch;
+
+  gap: 2px;
+
+  width: 100%;
+  min-width: 0;
+
+  text-align: center;
+}
+
+.weekly-timeline-block-content strong {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  font-size: 12px;
+  line-height: 1.08;
+  font-weight: 700;
+
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weekly-timeline-block-subtitle {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  font-size: 11px;
+  line-height: 1.08;
+
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weekly-timeline-block-content > small {
+  display: block;
+
+  width: 100%;
+
+  align-self: end;
+
+  color: inherit;
+
+  font-size: 10.5px;
+  line-height: 1;
+
+  font-variant-numeric: tabular-nums;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* =========================
+   AVAILABILITY
+   ========================= */
+
+.weekly-timeline-block.availability {
+  cursor: grab;
+}
+
+.weekly-timeline-block.availability
+  .weekly-timeline-block-content {
+  cursor: grab;
+}
+
+.weekly-timeline-block.is-public {
+  pointer-events: none;
+  z-index: 1;
+
+  opacity: 0.7;
+}
+
+.weekly-timeline-block.is-public
+  .weekly-timeline-block-content {
+  cursor: default;
+}
+
+/* =========================
+   STATES
+   ========================= */
+
+.weekly-timeline-block.is-draft {
+  border-color: var(--status-warning);
+
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+}
+
+.weekly-timeline-block.lesson,
+.weekly-timeline-block.selected {
+  border-color: var(--brand-primary);
+
+  background: var(--surface-light-blue);
+  color: var(--brand-primary-deep);
+}
+
+.weekly-timeline-block.is-dragging {
+  opacity: 0.4;
+}
+
+.weekly-timeline-block.lesson.is-completed {
+  border-color: var(--color-border-strong);
+  background: var(--surface-page);
+  color: var(--text-muted);
+  opacity: .7;
+}
+
+/* =========================
+   REMOVE BUTTON
+   ========================= */
+
+.weekly-timeline-remove {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+
+  z-index: 10;
+
+  width: 25px;
+  height: 25px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: var(--surface-white);
+  color: inherit;
+}
+
+/* =========================
+   DRAG PREVIEW
+   ========================= */
+
+.weekly-timeline-preview {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+
+  z-index: 40;
+
+  pointer-events: none;
+
+  padding: 5px;
+
+  border: 2px dashed var(--brand-primary);
+  border-radius: var(--radius-sm);
+
+  background: var(--surface-light-blue);
+  color: var(--brand-primary);
+
+  font-size: var(--text-caption);
+}
+
+.weekly-timeline-preview.is-invalid {
+  border-color: var(--status-danger);
+
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
+}
+
+/* =========================
+   FOCUS
+   ========================= */
+
+.weekly-timeline-scroll button:focus-visible {
+  outline: 3px solid var(--brand-accent-yellow);
+  outline-offset: -2px;
+}
+
+/* =========================
+   OTHER SCHEDULING UI
+   ========================= */
+
+.schedule-week-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: var(--space-2);
+
+  margin-bottom: var(--space-4);
+
+  font-size: var(--text-compact);
+}
+
+.schedule-error {
+  color: var(--status-danger) !important;
+}
+
+.schedule-confirm-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1000;
+
+  display: grid;
+  place-items: center;
+
+  padding: var(--space-4);
+
+  background: #18213b66;
+}
+
+.schedule-confirm {
+  width: min(360px, 100%);
+  max-height: 90vh;
+
+  overflow: auto;
+
+  padding: var(--space-6);
+
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+
+  background: var(--surface-white);
+
+  box-shadow: 0 18px 50px #18213b26;
+}
+
+.schedule-confirm h3 {
+  margin-top: 0;
+}
+
+.schedule-confirm label {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.schedule-confirm > div {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: var(--space-2);
+}
+
+.schedule-confirm p {
+  color: var(--text-muted);
+}
+
+.schedule-confirm-time-input {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 8px 10px;
+
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+
+  background: var(--surface-white);
+  color: var(--text-primary);
+
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+
+  letter-spacing: 0.02em;
+}
+
+.schedule-confirm-time-input:focus {
+  outline: 3px solid var(--brand-accent-yellow);
+  outline-offset: 1px;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 767px) {
+  .weekly-timeline-scroll {
+    width: 100%;
+    max-height: 560px;
+
+    margin-inline: 0;
+  }
+
+  .weekly-timeline {
+    grid-template-columns: var(--timeline-columns, 70px repeat(7, 122px));
+    width: var(--timeline-width, 924px);
+    min-width: var(--timeline-width, 924px);
+  }
+
+  .weekly-timeline-day-head {
+    padding-left: 8px;
+    padding-right: 38px;
+  }
+}

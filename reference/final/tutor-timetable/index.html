@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TutorNearMe Timetable Prototype — Final</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <header class="head">
+    <div>
+      <span class="eyebrow">TUTOR WORKSPACE · FINAL PROTOTYPE</span>
+      <h1>Lịch dạy học dạng timeline</h1>
+      <p>Bấm <b>+</b> ở cột giờ để mở chi tiết 5 phút. Click để thêm nhanh hoặc kéo block rảnh tới đúng mốc; giờ bắt đầu tối đa 22:00, nhưng timeline vẫn hiển thị tới 24:00.</p>
+    </div>
+    <div class="controls">
+      <label>Thời lượng mặc định
+        <select id="duration">
+          <option value="45">45 phút</option>
+          <option value="90" selected>90 phút</option>
+          <option value="custom">Tùy chỉnh</option>
+        </select>
+      </label>
+      <label id="customWrap" class="hidden">Số phút
+        <input id="customDuration" type="number" min="15" max="240" step="5" value="75" />
+      </label>
+      <button id="reset" class="secondary">Khôi phục demo</button>
+      <button id="save">Lưu lịch</button>
+    </div>
+  </header>
+
+  <section class="legend">
+    <span><i class="swatch available"></i>Lịch rảnh — kéo được</span>
+    <span><i class="swatch lesson"></i>Buổi học — click xem chi tiết</span>
+    <span><i class="swatch draft"></i>Chưa lưu</span><span><i class="swatch conflict"></i>Trùng lịch — không thể đặt</span>
+    <small><b>+</b> mở 1 giờ thành các mốc 5 phút · chỉ một vùng được mở tại một thời điểm.</small>
+  </section>
+
+  <main class="calendar-card">
+    <div class="calendar-scroll" id="calendarScroll">
+      <div class="calendar" id="calendar">
+        <div class="corner">Giờ</div>
+        <div class="day-head" data-day="0"><b>T2</b><small>05/10</small><button class="day-add" data-day="0" type="button" aria-label="Thêm lịch rảnh Thứ 2" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="1"><b>T3</b><small>06/10</small><button class="day-add" data-day="1" type="button" aria-label="Thêm lịch rảnh Thứ 3" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="2"><b>T4</b><small>07/10</small><button class="day-add" data-day="2" type="button" aria-label="Thêm lịch rảnh Thứ 4" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="3"><b>T5</b><small>08/10</small><button class="day-add" data-day="3" type="button" aria-label="Thêm lịch rảnh Thứ 5" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="4"><b>T6</b><small>09/10</small><button class="day-add" data-day="4" type="button" aria-label="Thêm lịch rảnh Thứ 6" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="5"><b>T7</b><small>10/10</small><button class="day-add" data-day="5" type="button" aria-label="Thêm lịch rảnh Thứ 7" title="Thêm lịch rảnh">+</button></div>
+        <div class="day-head" data-day="6"><b>CN</b><small>11/10</small><button class="day-add" data-day="6" type="button" aria-label="Thêm lịch rảnh Chủ nhật" title="Thêm lịch rảnh">+</button></div>
+        <div id="timeAxis" class="time-axis"></div>
+        <div class="day-col" data-day="0"></div>
+        <div class="day-col" data-day="1"></div>
+        <div class="day-col" data-day="2"></div>
+        <div class="day-col" data-day="3"></div>
+        <div class="day-col" data-day="4"></div>
+        <div class="day-col" data-day="5"></div>
+        <div class="day-col" data-day="6"></div>
+      </div>
+    </div>
+  </main>
+
+  <section class="status">
+    <div><i id="statusDot"></i><span><b id="statusTitle">Chưa có thay đổi</b><small id="statusText">Bấm + ở một mốc giờ để thử chế độ chi tiết.</small></span></div>
+    <strong id="durationLabel">90 phút / buổi</strong>
+  </section>
+</div>
+
+<div id="quickAdd" class="quick-add hidden" role="dialog" aria-label="Thêm lịch rảnh">
+  <span class="quick-add__time" id="quickTime">09:10</span>
+  <strong>Thêm lịch rảnh tại mốc này?</strong>
+  <small id="quickSummary">90 phút · kết thúc 10:40</small>
+  <div>
+    <button id="quickCancel" class="secondary">Hủy</button>
+    <button id="quickConfirm">+ Thêm lịch rảnh</button>
+  </div>
+</div>
+
+<dialog id="lessonDialog">
+  <div class="dialog-head"><div><span class="eyebrow">CHI TIẾT BUỔI HỌC</span><h2 id="lessonSubject">Toán</h2></div><button id="closeDialog" class="close">×</button></div>
+  <div class="detail-grid">
+    <div><span>Người học</span><b id="lessonLearner"></b></div>
+    <div><span>Ngày</span><b id="lessonDay"></b></div>
+    <div><span>Thời gian</span><b id="lessonTime"></b></div>
+    <div><span>Hình thức</span><b id="lessonFormat"></b></div>
+    <div><span>Địa điểm</span><b id="lessonLocation"></b></div>
+    <div><span>Trạng thái</span><b class="ok">Đã xác nhận</b></div>
+  </div>
+  <p class="note">Trong app thật, click block có thể điều hướng tới <code>/tutor/lessons/:id</code>.</p>
+  <div class="dialog-actions"><button id="fakeDetail" class="secondary">Mở trang chi tiết</button><button id="complete">Đánh dấu hoàn tất</button></div>
+</dialog>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 # TutorNearMe
 
-TutorNearMe là prototype tương tác để tìm gia sư sinh viên theo môn học, khu vực, lịch rảnh và mức phí. Ba trải nghiệm **Người học/Phụ huynh**, **Gia sư** và **Admin** dùng chung thương hiệu nhưng có layout riêng. Project hiện **frontend-only**: dữ liệu mock và localStorage, không có backend, API thật hay database.
+Prototype frontend kết nối Người học/Phụ huynh với gia sư sinh viên theo môn, khu vực, lịch rảnh và mức phí. React + JavaScript + Vite + React Router + CSS thuần + Lucide; Nunito/Nunito Sans self-host qua Fontsource. Không có backend, API thật hoặc database.
 
-## Chạy ứng dụng
+## Chạy app
 
 ```sh
 cd apps/web
@@ -10,43 +10,52 @@ npm install
 npm run dev
 ```
 
-Mở URL Vite in ra terminal. Kiểm tra production build bằng `npm run build` trong `apps/web`. Stack: **React, JavaScript, Vite, React Router, CSS thuần, Lucide**; Nunito/Nunito Sans được self-host bằng Fontsource với glyph tiếng Việt.
+Chạy `npm run build` tại `apps/web` để build production.
 
-## Route đang có
+## Route và tài khoản demo
 
-| Khu vực | Route |
+| Khu vực | Entry |
 |---|---|
-| Public | `/` trang chủ; `/learner` landing Người học; `/tutor` landing tuyển gia sư (**không phải** dashboard) |
-| Người học | `/learner/search`, `/tutors/:id`, `/requests/new`, `/requests`, `/requests/:id` |
-| Gia sư | `/tutor/dashboard`, `/tutor/profile`, `/tutor/availability`, `/tutor/requests`, `/tutor/requests/:id`, `/tutor/lessons` |
+| Public | `/`, `/learner`, `/tutor` |
+| Auth | Shared `/login`, `/register`, `/tutor/register` |
+| Learner | `/learner/search`, `/learner/dashboard`, `/learner/map`, `/tutors/:id`, `/requests`, `/requests/:id`, `/requests/new` |
+| Tutor | `/tutor/dashboard`, `/tutor/profile`, `/tutor/timetable`, `/tutor/income`, `/tutor/map`, `/tutor/find-students`, `/tutor/requests`, `/tutor/requests/:id` |
 | Admin | `/admin/dashboard` |
 
-Hồ sơ nhanh trong màn tìm kiếm chuyển sang form yêu cầu đầy đủ. Hồ sơ đã lưu và một số thao tác demo được giữ trong localStorage qua route/reload; bộ lọc landing chỉ giữ trong local state. Các route còn thiếu được liệt kê trong [`SCREEN_INVENTORY.md`](docs/screens/SCREEN_INVENTORY.md), không được xem là đã triển khai. Trang workspace có thanh chuyển nhanh giữa các role để review prototype.
+Demo: `minhanh`, `giabao`, `admin` / password `demo1234`. Product routes kiểm tra phiên và role demo; chưa đăng nhập sẽ tới shared Login và giữ internal redirect. `/tutor/availability` và `/tutor/lessons` là URL legacy redirect tới `/tutor/timetable`.
 
-## Cấu trúc hiện hành
+Search mở hồ sơ gia sư thành trang riêng. Form yêu cầu nằm trong hồ sơ; nút “Tạo yêu cầu mới” ở chi tiết request mở form đúng gia sư. Các trang Learner app dùng header đã đăng nhập. Dashboard cho sửa thông tin cá nhân/địa chỉ; Tutor có lịch rảnh/lịch dạy chung và tìm học viên theo lịch đã lưu.
+
+## Source và tài liệu
 
 ```text
-apps/web/
-  src/App.jsx, src/main.jsx       routing và entry point
-  src/components/                 UI primitives dùng chung
-  src/data/                       mock data, một nguồn hồ sơ gia sư
-  src/features/public/            ba landing, header/footer và public UI
-  src/features/learner/           tìm kiếm và luồng yêu cầu của người học
-  src/features/tutor/             dashboard và công việc gia sư
-  src/features/admin/             giao diện vận hành Admin
-  src/hooks/                      dialog focus và local demo persistence
-  src/styles/                     semantic tokens, reset, global, shared flows
+apps/web/src/
+  App.jsx, main.jsx     routing và entry
+  components/           shared primitives
+  data/                 dữ liệu và helper demo
+  features/public/      landing và public chrome
+  features/auth/        mock auth, Login/Register, route guard, OTP
+  features/learner/     Search, hồ sơ, Dashboard, map, requests
+  features/tutor/       workspace, hồ sơ, lịch, tìm lớp/học viên, requests
+  features/admin/       dashboard vận hành
+  hooks/                storage và dialog focus
+  styles/               tokens, reset, global, shared flows
 ```
 
-Sáu hồ sơ gia sư gốc ở `src/data/tutors.js`; `src/data/public.js` chuyển chúng sang dạng hiển thị landing. Không có code ứng dụng đang hoạt động trong skeleton API/database cũ.
+- [`AGENTS.md`](AGENTS.md): quy tắc coding và thứ tự đọc.
+- [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md): đề bài gốc; các gợi ý công nghệ/full-stack không phải stack hiện hành.
+- [`DESIGN.md`](DESIGN.md): visual hiện hành, phạm vi từng reference.
+- [`PRODUCT_SPEC.md`](docs/planning/PRODUCT_SPEC.md): behavior đã chốt và backlog.
+- [`ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md): routes, source và mock persistence hiện tại.
+- [`SCREEN_INVENTORY.md`](docs/screens/SCREEN_INVENTORY.md): ID, MVP và trạng thái từng màn.
+- [`FIGMA_ANALYSIS.md`](docs/design/FIGMA_ANALYSIS.md): preserved evidence; Learner/Tutor không tự restore Figma cũ, Admin Figma vẫn là active structural reference cho phase Admin sau này. Policy chi tiết theo role tại AGENTS/DESIGN.
+- [`PROJECT_HISTORY.md`](docs/archive/PROJECT_HISTORY.md): archive không có hiệu lực implementation.
 
-## Tài liệu cần đọc
+`reference/final/` lưu static visual reference; `reference/figma/` lưu export cấu trúc; `reference/brief/` giữ nguồn đề bài. Sáu hồ sơ gia sư gốc ở `src/data/tutors.js`; `public.js` chuyển chúng sang dạng landing.
 
-1. [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md): đề bài và nguồn gốc yêu cầu.
-2. [`DESIGN.md`](DESIGN.md): visual foundation hiện hành. `reference/final/` là visual source cao nhất và được giữ nguyên; `reference/figma/` chứa export cấu trúc, `reference/brief/` chứa nguồn đề bài.
-3. [`PRODUCT_SPEC.md`](docs/planning/PRODUCT_SPEC.md): phạm vi prototype, yêu cầu, flow và backlog.
-4. [`SCREEN_INVENTORY.md`](docs/screens/SCREEN_INVENTORY.md): ID màn hình cần giữ ổn định.
-5. [`FIGMA_ANALYSIS.md`](docs/design/FIGMA_ANALYSIS.md): bằng chứng Figma cho bố cục, hierarchy và navigation; palette Figma không phải final.
-6. [`ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md): ranh giới frontend và route hiện tại.
+## Giới hạn hiện tại
 
-Các prompt, đặc tả visual xanh rêu và ghi chú scaffold cũ được bảo tồn **nguyên văn** tại [`PROJECT_HISTORY.md`](docs/archive/PROJECT_HISTORY.md). Đây là tư liệu lịch sử, không phải hướng dẫn triển khai hiện hành.
+- Auth/OAuth/OTP, map và các trạng thái nghiệp vụ đều mô phỏng frontend; không có bảo mật hoặc matching server.
+- Auth dùng localStorage/sessionStorage theo Remember login. Shared Learner/Tutor domain dùng `tnm.demo.domain.v1`, private requests/saved tutors scope theo account ID; chưa đồng bộ giữa thiết bị. Admin chưa nối vào domain này.
+- Thu nhập Tutor và Dashboard derive từ completed Lessons theo ngày học, dùng sessionFee snapshot từ Request; không dùng giá profile hiện tại. historicalLessons chỉ seed vào cùng runtime Lessons, restore thêm ID còn thiếu mà giữ dữ liệu runtime. Backend Lesson adapter có thể thay provider sau này mà không rewrite UI. Chưa có thanh toán hay số dư thật; progress/reviews minh họa vẫn là demo.
+- Các màn chưa implement vẫn là backlog trong inventory. Không xem nhãn sidebar hoặc hình Figma là bằng chứng chức năng đã chạy.

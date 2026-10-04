@@ -4,7 +4,7 @@ import { ArrowRight, BadgeCheck, BookOpen, GraduationCap, MapPin, Search, Shield
 import { PublicDialog, PublicFooter, PublicHeader, SectionHead } from './PublicChrome.jsx';
 import { DemoLink, MapPreview, PublicTutorCard } from './PublicPieces.jsx';
 import { photo, publicTutors } from '../../data/public.js';
-import useDemoStorage from '../../hooks/useDemoStorage.js';
+import { useSavedTutors } from '../domain/DemoDomainContext.jsx';
 
 const needs = [
   ['THCS · THPT', 'Mất gốc & củng cố nền tảng', 'Học theo nhịp độ riêng, tập trung vào phần kiến thức còn yếu.', photo.maths, 'blue'],
@@ -17,7 +17,7 @@ export default function HomePage() {
   const [level, setLevel] = useState('THCS · Lớp 6–9');
   const [goal, setGoal] = useState('Củng cố kiến thức');
   const [district, setDistrict] = useState('Bình Thạnh');
-  const [saved, setSaved] = useDemoStorage('tnm.savedTutors', []);
+  const [saved, setSaved] = useSavedTutors();
   const [dialog, setDialog] = useState(null);
   const [consulted, setConsulted] = useState(false);
   const openInfo = (title, text) => setDialog({ title, text });

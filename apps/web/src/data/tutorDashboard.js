@@ -1,16 +1,22 @@
+import { demoReferenceData } from './demoReferenceData.js';
+// Legacy display examples are retained below; functional seeds are projections.
 export const tutorSummary = [
   { label: 'Yêu cầu cần phản hồi', value: '03', note: '2 yêu cầu mới hôm nay' },
   { label: 'Buổi học tuần này', value: '08', note: 'Buổi tiếp theo lúc 16:00' },
   { label: 'Giờ trống còn lại', value: '12', note: 'Trong 7 ngày tới' },
 ];
 
-export const initialTutorProfile = {
-  name: 'Mai Anh Nguyễn',
-  subjects: 'Toán, Vật lý',
-  area: 'Bình Thạnh',
-  fee: '180000',
-  bio: 'Giúp học sinh củng cố nền tảng bằng lộ trình rõ ràng và bài tập phù hợp.',
+export const tutorIncome = {
+  total: 3200000,
+  items: [
+    { id: 'income-1', date: '12/04', subject: 'Toán lớp 9', amount: 200000 },
+    { id: 'income-2', date: '10/04', subject: 'Vật lý lớp 10', amount: 180000 },
+    { id: 'income-3', date: '08/04', subject: 'Toán lớp 11', amount: 220000 },
+  ],
 };
+
+const profile = demoReferenceData.tutorProfiles.find((t) => t.accountId === 'demo-tutor');
+export const initialTutorProfile = { name: profile.name, subjects: profile.subjects.join(', '), area: profile.location, fee: String(profile.price), sessionMinutes: profile.sessionMinutes, bio: profile.intro, levels: profile.levels };
 
 export const initialLessons = [
   { id: 'lesson-1', day: 'Hôm nay', date: 'Thứ tư', time: '16:00 – 17:30', subject: 'Toán lớp 9', learner: 'Minh Khang', place: 'Bình Thạnh · Tại nhà', status: 'confirmed' },
@@ -18,11 +24,7 @@ export const initialLessons = [
   { id: 'lesson-3', day: 'Thứ bảy', date: 'Cuối tuần', time: '09:00 – 10:30', subject: 'Toán lớp 11', learner: 'Gia Bảo', place: 'Phú Nhuận · Tại nhà', status: 'pending' },
 ];
 
-export const initialRequests = [
-  { id: 'req-1', learner: 'Phụ huynh bé An', initials: 'PA', subject: 'Toán lớp 8', area: 'Bình Thạnh', schedule: 'Tối thứ 3, 5', note: 'Muốn củng cố kiến thức học kỳ I.', received: '2 giờ trước', status: 'pending' },
-  { id: 'req-2', learner: 'Nguyễn Khánh Linh', initials: 'KL', subject: 'Vật lý lớp 10', area: 'Thủ Đức', schedule: 'Chiều cuối tuần', note: 'Cần hỗ trợ phần điện học.', received: '5 giờ trước', status: 'pending' },
-  { id: 'req-3', learner: 'Phụ huynh bé Nam', initials: 'PN', subject: 'Toán lớp 9', area: 'Quận 3', schedule: 'Tối thứ 2, 4', note: 'Ôn tập trước kỳ thi chuyển cấp.', received: 'Hôm qua', status: 'pending' },
-];
+export const initialRequests = demoReferenceData.requests.filter((r) => r.id.startsWith('req-'));
 
 export const weeklyLessons = [
   { day: 'T2', date: '28', items: [{ time: '18:00', label: 'Toán · Khang', tone: 'blue' }] },
