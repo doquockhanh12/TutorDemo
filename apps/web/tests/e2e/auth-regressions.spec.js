@@ -73,3 +73,33 @@ test('AUTH-004 phone validation invalid OTP success and ESC close', async ({ pag
   await page.getByRole('button', { name: 'Xác minh', exact: true }).click();
   await expect(page).toHaveURL(/\/learner\/search$/);
 });
+
+test('AUTH-005 homepage role selection modal navigates to isolated registration flows without cross-flow links', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Tạo tài khoản ngay' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Bạn muốn đăng ký với vai trò nào?' });
+  await expect(dialog).toBeVisible();
+
+  // Choose Learner
+  await dialog.getByRole('button', { name: 'Đăng ký Người học' }).click();
+  await expect(page).toHaveURL(/\/register$/);
+  // Verify isolated flow: no link to tutor registration
+  await expect(page.getByRole('link', { name: /Đăng ký gia sư/ })).toHaveCount(0);
+  await expect(page.getByText('Bạn muốn dạy học?')).toHaveCount(0);
+
+  // Return to home and choose Tutor
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Tạo tài khoản ngay' }).click();
+  const dialog2 = page.getByRole('dialog', { name: 'Bạn muốn đăng ký với vai trò nào?' });
+  await expect(dialog2).toBeVisible();
+  await dialog2.getByRole('button', { name: 'Đăng ký Gia sư' }).click();
+  await expect(page).toHaveURL(/\/tutor\/register$/);
+  // Verify isolated flow: no link to learner registration
+  await expect(page.getByRole('link', { name: /Đăng ký người học/ })).toHaveCount(0);
+  await expect(page.getByText('Bạn đang tìm gia sư?')).toHaveCount(0);
+
+  // Shared login page remains intact
+  await page.goto('/login');
+  await expect(page.getByRole('link', { name: 'Đăng ký người học' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Đăng ký gia sư' })).toBeVisible();
+});

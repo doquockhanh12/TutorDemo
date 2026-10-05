@@ -13,7 +13,7 @@ const tutorLinks = [
   ['Cơ hội dạy', '#opportunities'], ['Thu nhập tháng', '#income'], ['Tạo hồ sơ', '#profile'], ['Xem lớp hiện có', '#opportunities'],
 ];
 
-export function PublicHeader({ kind = 'home', onInfo, navigation, actions }) {
+export function PublicHeader({ kind = 'home', onInfo, navigation, actions, onRegister }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrolling, setScrolling] = useState(false);
@@ -52,7 +52,6 @@ export function PublicHeader({ kind = 'home', onInfo, navigation, actions }) {
     <>
       <Link to="/tutor/register">Tạo hồ sơ gia sư</Link>
       <Link to="/login">Đăng nhập</Link>
-      <Link to="/register">Đăng ký tài khoản</Link>
     </>
   ) : isLearner ? (
     <>
@@ -64,7 +63,11 @@ export function PublicHeader({ kind = 'home', onInfo, navigation, actions }) {
     <>
       <a href="#portal">Chọn vai trò</a>
       <Link to="/login">Đăng nhập</Link>
-      <Link to="/register">Đăng ký tài khoản</Link>
+      {onRegister ? (
+        <a href="#register" onClick={(e) => { e.preventDefault(); setOpen(false); onRegister(); }}>Đăng ký tài khoản</a>
+      ) : (
+        <Link to="/register">Đăng ký tài khoản</Link>
+      )}
     </>
   );
 
@@ -81,7 +84,11 @@ export function PublicHeader({ kind = 'home', onInfo, navigation, actions }) {
   ) : (
     <>
       <Link className="public-header__plain" to="/login">Đăng nhập</Link>
-      <Link className="public-header__blue" to="/register">Đăng ký</Link>
+      {onRegister ? (
+        <button type="button" className="public-header__blue" onClick={onRegister} style={{ border: 'none', cursor: 'pointer' }}>Đăng ký</button>
+      ) : (
+        <Link className="public-header__blue" to="/register">Đăng ký</Link>
+      )}
     </>
   );
 

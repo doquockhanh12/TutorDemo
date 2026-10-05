@@ -14,9 +14,11 @@ import {
   Users,
 } from 'lucide-react';
 import { PublicFooter, PublicHeader, SectionHead } from './PublicChrome.jsx';
+import RoleSelectModal from './RoleSelectModal.jsx';
 import { photo } from '../../data/public.js';
 
 export default function HomePage() {
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [consultName, setConsultName] = useState('');
   const [consultPhone, setConsultPhone] = useState('');
   const [consultRole, setConsultRole] = useState('learner');
@@ -35,7 +37,7 @@ export default function HomePage() {
 
   return (
     <div className="public-page public-page--home">
-      <PublicHeader kind="home" />
+      <PublicHeader kind="home" onRegister={() => setRoleModalOpen(true)} />
 
       <main>
         {/* SECTION 1: HERO NỀN TẢNG TỔNG QUAN */}
@@ -63,9 +65,13 @@ export default function HomePage() {
                 >
                   Bắt đầu ngay <ArrowRight size={18} />
                 </button>
-                <Link to="/register" className="public-btn public-btn--outline">
+                <button
+                  type="button"
+                  className="public-btn public-btn--outline"
+                  onClick={() => setRoleModalOpen(true)}
+                >
                   Đăng ký thành viên
-                </Link>
+                </button>
               </div>
               <div className="public-hero__proof">
                 <span>
@@ -317,9 +323,13 @@ export default function HomePage() {
                   </li>
                 </ul>
 
-                <Link to="/register" className="public-btn public-btn--yellow">
+                <button
+                  type="button"
+                  className="public-btn public-btn--yellow"
+                  onClick={() => setRoleModalOpen(true)}
+                >
                   Đăng ký tài khoản miễn phí <ArrowRight size={18} />
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -427,9 +437,13 @@ export default function HomePage() {
               nhận trọn vẹn quyền lợi.
             </p>
             <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/register" className="public-btn public-btn--yellow">
+              <button
+                type="button"
+                className="public-btn public-btn--yellow"
+                onClick={() => setRoleModalOpen(true)}
+              >
                 Tạo tài khoản ngay
-              </Link>
+              </button>
               <button
                 type="button"
                 className="public-btn public-btn--outline"
@@ -444,6 +458,7 @@ export default function HomePage() {
       </main>
 
       <PublicFooter />
+      {roleModalOpen && <RoleSelectModal onClose={() => setRoleModalOpen(false)} />}
     </div>
   );
 }
