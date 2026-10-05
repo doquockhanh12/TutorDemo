@@ -1,5 +1,90 @@
 # Frontend Regression Notes
 
+## ADM-REG-005 — Mobile table actions clipped inside cells
+
+### Symptom
+At 390px, some Tutor approval/suspension controls were partly clipped even with no page overflow.
+### Root cause
+Mobile enlarged buttons to 44px, but their nowrap flex row no longer fit the fixed table column; td overflow hidden clipped actions.
+### Invariant
+Every action button fits within its cell and remains independently usable after horizontal table scrolling. Keep tap target size; wrap actions instead of hiding/shrinking them.
+### Regression test
+`tests/e2e/admin-improvements.spec.js` — `ADM-REG-005 mobile table action buttons stay inside their cell`: RED CONFIRMED (button bounds exceeded cell); green after allowing row wrap. Connected-screen QA checks the same bounds in every Admin table.
+### Files affected
+`features/admin/admin.css`.
+### Prevention
+Check button bounds against their clipped cell, not just viewport bounds. Scroll to the final table columns during visual review.
+### Date / context
+2026-10-05 — Admin QA; no commit.
+
+## ADM-REG-004 — Dashboard totals incorrectly displayed zero
+
+### Symptom
+The dashboard showed zero reviews/issues despite populated lists.
+### Root cause
+UI requested totalReviews/totalIssues that selectAdminStats did not return, and silently fell back to zero.
+### Invariant
+Functional summary values derive from shared collection counts; missing selector output must not masquerade as a legitimate empty collection.
+### Regression test
+`tests/adminReviewMetrics.test.js` — `ADM-REG-004 dashboard totals match the shared review and issue collections`: RED CONFIRMED (undefined versus 6); passed after fix. `tests/e2e/admin-improvements.spec.js` — `ADM-REG-004 visible dashboard metrics match shared records`: browser green verification added after prerequisite fix; no independent browser red claimed.
+### Files affected
+`features/domain/useAdminDomain.js`.
+### Prevention
+Compare summary totals with list data during QA, not merely the presence of metric cards.
+### Date / context
+2026-10-05 — Admin QA; no commit.
+
+## ADM-REG-003 — Admin Dashboard mobile grid overflow
+
+### Symptom
+390px viewport rendered a 637px-wide dashboard; summary/table headers and actions were outside the visible page.
+### Root cause
+The single `1fr` track retained its automatic minimum from an unbounded subgrid; nonwrapping header actions inflated that minimum. A nowrap review excerpt also exceeded its column after the real font loaded.
+### Invariant
+Dashboard sections fit the page; wide tables scroll inside their region. Header/title/count/links reflow without hiding controls.
+### Regression test
+`tests/e2e/admin-improvements.spec.js` — `ADM-REG-003 mobile dashboard stays within the viewport without clipping header actions`. RED CONFIRMED: scrollWidth 637 at 390px; a font-ready rerun exposed remaining width 624px. Both passed after bounding the grid and excerpt.
+### Files affected
+`features/admin/admin.css`.
+### Prevention
+Use minmax(0,1fr) and bounded inner grids/excerpts; wait for document.fonts.ready before measuring. Inspect section headers and both columns after real data/copy is added. Wait for drawer motion to finish before measuring its bounds. Do not accept a screenshot whose canvas silently expanded past the test viewport.
+### Date / context
+2026-10-05 — Admin QA; no commit.
+
+## ADM-REG-002 — Comparison cards in a narrow drawer
+
+### Symptom
+At 1440px, two account cards were squeezed into the 520px detail drawer; identity/contact/history text had insufficient room.
+### Root cause
+Two equal columns were chosen using page width even though their container remained narrow.
+### Invariant
+Comparison must adapt to the drawer's usable width; full-page overflow checks do not prove the inner cards are readable.
+### Regression test
+`apps/web/tests/e2e/admin-improvements.spec.js` — `ADM-REG-002 desktop comparison preserves readable party cards in the narrow drawer`. RED CONFIRMED: card width 219px, below 260px; green after stacking in this drawer.
+### Files affected
+`features/admin/admin.css`.
+### Prevention
+Review inner container widths and long Vietnamese text at every breakpoint; do not choose columns only from viewport width.
+### Date / context
+2026-10-05 — Admin reports/appeals batch; no commit.
+
+## ADM-REG-001 — Admin drawer keyboard boundary
+
+### Symptom
+Opening an Admin detail drawer left focus on the table behind the modal; keyboard users could operate obscured controls.
+### Root cause
+AdminSlideOver only handled ESC, with no focus capture, trap or return.
+### Invariant
+Every Admin drawer captures focus, traps Tab/Shift+Tab, closes with ESC and returns focus to its trigger; background scrolling is locked.
+### Regression test
+`apps/web/tests/e2e/admin-improvements.spec.js` — `ADM-REG-001 drawer traps keyboard focus and restores its trigger`. RED CONFIRMED: active element remained outside dialog; targeted test passed after reuse of useDialogFocus.
+### Files affected
+`features/admin/AdminSlideOver.jsx`.
+### Prevention
+Reuse the established dialog hook; role=dialog alone does not provide keyboard behavior. QA must exercise keyboard navigation, not just click/ESC.
+### Date / context
+2026-10-05 — Admin reports/appeals batch; no commit.
+
 ## Approved visual QA assessment — timetable/history reconciliation
 
 ### Why the previous review missed the defect

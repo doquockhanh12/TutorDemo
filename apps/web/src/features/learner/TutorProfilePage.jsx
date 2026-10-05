@@ -1,5 +1,6 @@
 import {
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 
@@ -24,10 +25,6 @@ import Brand from '../../components/Brand.jsx';
 
 import useDemoDomain from '../domain/DemoDomainContext.jsx';
 
-import {
-  profileReviews,
-} from '../../data/tutorProfiles.js';
-
 import ProfileCalendar from './ProfileCalendar.jsx';
 import ProfileChoices from './ProfileChoices.jsx';
 
@@ -48,7 +45,9 @@ import './profile.css';
 
 export default function TutorProfilePage() {
   const { id } = useParams();
-  const { profiles: tutors } = useDemoDomain();
+  const domain = useDemoDomain();
+  const tutors = domain.profiles || [];
+  const reviews = domain.reviews || [];
 
   const { hash } =
     useLocation();
@@ -72,11 +71,12 @@ export default function TutorProfilePage() {
     }
   }, [id, hash]);
 
-  const tutor =
+  const rawTutor =
     tutors.find(
       (item) =>
         item.id === id
     );
+  const tutor = (rawTutor && (rawTutor.moderationStatus || 'approved') === 'approved') ? rawTutor : null;
 
   return (
     <div className="public-page public-page--learner learner-page learner-search-page density-comfortable">
@@ -103,6 +103,7 @@ export default function TutorProfilePage() {
           <ProfileContent
             key={id}
             tutor={tutor}
+            reviews={reviews}
           />
         ) : (
           <section className="learner-empty">
@@ -146,7 +147,30 @@ export default function TutorProfilePage() {
 
 function ProfileContent({
   tutor,
+  reviews: propReviews,
 }) {
+  const domain = useDemoDomain();
+  const reviews = propReviews || domain.reviews || [];
+
+  const visibleReviews = useMemo(() => {
+    const tid = tutor?.id;
+    return reviews.filter(
+      (r) =>
+        (r.tutorId === tid || r.tutorId === tutor?.id) &&
+        (r.moderationStatus || 'approved') === 'approved' &&
+        (r.visibility || 'public') === 'public'
+    );
+  }, [reviews, tutor?.id]);
+
+  const ratingSummary = useMemo(() => {
+    if (!visibleReviews.length) {
+      return { averageRating: 0, reviewCount: 0, hasReviews: false };
+    }
+    const sum = visibleReviews.reduce((acc, r) => acc + (r.rating || 0), 0);
+    const avg = Number((sum / visibleReviews.length).toFixed(1));
+    return { averageRating: avg, reviewCount: visibleReviews.length, hasReviews: true };
+  }, [visibleReviews]);
+
   const [saved, setSaved] =
     useSavedTutors();
 
@@ -295,20 +319,24 @@ function ProfileContent({
               }
             </p>
 
-            {Number.isFinite(tutor.rating) ? <span className="profile-rating">
-              <Star
-                size={17}
-                fill="currentColor"
-              />
+            {ratingSummary.hasReviews ? (
+              <span className="profile-rating">
+                <Star
+                  size={17}
+                  fill="currentColor"
+                />
 
-              <strong>
-                {tutor.rating}/5
-              </strong>
+                <strong>
+                  {ratingSummary.averageRating}/5
+                </strong>
 
-              {' · '}
-              {tutor.reviews}{' '}
-              đánh giá
-            </span> : <span className="profile-rating">Chưa có đánh giá</span>}
+                {' · '}
+                {ratingSummary.reviewCount}{' '}
+                đánh giá
+              </span>
+            ) : (
+              <span className="profile-rating">Chưa có đánh giá</span>
+            )}
           </div>
 
           <div className="profile-identity__action">
@@ -566,64 +594,53 @@ function ProfileContent({
           </h2>
 
           <p className="profile-reviews__note">
-            Nhận xét minh họa cho giao
-            diện.
+            Nhận xét minh họa cho giao diện.
           </p>
 
-          {profileReviews.map(
-            (review) => (
-              <article
-                key={
-                  review.id
-                }
-              >
-                <Avatar
-                  initials={
-                    review.initials
-                  }
-                  name={
-                    review.name
-                  }
-                  size="sm"
-                />
+          {visibleReviews.length === 0 ? (
+            <p className="profile-reviews__note" style={{ fontStyle: 'italic', marginTop: 'var(--space-2)' }}>
+              Chưa có đánh giá nào cho gia sư này.
+            </p>
+          ) : (
+            visibleReviews.map((review) => {
+              const reviewerName = review.name || review.author || review.learnerName || 'Học viên';
+              const reviewerInitials =
+                review.initials ||
+                reviewerName
+                  .trim()
+                  .split(/\s+/)
+                  .slice(-2)
+                  .map((s) => s[0])
+                  .join('')
+                  .toUpperCase() ||
+                'HV';
+              const reviewText = review.text || review.comment || review.excerpt || '';
+              const reviewDate = review.date || (review.createdAt ? new Date(review.createdAt).toLocaleDateString('vi-VN') : '');
 
-                <div>
-                  <div className="profile-review__meta">
-                    <strong>
-                      {
-                        review.name
-                      }
-                    </strong>
+              return (
+                <article key={review.id}>
+                  <Avatar
+                    initials={reviewerInitials}
+                    name={reviewerName}
+                    size="sm"
+                  />
 
-                    <time>
-                      {
-                        review.date
-                      }
-                    </time>
+                  <div>
+                    <div className="profile-review__meta">
+                      <strong>{reviewerName}</strong>
+                      {reviewDate && <time>{reviewDate}</time>}
+                    </div>
+
+                    <span className="profile-rating">
+                      <Star size={14} fill="currentColor" />
+                      {review.rating}/5
+                    </span>
+
+                    <p>{reviewText}</p>
                   </div>
-
-                  <span className="profile-rating">
-                    <Star
-                      size={
-                        14
-                      }
-                      fill="currentColor"
-                    />
-
-                    {
-                      review.rating
-                    }
-                    /5
-                  </span>
-
-                  <p>
-                    {
-                      review.text
-                    }
-                  </p>
-                </div>
-              </article>
-            )
+                </article>
+              );
+            })
           )}
         </section>
       </aside>

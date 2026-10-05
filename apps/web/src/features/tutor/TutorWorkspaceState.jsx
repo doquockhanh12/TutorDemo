@@ -1,4 +1,4 @@
-﻿import { normalizeSessionMinutes, selectPublicTutorSchedule, weekDates, isValidProposal, availabilityLabels, rangesSummary } from '../../data/tutorSchedule.js';
+import { normalizeSessionMinutes, selectPublicTutorSchedule, weekDates, isValidProposal, availabilityLabels, rangesSummary } from '../../data/tutorSchedule.js';
 import useDemoDomain, { DemoDomainProvider } from '../domain/DemoDomainContext.jsx';
 import { useMemo } from 'react';
 import { isFutureSession } from '../../data/tutorSchedule.js';
@@ -22,8 +22,12 @@ export function useTutorProposalValidation(tutor) {
 }
 export function useScheduledTutors() {
   const state = useDemoDomain();
-  return state.profiles.map((tutor) => {
-    const { ranges, sessionMinutes } = selectPublicTutorSchedule(state, tutor, weekDates(), tutor.sessionMinutes);
-    return { ...tutor, sessionMinutes, availability: availabilityLabels(ranges), scheduleSummary: rangesSummary(ranges) };
-  });
+  return useMemo(() => {
+    return (state.profiles || [])
+      .filter((tutor) => (tutor.moderationStatus || 'approved') === 'approved')
+      .map((tutor) => {
+        const { ranges, sessionMinutes } = selectPublicTutorSchedule(state, tutor, weekDates(), tutor.sessionMinutes);
+        return { ...tutor, sessionMinutes, availability: availabilityLabels(ranges), scheduleSummary: rangesSummary(ranges) };
+      });
+  }, [state]);
 }

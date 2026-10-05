@@ -4,6 +4,9 @@ import { identityKey, normalizePhone } from './authUtils.js';
 import { normalizeSessionMinutes } from '../../data/tutorSchedule.js';
 
 const STORAGE_KEY = 'tutornearme.demo-auth.v1';
+const DOMAIN_STORAGE_KEY = 'tnm.demo.domain.v1';
+export const SUSPENDED_ACCOUNT_ERROR = 'Tài khoản của bạn đã bị tạm khóa bởi Quản trị viên. Vui lòng liên hệ hỗ trợ.';
+export const INVALID_CREDENTIALS_ERROR = 'Thông tin đăng nhập chưa chính xác. Tài khoản demo: minhanh / demo1234, giabao / demo1234, admin / demo1234.';
 const DEMO_USERS = demoReferenceData.accounts;
 export const MOCK_PROVIDER_PAYLOADS = demoReferenceData.providerPayloads;
 
@@ -17,7 +20,33 @@ const AuthContext = createContext(null);
 export function DemoAuthProvider({ children }) {
   const [state, setState] = useState(restore);
   const persist = (next, remember = true) => { setState(next); try { const target = remember ? localStorage : sessionStorage; const other = remember ? sessionStorage : localStorage; target.setItem(STORAGE_KEY, JSON.stringify(next)); other.removeItem(STORAGE_KEY); } catch { /* storage may be unavailable */ } };
-  const allAccounts = () => [...DEMO_USERS.filter((seed) => !(state.accounts || []).some((account) => account.id === seed.id)), ...(state.accounts || [])];
+  const allAccounts = () => {
+    const baseAccounts = [
+      ...DEMO_USERS.filter((seed) => !(state.accounts || []).some((account) => account.id === seed.id)),
+      ...(state.accounts || [])
+    ];
+    try {
+      const raw = localStorage.getItem(DOMAIN_STORAGE_KEY);
+      if (raw) {
+        const domain = JSON.parse(raw);
+        if (Array.isArray(domain?.users)) {
+          const domainUserMap = new Map();
+          domain.users.forEach((u) => {
+            if (u.id) domainUserMap.set(u.id, u);
+            if (u.username) domainUserMap.set(u.username, u);
+          });
+          const baseIds = new Set(baseAccounts.map((a) => a.id));
+          const mergedBase = baseAccounts.map((acc) => {
+            const domainUser = domainUserMap.get(acc.id) || (acc.username ? domainUserMap.get(acc.username) : null);
+            return domainUser ? { ...acc, status: domainUser.status || acc.status } : acc;
+          });
+          const extraDomainUsers = domain.users.filter((u) => !baseIds.has(u.id));
+          return [...mergedBase, ...extraDomainUsers];
+        }
+      }
+    } catch { /* storage may be unavailable */ }
+    return baseAccounts;
+  };
   const updateProfile = (changes) => {
     if (!state.user) return { error: 'Bạn cần đăng nhập để cập nhật hồ sơ.' };
     const allowed = ['fullName', 'email', 'phone', 'accountType', 'address'];
@@ -47,13 +76,26 @@ export function DemoAuthProvider({ children }) {
   const login = (identity, password, remember = true) => {
     const key = identityKey(identity);
     const user = allAccounts().find((item) => [item.username, item.email, item.phone].some((v) => identityKey(v) === key));
-    if (!user || user.password !== password) return { error: 'Thông tin đăng nhập chưa chính xác. Tài khoản demo: minhanh / demo1234, giabao / demo1234, admin / demo1234.' };
+    if (!user || user.password !== password) return { error: INVALID_CREDENTIALS_ERROR };
+    if (user.status === 'suspended') return { error: SUSPENDED_ACCOUNT_ERROR };
     persist({ ...state, user }, remember); return { user };
   };
   const loginProvider = (provider, phone, remember = true) => {
     const account = allAccounts().find((item) => provider === 'phone' ? normalizePhone(item.phone) === normalizePhone(phone) : item.linkedProviders?.includes(provider));
-    if (account) { persist({ ...state, user: account }, remember); return { user: account }; }
+    if (account) {
+      if (account.status === 'suspended') return { error: SUSPENDED_ACCOUNT_ERROR };
+      persist({ ...state, user: account }, remember); return { user: account };
+    }
     return { registration: true, provider, payload: MOCK_PROVIDER_PAYLOADS[provider] };
+  };
+  // Restricted frontend session; suspended users may appeal without unlocking product routes.
+  const loginForAppeal = (identity, password) => {
+    const key = identityKey(identity);
+    const account = allAccounts().find(item => [item.username, item.email, item.phone].some(v => identityKey(v) === key));
+    if (!account || account.password !== password || !['learner', 'tutor'].includes(account.role)) return { error: 'Thông tin tài khoản chưa chính xác.' };
+    const user = { ...account, appealOnly: true };
+    persist({ ...state, user }, false);
+    return { user };
   };
   const register = (role, values, provider) => {
     const key = identityKey(values.username);
@@ -62,7 +104,7 @@ export function DemoAuthProvider({ children }) {
     const accounts = [...(state.accounts || []), user]; persist({ accounts, user }); return { user };
   };
   const logout = () => persist({ ...state, user: null });
-  const value = useMemo(() => ({ user: state.user, authenticated: Boolean(state.user), login, loginProvider, register, logout, updateProfile }), [state, state.user]);
+  const value = useMemo(() => ({ user: state.user, authenticated: Boolean(state.user), login, loginProvider, loginForAppeal, register, logout, updateProfile }), [state, state.user]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 export default function useDemoAuth() {

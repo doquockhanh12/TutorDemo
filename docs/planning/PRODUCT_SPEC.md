@@ -3,7 +3,7 @@
 ## Implementation priority và policy Figma
 
 - **Active core batch:** hoàn thiện Learner/Tutor vertical slice theo latest user requirements, current behavior, PRODUCT_SPEC, ARCHITECTURE và React hiện tại. Learner/Tutor Figma chỉ historical/reference evidence; không tự restore structure cũ. Parity chỉ áp dụng cho màn/phần user yêu cầu rõ.
-- **Admin:** planned future phase, vẫn thuộc product và giữ nguyên requirements/flow/inventory. Dashboard demo hiện có không có nghĩa Admin đã hoàn thiện. Admin Figma vẫn là active structural reference cho future Admin work cho đến khi user duyệt Admin structure/reference mới; appearance dùng current TutorNearMe visual system.
+- **Admin:** dashboard, users, tutors, reviews, issues và appeals đã có implementation frontend; subject/location/settings/logs vẫn là future phase. Admin Figma vẫn là active structural reference cho future Admin work cho đến khi user duyệt Admin structure/reference mới; appearance dùng current TutorNearMe visual system.
 - Chi tiết thứ tự nguồn theo role tại AGENTS.md; Figma không tự thay runtime architecture hoặc tạo trạng thái Implemented.
 
 ## Learner / Parent — behavior hiện hành
@@ -94,7 +94,7 @@ Nếu tính năng mới không hỗ trợ trực tiếp core flow, ghi vào back
 | Ưu tiên | Việc cần theo dõi |
 |---|---|
 | Active core batch | Hoàn thiện Learner/Tutor vertical slice theo current behavior và screen inventory; responsive/visual QA; Auth V4 mock frontend flow đã implement. |
-| Admin future phase | Giữ Admin product flow và inventory; triển khai sau theo Admin Figma structural evidence + current visual system, khi user ưu tiên phase Admin. Chưa completed. |
+| Admin remaining phase | Giữ product flow/inventory cho subject/location/settings/logs chưa triển khai; operational screens đã có không đồng nghĩa toàn bộ Admin completed. |
 | Sau core | Map thật, verification mở rộng, chat, gói học, distance matching; không tự đưa vào prototype. |
 | Quyết định nghiệp vụ còn mở | Role/auth model, request/lesson lifecycle, tutor approval và location model: chỉ mô phỏng state UI cho đến khi user chốt. |
 | Bàn giao môn học | Requirement, user flow, wireframe/UI design, GitHub repository, slide, demo URL. |
@@ -132,3 +132,13 @@ Các quyết định còn mở không phải chỉ thị triển khai backend. C
 - Chi tiết các buổi tạo thu nhập trong tháng gồm ngày, người học, môn, giờ và fee, mới nhất trước. Null learnerId dùng lesson.learner đã có; thiếu thông tin hiển thị unknown, không tạo identity.
 - Dashboard total, rows tháng hiện tại và Xem thêm dùng cùng selectors/hooks; Xem thêm mở `/tutor/income`, không còn fixed +12% Income trend. Responsive table chuyển thành rows có label trên mobile.
 - Đây là thống kê frontend theo buổi hoàn tất, chưa có thanh toán, số dư hoặc giao dịch thật. Backend Lesson data sau này thay provider/adapter mà không đổi selector/UI.
+
+## Admin reports and appeals — user-approved 2026-10-05
+
+- Dashboard: cột trái đặt **Kiểm duyệt hồ sơ** phía trên **Cần theo dõi / Báo cáo & sự cố**; cột phải giữ lớp học và đánh giá. Khi chuyển một cột trên màn nhỏ, nhóm hồ sơ/báo cáo hiển thị trước, rồi tới lớp học/đánh giá.
+- Cả hai tài khoản trong đối soát có nút **Lịch sử báo cáo**: xem báo cáo đã gửi, tổng cảnh cáo đã nhận, lý do, ngày/người xử lý và sự cố liên quan nếu dữ liệu đã có. Không suy warning từ việc chỉ bị báo cáo, không invent lịch sử còn thiếu.
+- Learner/Tutor tự gửi tại `/appeals`, chọn đúng sự cố mà mình là bên bị báo cáo; lý do tố cáo oan/hiểu nhầm/hoàn cảnh cần thông cảm, giải trình tối thiểu 20 ký tự, bằng chứng (link hoặc ảnh/PDF), mô tả nguồn và cam kết trung thực bắt buộc. Gửi trùng hồ sơ đang xem xét bị chặn.
+- Admin tiếp nhận tại `/admin/appeals`, tìm/lọc và đọc hồ sơ/bằng chứng trong drawer, chuyển đang xem xét hoặc chấp nhận/không chấp nhận cùng căn cứ phản hồi bắt buộc. Người gửi chỉ thấy hồ sơ của mình và xem kết quả sau reload.
+- Account suspended có lối xác thực giới hạn dành riêng cho kháng cáo; không unlock Learner/Tutor workspace. Shared login/auth guard chính giữ behavior cũ.
+- Acceptance là kết quả xem xét kháng cáo, không tự hủy cảnh cáo hay mở khóa. Policy tác động lên warning/suspension và kiểm chứng bằng chứng thật vẫn UNKNOWN/chưa triển khai.
+- Frontend-only: file lưu nội dung trong demo storage, không server upload. Tối đa 3 bằng chứng; mỗi tệp 500 KB, tổng 1 MB. Không tuyên bố dữ liệu đã xác minh hoặc application đã đủ production security.

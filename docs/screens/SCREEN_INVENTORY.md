@@ -2,7 +2,7 @@
 
 ID được giữ ổn định. **MVP** là mức ưu tiên sản phẩm, **Trạng thái** là mức triển khai hiện tại; Yes không có nghĩa đã có page riêng. Route chính xác nằm trong [ARCHITECTURE.md](../architecture/ARCHITECTURE.md), behavior trong [PRODUCT_SPEC.md](../planning/PRODUCT_SPEC.md).
 
-Learner/Tutor là active core batch: current implementation/behavior ưu tiên, Figma chỉ historical/reference evidence trừ parity cụ thể do user yêu cầu. Admin là future phase, vẫn giữ active Admin Figma structural evidence đến khi user duyệt reference mới. Một frame Figma không có nghĩa screen đã implement; trạng thái Planned của các màn Admin chưa triển khai giữ nguyên.
+Learner/Tutor ưu tiên current implementation/behavior; Figma chỉ historical/reference evidence trừ parity cụ thể do user yêu cầu. Admin đã có các màn operational được liệt kê dưới đây; phần chưa triển khai vẫn Planned. Admin Figma tiếp tục là active structural evidence đến khi user duyệt reference mới. Một frame Figma không có nghĩa screen đã implement.
 
 ## Learner / Parent
 
@@ -54,19 +54,24 @@ T03 hiện dùng header workspace với map/tổng quan/avatar/logout và groupi
 |---|---|---|---|
 | A01 | Admin Login | Yes | Shared `/login`, không `/admin/login` |
 | A02 | Dashboard | Yes | Implemented `/admin/dashboard`; duyệt/review/issue actions demo |
-| A03 | User List | Yes | Planned |
-| A04 | User Detail / Account Status | Yes | Planned |
-| A05 | Tutor List | Yes | Page riêng Planned; approval summary trong A02 |
-| A06 | Tutor Detail / Status | Yes | Planned |
+| A03 | User List | Yes | Implemented `/admin/users` |
+| A04 | User Detail / Account Status | Yes | Drawer trong A03 |
+| A05 | Tutor List | Yes | Implemented `/admin/tutors` |
+| A06 | Tutor Detail / Status | Yes | Drawer trong A05 |
 | A07 | Subject Management | Yes | Planned |
-| A08 | Review Management | Yes | Page riêng Planned; moderation summary trong A02 |
-| A09 | Account Issues / Suspended Requests | Yes | Page riêng Planned; issue summary trong A02 |
-| A10 | Issue Detail | Yes | Planned |
+| A08 | Review Management | Yes | Implemented `/admin/reviews`; moderation và drawer |
+| A09 | Account Issues / Suspended Requests | Yes | Implemented `/admin/issues`; dùng chung A12 |
+| A10 | Issue Detail | Yes | Drawer trong A09/A12; lịch sử báo cáo hai bên |
 | A11 | Location Management | Recommended/Core-support | Planned |
-| A12 | Reports / Complaints | Later / Figma reference | Planned |
+| A12 | Reports / Complaints | User-approved | Implemented `/admin/issues`, báo cáo/cảnh cáo theo account ID |
 | A13 | System Settings | Later | Planned |
 | A14 | Logs / Permissions | Later | Planned |
+| A15 | Appeal Review | User-approved extension | Implemented `/admin/appeals`; xem bằng chứng, căn cứ xét duyệt |
 
 ## Chưa triển khai trong prototype
 
 Map thật/geocoding/distance matching, chat, gói học, xác minh thẻ sinh viên và backend permission. Map demo L13/T16 đã được duyệt riêng; không đồng nghĩa các mở rộng thật đã được implement.
+
+## Kháng cáo — approved extension (2026-10-05)
+
+`/appeals` là trang dùng chung cho Learner/Tutor gửi và theo dõi kháng cáo; form yêu cầu sự cố thuộc bên bị báo cáo, nội dung giải trình, bằng chứng và cam kết trung thực. Tài khoản bị khóa có thể xác thực phiên chỉ dành cho kháng cáo; không mở product routes. Không renumber screen IDs hiện có.

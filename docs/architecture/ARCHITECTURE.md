@@ -44,7 +44,8 @@ apps/web/src/
   features/learner/       search, tutor detail, dashboard/account editing, map, request pages
   features/tutor/         dashboard, sidebar, profile, timetable, requests, shared mock schedule state
   features/scheduling/    shared weekly timeline, geometry, time confirmation và CSS
-  features/admin/         operational dashboard
+  features/admin/         operational dashboard, lists, moderation, reports, appeals
+  features/appeals/       shared user submission, evidence and appeal history
   hooks/                  localStorage demo và dialog keyboard focus
   styles/                 semantic tokens, reset, global và shared flow styles
 ```
@@ -61,15 +62,16 @@ Mock data ở `src/data`; local state/localStorage chỉ phục vụ tương tá
 | Public Tutor | `/tutor` | Landing tuyển gia sư theo `reference/final/tutor/`; **không phải** dashboard. |
 | Learner product | `/learner/search`, `/learner/dashboard`, `/learner/map`, `/tutors/:id`, `/requests/new`, `/requests`, `/requests/:id` | Tìm/lọc, dashboard với hồ sơ/địa chỉ chỉnh sửa, lịch/yêu cầu và gia sư đã lưu; bản đồ minh họa, hồ sơ gia sư, tạo và theo dõi yêu cầu. `LearnerAccountPanel` dùng `DemoAuthContext.updateProfile` để cập nhật mock account theo ID, giữ phiên lưu hiện tại và bỏ verified khi email/phone đổi; `dashboard.css` được scope riêng. `/requests/:id` chứa trạng thái buổi học và form review demo khi hoàn tất. |
 | Tutor workspace | `/tutor/dashboard`, `/tutor/profile`, `/tutor/timetable`, `/tutor/income`, `/tutor/map`, `/tutor/find-students`, `/tutor/requests`, `/tutor/requests/:id` | Profile, yêu cầu và bảng lịch dạy/lịch rảnh chung; Income từ completed Lessons; map minh họa và tìm học viên theo lịch rảnh đã lưu. Hai URL lịch cũ redirect tới timetable. Môn, phí, khu vực hiện gộp trong `/tutor/profile`. |
-| Admin workspace | `/admin/dashboard` | Dashboard vận hành demo. |
+| Admin workspace | `/admin/dashboard`, `/admin/users`, `/admin/tutors`, `/admin/reviews`, `/admin/issues`, `/admin/appeals` | Dashboard, tài khoản, duyệt hồ sơ, review, báo cáo và kháng cáo; chi tiết mở drawer. |
+| Account appeals | `/appeals` | Learner/Tutor gửi và theo dõi hồ sơ; chưa đăng nhập phải xác thực trước khi xem dữ liệu riêng. |
 
-All learner product routes listed above are protected for the learner role, tutor workspace routes for tutor, and Admin dashboard for admin. Unauthenticated users are redirected to `/login?redirect=...`; after login/registration a safe destination is restored, otherwise the role default is used.
+All learner product routes listed above are protected for the learner role, tutor workspace routes for tutor, and Admin workspace routes for admin. Unauthenticated users are redirected to `/login?redirect=...`; after login/registration a safe destination is restored, otherwise the role default is used. Appeal-only sessions cannot access protected product routes.
 
 ## Planned trong screen inventory, chưa implement
 
 - Learner lesson detail và review route riêng.
 - Tutor onboarding mở rộng, subject/pricing/location settings riêng và lesson detail riêng.
-- Admin `/admin/users`, `/admin/users/:id`, `/admin/tutors`, `/admin/tutors/:id`, `/admin/subjects`, `/admin/reviews`, `/admin/issues`, `/admin/issues/:id`, `/admin/locations`; các màn reports/settings/logs để sau core. A01 uses the shared `/login` route; `/admin/login` is not implemented.
+- Admin subject/location management, settings/logs/permissions vẫn Planned. User/tutor/issue detail dùng drawer hiện có, không có route detail riêng. A01 uses the shared `/login` route; `/admin/login` is not implemented.
 
 Xem [`SCREEN_INVENTORY.md`](../screens/SCREEN_INVENTORY.md) để biết ID/MVP của từng màn. Danh sách planned chỉ là hướng điều hướng dự kiến; không tạo route giả hoặc ngầm khẳng định chức năng đã chạy.
 
@@ -77,7 +79,7 @@ Xem [`SCREEN_INVENTORY.md`](../screens/SCREEN_INVENTORY.md) để biết ID/MVP 
 
 - `LearnerHeader` được reuse tại Search, profile, Dashboard, map và request list/detail/error. Header dựa vào mock auth hiện tại, không dùng các action Login/Register của public marketing. `LearnerPages.jsx` giữ footer public nhưng không thay đổi phiên đăng nhập.
 - Nút tạo request nằm ở detail, truyền `tutor` vào `/requests/new`; không có nút này ở list. Khi thiếu query tutor, route legacy vẫn fallback về hồ sơ demo đầu tiên; đây là behavior hiện tại, không phải cơ chế chọn tutor mới.
-- Runtime domain persist duy nhất tại `tnm.demo.domain.v1`: profiles, requests, lessons, availability, settings, savedByAccount và nextRequestNumber. Learner private requests filter learnerId; saves keyed account ID. Legacy `tnm.savedTutors`, `tnm.learnerRequests`, `tnm.tutor.workspace.v2/v3`, `tnm.tutorRequests`, `tnm.tutor.referenceRequests.v1`, `tnm.tutor.scheduleChecks.v1`, `tnm.tutorProfile` chỉ migration/compatibility và không bị xóa. Admin chưa được nối vào domain này.
+- Runtime domain persist duy nhất tại `tnm.demo.domain.v1`: profiles, requests, lessons, availability, settings, savedByAccount và nextRequestNumber; Admin users/reviews/issues cùng appeals cũng thuộc shared domain. Learner private requests filter learnerId; saves keyed account ID. Legacy `tnm.savedTutors`, `tnm.learnerRequests`, `tnm.tutor.workspace.v2/v3`, `tnm.tutorRequests`, `tnm.tutor.referenceRequests.v1`, `tnm.tutor.scheduleChecks.v1`, `tnm.tutorProfile` chỉ migration/compatibility và không bị xóa.
 - Tutor profile, timetable và Learner dùng một session setting 45 hoặc 90 phút trong workspace; registration dùng cùng tập giá trị và account duration cũ ngoài tập này được chuẩn hóa về 45. Tutor đăng ký mới tạo runtime profile từ đúng dữ liệu user nhập và settings/availability riêng theo ID; các field không được cung cấp (rating/experience/formats/levels) không được bịa. Cấp độ sửa tại profile; registration hiện chưa có field hình thức dạy nên profile mới không tự có Online/Tại nhà. Session setting điều khiển proposal mới; migration của lesson giữ ngày/giờ cụ thể hiện có. Timeline dùng khoảng 06:00–24:00 với thời điểm bắt đầu tối đa 22:00; độ dài availability/lesson không bị làm tròn về slot 45 phút.
 - Header Tutor dùng auth identity; greeting/profile summary dùng cùng canonical mutable Tutor profile. Functional Income đọc shared Lessons qua useTutorIncome; progress vẫn là layout-support illustration. Không có ledger/account balance/payment thật.
 
@@ -105,3 +107,12 @@ Migration không coi historical dashboard identity là canonical. Old untouched 
 Timetable reconciliation trừ occupied Lessons khỏi saved availability; renderer tách các khung trùng thành cột đủ rộng và cảnh báo, không tự đổi ngày/giờ. Modal completed Lesson hiển thị snapshot fee và tháng thu nhập theo lesson.date. User-approved cleanup 2026-10-04 loại đúng buổi Math req-1 ngày 01/10/2026 và khoảng rảnh tối 02/10/2026 quanh IELTS; `appliedDemoCleanups` trong shared state làm correction một lần, không reset fixture/state hoặc xóa các chỉnh sửa sau đó. Ghi chú QA và invariant tại FRONTEND_REGRESSION_NOTES.
 
 Tại apps/web: `node --test`, `npm run build`, `npm run test:e2e`. Playwright Chromium dùng một worker, fixed clock/timezone và reset state từ canonical fixture cho mỗi test; không phụ thuộc thứ tự test. Không chạy hai Playwright runner đồng thời trên cùng output folder. Browser route coverage gồm public/Auth và toàn bộ current Learner/Tutor connected screens, 1440/1024/390px, modal, console và page overflow. Legacy Maps smoke test được giữ, không mở rộng Maps. Root cause/invariants tại [FRONTEND_REGRESSION_NOTES.md](../quality/FRONTEND_REGRESSION_NOTES.md).
+
+## Admin reports / appeals — 2026-10-05
+
+- `accountHistory` và `issueTargetId` trong `features/domain/appeals.js` resolve stable account/profile IDs; lịch sử hai bên derive từ cùng issues và user warnings. Không tạo lịch sử giả cho field thiếu; UI nói rõ thiếu chi tiết.
+- `/appeals` dùng shared domain `appeals[]`, `nextAppealNumber`; không store/storage riêng. Old v1 restore thêm array rỗng khi thiếu, giữ hồ sơ runtime. Submit kiểm tra ownership, reason, tối thiểu 20 ký tự giải trình, 1–3 bằng chứng và truthful declaration. Pending/in_review cùng sự cố không được gửi trùng.
+- Bằng chứng là URL http/https hoặc nội dung tệp ảnh/PDF thực được đọc bằng FileReader, không chỉ tên tệp. Mỗi tệp tối đa 500 KB, tổng 1 MB trong demo; không upload server. Admin đối chiếu nội dung, không có xác thực bằng chứng tự động.
+- `/admin/appeals` dùng cùng entity ID, review action chỉ Admin, bắt buộc phản hồi/căn cứ. pending → in_review/accepted/rejected; kết quả lưu và phản ánh lại cho người gửi. Không tự xóa warnings hoặc unsuspend sau acceptance vì policy đó chưa được duyệt.
+- `loginForAppeal` xác thực credentials demo và lưu sessionStorage với appealOnly; ProtectedRoute chặn mọi product route và về `/appeals`. Standard login cho account suspended vẫn bị từ chối như trước. `/login`, Learner Dashboard và Tutor sidebar nối tới kháng cáo.
+- AdminSlideOver dùng shared useDialogFocus cho focus trap/ESC/return focus/body-scroll lock. Drawer đối soát xếp một cột vì container hẹp; tables cuộn trong vùng riêng, action buttons wrap giữ tap targets. Backend thay provider/adapter sau này; không thay UI bằng fixture import.

@@ -20,7 +20,8 @@ Chạy `npm run build` tại `apps/web` để build production.
 | Auth | Shared `/login`, `/register`, `/tutor/register` |
 | Learner | `/learner/search`, `/learner/dashboard`, `/learner/map`, `/tutors/:id`, `/requests`, `/requests/:id`, `/requests/new` |
 | Tutor | `/tutor/dashboard`, `/tutor/profile`, `/tutor/timetable`, `/tutor/income`, `/tutor/map`, `/tutor/find-students`, `/tutor/requests`, `/tutor/requests/:id` |
-| Admin | `/admin/dashboard` |
+| Admin | `/admin/dashboard`, `/admin/tutors`, `/admin/users`, `/admin/reviews`, `/admin/issues`, `/admin/appeals` |
+| Kháng cáo Learner/Tutor | `/appeals` |
 
 Demo: `minhanh`, `giabao`, `admin` / password `demo1234`. Product routes kiểm tra phiên và role demo; chưa đăng nhập sẽ tới shared Login và giữ internal redirect. `/tutor/availability` và `/tutor/lessons` là URL legacy redirect tới `/tutor/timetable`.
 
@@ -37,7 +38,8 @@ apps/web/src/
   features/auth/        mock auth, Login/Register, route guard, OTP
   features/learner/     Search, hồ sơ, Dashboard, map, requests
   features/tutor/       workspace, hồ sơ, lịch, tìm lớp/học viên, requests
-  features/admin/       dashboard vận hành
+  features/admin/       dashboard, quản lý tài khoản, moderation, báo cáo, kháng cáo
+  features/appeals/     gửi kháng cáo, bằng chứng và lịch sử của người dùng
   hooks/                storage và dialog focus
   styles/               tokens, reset, global, shared flows
 ```
@@ -48,6 +50,7 @@ apps/web/src/
 - [`PRODUCT_SPEC.md`](docs/planning/PRODUCT_SPEC.md): behavior đã chốt và backlog.
 - [`ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md): routes, source và mock persistence hiện tại.
 - [`SCREEN_INVENTORY.md`](docs/screens/SCREEN_INVENTORY.md): ID, MVP và trạng thái từng màn.
+- [`ADMIN_UI_REVIEW.md`](docs/quality/ADMIN_UI_REVIEW.md): đánh giá Admin/kháng cáo, lỗi đã sửa, kiểm thử và giới hạn production.
 - [`FIGMA_ANALYSIS.md`](docs/design/FIGMA_ANALYSIS.md): preserved evidence; Learner/Tutor không tự restore Figma cũ, Admin Figma vẫn là active structural reference cho phase Admin sau này. Policy chi tiết theo role tại AGENTS/DESIGN.
 - [`PROJECT_HISTORY.md`](docs/archive/PROJECT_HISTORY.md): archive không có hiệu lực implementation.
 
@@ -56,6 +59,8 @@ apps/web/src/
 ## Giới hạn hiện tại
 
 - Auth/OAuth/OTP, map và các trạng thái nghiệp vụ đều mô phỏng frontend; không có bảo mật hoặc matching server.
-- Auth dùng localStorage/sessionStorage theo Remember login. Shared Learner/Tutor domain dùng `tnm.demo.domain.v1`, private requests/saved tutors scope theo account ID; chưa đồng bộ giữa thiết bị. Admin chưa nối vào domain này.
+- Auth dùng localStorage/sessionStorage theo Remember login. Shared domain dùng `tnm.demo.domain.v1`, private requests/saved tutors scope theo account ID; Admin users/reviews/issues và appeals dùng cùng domain. Chưa đồng bộ giữa thiết bị.
 - Thu nhập Tutor và Dashboard derive từ completed Lessons theo ngày học, dùng sessionFee snapshot từ Request; không dùng giá profile hiện tại. historicalLessons chỉ seed vào cùng runtime Lessons, restore thêm ID còn thiếu mà giữ dữ liệu runtime. Backend Lesson adapter có thể thay provider sau này mà không rewrite UI. Chưa có thanh toán hay số dư thật; progress/reviews minh họa vẫn là demo.
 - Các màn chưa implement vẫn là backlog trong inventory. Không xem nhãn sidebar hoặc hình Figma là bằng chứng chức năng đã chạy.
+
+Kháng cáo: Learner Dashboard/Tutor sidebar hoặc link tại `/login` mở `/appeals`. Account bị khóa vẫn có phiên xác thực giới hạn để kháng cáo, không truy cập product routes. Nội dung/bằng chứng được xem xét thủ công qua `/admin/appeals`; demo không upload hoặc kiểm chứng bằng chứng trên server.

@@ -6,6 +6,12 @@ import TutorDashboard from './features/tutor/TutorDashboard.jsx';
 import TutorClassMap from './features/tutor/TutorClassMap.jsx';
 import TutorClassSearch from './features/tutor/TutorClassSearch.jsx';
 import AdminDashboard from './features/admin/AdminDashboard.jsx';
+import AdminTutorsPage from './features/admin/AdminTutorsPage.jsx';
+import AdminUsersPage from './features/admin/AdminUsersPage.jsx';
+import AdminReviewsPage from './features/admin/AdminReviewsPage.jsx';
+import AdminIssuesPage from './features/admin/AdminIssuesPage.jsx';
+import AdminAppealsPage from './features/admin/AdminAppealsPage.jsx';
+import UserAppealsPage from './features/appeals/UserAppealsPage.jsx';
 import HomePage from './features/public/HomePage.jsx';
 import LearnerLanding from './features/public/LearnerLanding.jsx';
 import TutorLanding from './features/public/TutorLanding.jsx';
@@ -36,6 +42,12 @@ export default function App() {
     <Route path="/requests/new" element={<Protected role="learner"><NewRequest /></Protected>} /><Route path="/requests" element={<Protected role="learner"><MyRequests /></Protected>} /><Route path="/requests/:id" element={<Protected role="learner"><RequestDetail /></Protected>} />
     <Route path="/tutor/dashboard" element={<Protected role="tutor"><TutorDashboard /></Protected>} /><Route path="/tutor/profile" element={<Protected role="tutor"><TutorProfile /></Protected>} /><Route path="/tutor/availability" element={<Protected role="tutor"><Navigate to="/tutor/timetable" replace /></Protected>} /><Route path="/tutor/requests" element={<Protected role="tutor"><TutorRequests /></Protected>} /><Route path="/tutor/requests/:id" element={<Protected role="tutor"><TutorRequestDetail /></Protected>} /><Route path="/tutor/lessons" element={<Protected role="tutor"><Navigate to="/tutor/timetable" replace /></Protected>} />
     <Route path="/admin/dashboard" element={<Protected role="admin"><AdminDashboard /></Protected>} />
+    <Route path="/admin/tutors" element={<Protected role="admin"><AdminTutorsPage /></Protected>} />
+    <Route path="/admin/users" element={<Protected role="admin"><AdminUsersPage /></Protected>} />
+    <Route path="/admin/reviews" element={<Protected role="admin"><AdminReviewsPage /></Protected>} />
+    <Route path="/admin/issues" element={<Protected role="admin"><AdminIssuesPage /></Protected>} />
+    <Route path="/admin/appeals" element={<Protected role="admin"><AdminAppealsPage /></Protected>} />
+    <Route path="/appeals" element={<UserAppealsPage />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes></TutorWorkspaceProvider>;
 }

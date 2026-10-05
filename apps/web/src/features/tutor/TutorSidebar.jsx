@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardList, LayoutDashboard, UserRound, Users, Wallet, Star, MessageSquare, Settings, X } from 'lucide-react';
+import { CalendarDays, ClipboardList, LayoutDashboard, UserRound, Users, Wallet, Star, MessageSquare, Settings, Scale, X } from 'lucide-react';
 import SidebarItem from '../../components/SidebarItem.jsx';
 
 const navigation = [
@@ -8,6 +8,7 @@ const navigation = [
   { label: 'Tìm học viên mới', icon: Users, to: '/tutor/find-students' },
   { label: 'Thu nhập', icon: Wallet, to: '/tutor/income' },
   { label: 'Hồ sơ gia sư', icon: UserRound, to: '/tutor/profile' },
+  { label: 'Kháng cáo', icon: Scale, to: '/appeals' },
   { label: 'Đánh giá', icon: Star },
   { label: 'Tin nhắn', icon: MessageSquare },
   { label: 'Cài đặt', icon: Settings },

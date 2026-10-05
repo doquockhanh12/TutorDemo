@@ -34,6 +34,9 @@ function IncomeChart({ months, selectedKey, onSelect }) {
         <text x="48" y={209 - step * 155} textAnchor="end">{new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(max * step)}</text>
       </g>)}
       <polyline points={points.map((point) => `${point.x},${point.y}`).join(' ')} className="income-chart__line"/>
+      {points.map((point) => (
+        <text key={`label-${point.key}`} x={point.x} y="235" textAnchor="middle">{monthLabel(point.key)}</text>
+      ))}
       {points.map((point) => {
         const state = tone(point.total);
         const selected = point.key === selectedKey;
@@ -51,7 +54,6 @@ function IncomeChart({ months, selectedKey, onSelect }) {
           <circle cx={point.x} cy={point.y} r="16" className="income-chart__hit"/>
           <circle cx={point.x} cy={point.y} r="10" className="income-chart__selection"/>
           <circle cx={point.x} cy={point.y} r="6" className="income-chart__point" data-tone={state}/>
-          <text x={point.x} y="235" textAnchor="middle">{monthLabel(point.key)}</text>
         </g>;
       })}
     </svg>

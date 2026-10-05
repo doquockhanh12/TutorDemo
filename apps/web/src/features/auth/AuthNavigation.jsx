@@ -15,6 +15,7 @@ export function ProtectedRoute({ children, role }) {
     const target = `${location.pathname}${location.search}${location.hash}`;
     return <Navigate to={authPath('/login', target)} replace state={{ from: target }} />;
   }
+  if (user.appealOnly) return <Navigate to="/appeals" replace />;
   if (role && user.role !== role) return <Navigate to={defaultDestination(user.role)} replace />;
   return children;
 }

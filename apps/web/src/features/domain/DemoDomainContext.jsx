@@ -1,8 +1,25 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import useDemoAuth from '../auth/DemoAuthContext.jsx';
-import { DOMAIN_STORAGE_KEY, restoreDemoState, requestIsCompleted, decideRequest, updateLearnerRequest, completeDomainLesson, addLearnerRequest } from './demoDomain.js';
+import {
+  DOMAIN_STORAGE_KEY,
+  restoreDemoState,
+  requestIsCompleted,
+  decideRequest,
+  updateLearnerRequest,
+  completeDomainLesson,
+  addLearnerRequest,
+  approveTutor,
+  rejectTutor,
+  setTutorSuspension,
+  setUserSuspension,
+  moderateReview,
+  updateIssueStatus,
+  warnUserIssue,
+  dismissIssue,
+} from './demoDomain.js';
 import { normalizeRanges, normalizeSessionMinutes, isValidAvailability, overlaps } from '../../data/tutorSchedule.js';
 import { selectTutorIncome } from './incomeSelectors.js';
+import { submitAppeal, reviewAppeal } from './appeals.js';
 
 const Context = createContext(null);
 export function DemoDomainProvider({ children }) {
@@ -61,7 +78,75 @@ export function DemoDomainProvider({ children }) {
   };
   const completeLesson = (id) => setState((current) => completeDomainLesson(current, tutorId, id));
   const saveLessonNotes = (id, notes) => setState((current) => ({ ...current, lessons: current.lessons.map((l) => l.id === id && l.tutorId === tutorId ? { ...l, notes } : l) }));
-  return <Context.Provider value={{ ...state, tutorId, sessionMinutes: normalizeSessionMinutes(state.settings[tutorId]?.sessionMinutes ?? user?.duration), anonymousSaved, createRequest, decide, updateLearnerRequests, setSaved, saveAvailability, setSessionMinutes, saveTutorProfile, completeLesson, saveLessonNotes }}>{children}</Context.Provider>;
+
+  // Admin Domain Actions
+  const approveTutorAction = (targetTutorId) => setState((current) => approveTutor(current, targetTutorId));
+  const rejectTutorAction = (targetTutorId, reason) => setState((current) => rejectTutor(current, targetTutorId, reason));
+  const setTutorSuspensionAction = (targetTutorId, isSuspended) => setState((current) => setTutorSuspension(current, targetTutorId, isSuspended));
+  const toggleSuspendTutor = (targetTutorId) => setState((current) => {
+    const tutor = (current.profiles || []).find((p) => p.id === targetTutorId);
+    const isCurrentlySuspended = tutor?.moderationStatus === 'suspended' || tutor?.status === 'suspended';
+    return setTutorSuspension(current, targetTutorId, !isCurrentlySuspended);
+  });
+  const setUserSuspensionAction = (userId, isSuspended) => setState((current) => setUserSuspension(current, userId, isSuspended));
+  const toggleSuspendUser = (userId) => setState((current) => {
+    const targetUser = (current.users || []).find((u) => u.id === userId);
+    const isCurrentlySuspended = targetUser?.status === 'suspended';
+    return setUserSuspension(current, userId, !isCurrentlySuspended);
+  });
+  const moderateReviewAction = (reviewId, decision) => setState((current) => moderateReview(current, reviewId, decision));
+  const approveReview = (reviewId) => setState((current) => moderateReview(current, reviewId, 'approved'));
+  const hideReview = (reviewId) => setState((current) => moderateReview(current, reviewId, 'hidden'));
+  const updateIssueStatusAction = (issueId, status, resolutionNote) => setState((current) => updateIssueStatus(current, issueId, status, resolutionNote));
+  const warnUserIssueAction = (issueId, warningReason) => setState((current) => warnUserIssue(current, issueId, warningReason));
+  const dismissIssueAction = (issueId, rejectionReason) => setState((current) => dismissIssue(current, issueId, rejectionReason));
+  const createAppeal = (values) => {
+    const result = submitAppeal(state, user, values);
+    if (result.state) setState(result.state);
+    return result;
+  };
+  const decideAppeal = (id, status, note) => {
+    const result = reviewAppeal(state, user, id, status, note);
+    if (result.state) setState(result.state);
+    return result;
+  };
+
+  return (
+    <Context.Provider
+      value={{
+        ...state,
+        tutorId,
+        sessionMinutes: normalizeSessionMinutes(state.settings[tutorId]?.sessionMinutes ?? user?.duration),
+        anonymousSaved,
+        createRequest,
+        decide,
+        updateLearnerRequests,
+        setSaved,
+        saveAvailability,
+        setSessionMinutes,
+        saveTutorProfile,
+        completeLesson,
+        saveLessonNotes,
+        // Admin Domain Actions
+        approveTutor: approveTutorAction,
+        rejectTutor: rejectTutorAction,
+        setTutorSuspension: setTutorSuspensionAction,
+        toggleSuspendTutor,
+        setUserSuspension: setUserSuspensionAction,
+        toggleSuspendUser,
+        moderateReview: moderateReviewAction,
+        approveReview,
+        hideReview,
+        updateIssueStatus: updateIssueStatusAction,
+        warnUserIssue: warnUserIssueAction,
+        dismissIssue: dismissIssueAction,
+        createAppeal,
+        decideAppeal,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
 }
 export default function useDemoDomain() { const value = useContext(Context); if (!value) throw new Error('DemoDomainProvider missing'); return value; }
 export function useTutorIncome(referenceDate = new Date()) {
