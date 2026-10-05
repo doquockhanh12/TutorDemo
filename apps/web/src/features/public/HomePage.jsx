@@ -1,44 +1,449 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, BadgeCheck, BookOpen, GraduationCap, MapPin, Search, ShieldCheck, Sparkles, Star } from 'lucide-react';
-import { PublicDialog, PublicFooter, PublicHeader, SectionHead } from './PublicChrome.jsx';
-import { DemoLink, MapPreview, PublicTutorCard } from './PublicPieces.jsx';
-import { photo, publicTutors } from '../../data/public.js';
-import { useSavedTutors } from '../domain/DemoDomainContext.jsx';
-
-const needs = [
-  ['THCS · THPT', 'Mất gốc & củng cố nền tảng', 'Học theo nhịp độ riêng, tập trung vào phần kiến thức còn yếu.', photo.maths, 'blue'],
-  ['ÔN THI', 'Luyện thi vào 10 & THPT', 'Ôn trọng tâm, giải đề và theo dõi tiến độ từng giai đoạn.', photo.exam, 'red'],
-  ['NGOẠI NGỮ', 'Tiếng Anh & IELTS', 'Luyện kỹ năng, phản xạ và chuẩn bị kỳ thi quốc tế.', photo.english, 'yellow'],
-];
+import { Link } from 'react-router-dom';
+import {
+  ArrowRight,
+  Award,
+  CalendarDays,
+  Check,
+  CheckCircle2,
+  GraduationCap,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Users,
+} from 'lucide-react';
+import { PublicFooter, PublicHeader, SectionHead } from './PublicChrome.jsx';
+import { photo } from '../../data/public.js';
 
 export default function HomePage() {
-  const navigate = useNavigate();
-  const [level, setLevel] = useState('THCS · Lớp 6–9');
-  const [goal, setGoal] = useState('Củng cố kiến thức');
-  const [district, setDistrict] = useState('Bình Thạnh');
-  const [saved, setSaved] = useSavedTutors();
-  const [dialog, setDialog] = useState(null);
+  const [consultName, setConsultName] = useState('');
+  const [consultPhone, setConsultPhone] = useState('');
+  const [consultRole, setConsultRole] = useState('learner');
+  const [consultTopic, setConsultTopic] = useState('find_tutor');
+  const [consultNote, setConsultNote] = useState('');
   const [consulted, setConsulted] = useState(false);
-  const openInfo = (title, text) => setDialog({ title, text });
-  const toggleSave = (id) => setSaved((ids) => ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id]);
-  const goSearch = () => navigate(`/learner/search?district=${encodeURIComponent(district)}`);
-  return <div className="public-page public-page--home">
-    <PublicHeader onInfo={openInfo}/>
-    <main>
-      <section className="public-hero public-hero--home"><div className="public-wrap public-hero__grid"><div className="public-hero__copy"><span className="public-hero__eyebrow">HỌC ĐÚNG NGƯỜI · HỌC ĐÚNG CÁCH</span><h1>Tìm đúng gia sư.<br/>Học đúng cách.<br/>Tiến bộ rõ ràng.</h1><p>Chọn gia sư theo môn học, khu vực, lịch rảnh và ngân sách. Xem hồ sơ rõ ràng trước khi kết nối.</p><div className="public-hero__actions"><a className="public-btn public-btn--yellow" href="#finder">Tìm gia sư ngay <ArrowRight size={18}/></a><button className="public-btn public-btn--outline" onClick={() => document.getElementById('consult')?.scrollIntoView({ behavior: 'smooth' })}>Nhận tư vấn miễn phí</button></div><div className="public-hero__proof"><span><strong>1.200+</strong> hồ sơ minh họa</span><span><strong>4.9/5</strong> điểm đánh giá demo</span><span><strong>20+</strong> môn học</span></div></div><div className="public-hero__visual"><img className="public-hero__photo-main" src={photo.homeHero} alt="Gia sư đang hướng dẫn học viên"/><img className="public-hero__photo-side" src={photo.learnerHero} alt="Nhóm học viên học tập"/><span className="public-float public-float--rating"><Star size={20} fill="currentColor"/> <b>4.9</b><small>đánh giá nổi bật</small></span><span className="public-float public-float--location"><MapPin size={18}/><b>1.8 km</b><small>gia sư gần bạn</small></span></div></div></section>
-      <div className="public-wrap public-shortcuts"><a href="#finder"><Search/> <span><strong>Tìm gia sư</strong><small>Theo môn, khu vực, lịch</small></span><ArrowRight size={17}/></a><a href="#map-section"><MapPin/><span><strong>Gia sư gần bạn</strong><small>Xem theo khu vực</small></span><ArrowRight size={17}/></a><a href="#offers"><Sparkles/><span><strong>Ưu đãi học viên</strong><small>Khám phá chương trình demo</small></span><ArrowRight size={17}/></a><a href="#stories"><BookOpen/><span><strong>Góc học tập</strong><small>Mẹo học và tài liệu</small></span><ArrowRight size={17}/></a></div>
-      <section className="public-section public-finder" id="finder"><div className="public-wrap"><div className="public-finder__intro"><div><span className="public-kicker">TÌM NHANH THEO NHU CẦU</span><h2>Tìm gia sư <em>đúng nhu cầu</em></h2><p>Chọn trình độ, mục tiêu và khu vực để bắt đầu với nhóm gia sư phù hợp.</p></div><span className="public-finder__note">Tìm nhanh trong 30 giây<br/><small>Chọn vài thông tin — TutorNearMe lo phần còn lại.</small></span></div><div className="public-finder__fields"><label>Bạn đang học<select value={level} onChange={(e) => setLevel(e.target.value)}><option>THCS · Lớp 6–9</option><option>THPT · Lớp 10–12</option><option>Đại học</option><option>Người đi làm</option></select></label><label>Mục tiêu<select value={goal} onChange={(e) => setGoal(e.target.value)}><option>Củng cố kiến thức</option><option>Luyện thi</option><option>Mất gốc</option><option>Nâng cao</option></select></label><label>Khu vực<select value={district} onChange={(e) => setDistrict(e.target.value)}><option>Bình Thạnh</option><option>Thủ Đức</option><option>Quận 3</option><option>Phú Nhuận</option></select></label><button className="public-btn public-btn--red" onClick={goSearch}>Khám phá gia sư <ArrowRight size={18}/></button></div><p className="public-finder__hint">Gợi ý: {level} · {goal} · {district}</p></div></section>
-      <section className="public-section public-needs" id="needs"><div className="public-wrap"><SectionHead kicker="GIA SƯ CHO MỌI MỤC TIÊU" title="Mỗi mục tiêu, một cách học phù hợp." text="Bắt đầu từ vấn đề thực tế: mất gốc, luyện thi, ngoại ngữ hoặc học nâng cao."/><div className="public-needs__grid">{needs.map(([tag,title,description,img,tone]) => <Link to="/learner/search" className={`public-need-card public-need-card--${tone}`} key={title}><img src={img} alt="" loading="lazy"/><div><span>{tag}</span><h3>{title}</h3><p>{description}</p><b>Tìm gia sư phù hợp <ArrowRight size={16}/></b></div></Link>)}</div></div></section>
-      <section className="public-section public-featured" id="tutors"><div className="public-wrap"><div className="public-featured__head"><SectionHead kicker="GIA SƯ TIÊU BIỂU" title="Hồ sơ rõ ràng. Chọn gia sư tự tin hơn." text="Dữ liệu dưới đây là nội dung minh họa cho prototype giao diện."/><DemoLink to="/learner/search" className="public-btn--outline-blue">Xem tất cả</DemoLink></div><div className="public-featured__grid">{publicTutors.slice(0,3).map((tutor,i) => <PublicTutorCard key={tutor.id} tutor={tutor} to={`/tutors/${tutor.id}`} featured={i === 0} saved={saved.includes(tutor.id)} onSave={toggleSave} onOpen={(item) => openInfo(item.name, `${item.bio} Mở màn tìm kiếm để xem thêm thông tin và gửi yêu cầu học demo.`)}/>)}</div></div></section>
-      <section className="public-section public-community"><div className="public-wrap public-community__grid"><div><SectionHead kicker="CỘNG ĐỒNG HỌC TẬP" title="Mỗi buổi học tốt là một bước tiến." text="TutorNearMe tập trung vào trải nghiệm học thật: đúng mục tiêu, đúng nhịp độ và đúng người đồng hành." light/><div className="public-community__numbers"><span><strong>15.000+</strong> buổi học minh họa</span><span><strong>20+</strong> môn học</span><span><strong>5 km</strong> phạm vi ví dụ</span></div></div><div className="public-community__image"><img src={photo.community} alt="Nhóm học viên trong môi trường học tập"/><span>“Củng cố kiến thức trước kỳ thi”</span></div></div></section>
-      <section className="public-section public-map-section" id="map-section"><div className="public-wrap public-map-section__grid"><div><SectionHead kicker="TUTORNEARME MAP" title="Tìm gia sư giỏi ngay gần bạn." text="Vị trí chỉ biểu diễn ở mức khu vực để hỗ trợ so sánh, không hiển thị địa chỉ nhà chính xác."/><ol><li><b>01</b><span><strong>Khoảng cách</strong><small>Ưu tiên lựa chọn thuận tiện.</small></span></li><li><b>02</b><span><strong>Hình thức</strong><small>Tại nhà, online hoặc kết hợp.</small></span></li><li><b>03</b><span><strong>Lịch rảnh</strong><small>So sánh trước khi gửi yêu cầu.</small></span></li></ol><DemoLink to="/learner/search" className="public-btn--blue">Xem gia sư gần tôi</DemoLink></div><MapPreview tutors={publicTutors} onOpen={(item) => openInfo(item.name, `${item.subject} · ${item.area}. Đây là khu vực minh họa của hồ sơ demo.`)}/></div></section>
-      <section className="public-section public-consult" id="consult"><div className="public-wrap public-consult__grid"><div className="public-consult__photo"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1100&q=82" alt="Phụ huynh và học viên trao đổi kế hoạch học tập"/><span>Chưa biết chọn gia sư thế nào?<br/>Bắt đầu bằng nhu cầu của bạn.</span></div><form className="public-consult__form" onSubmit={(e) => { e.preventDefault(); setConsulted(true); }}><span className="public-kicker">NHẬN TƯ VẤN TÌM GIA SƯ</span><h2>Chia sẻ nhu cầu. Nhận gợi ý phù hợp.</h2><p>Form này chỉ minh họa giao diện, không gửi dữ liệu thật.</p><div><label>Họ và tên<input required placeholder="Tên của bạn"/></label><label>Số điện thoại<input required inputMode="tel" placeholder="Số điện thoại demo"/></label><label>Môn học<select><option>Toán</option><option>Tiếng Anh</option><option>Vật lý</option></select></label><label>Khu vực<select><option>Bình Thạnh</option><option>Thủ Đức</option><option>Quận 3</option></select></label></div><label>Nhu cầu học tập<textarea rows="3" placeholder="Mục tiêu, lịch học phù hợp..."/></label><button className="public-btn public-btn--blue" type="submit">Nhận gợi ý phù hợp <ArrowRight size={17}/></button>{consulted && <p role="status" className="public-form-success">Đã ghi nhận thông tin trong giao diện demo.</p>}</form></div></section>
-      <section className="public-section public-offer" id="offers"><div className="public-wrap public-offer__grid"><div><span className="public-kicker">ƯU ĐÃI DEMO · HỌC VIÊN MỚI</span><h2>Buổi đầu nhẹ nhàng hơn.<br/>Khởi đầu tự tin hơn.</h2><p>Minh họa chương trình giảm 20% cho buổi học đầu tiên khi kết nối qua TutorNearMe.</p><button className="public-btn public-btn--yellow" onClick={() => openInfo('Ưu đãi minh họa', 'Đây là nội dung demo để thể hiện giao diện, chưa phải chương trình khuyến mãi thật.')}>Khám phá ưu đãi <ArrowRight size={17}/></button><small>* Nội dung khuyến mãi là dữ liệu demo.</small></div><strong className="public-offer__number">20<span>%</span></strong></div></section>
-      <section className="public-section public-steps"><div className="public-wrap"><SectionHead kicker="3 BƯỚC ĐỂ BẮT ĐẦU" title="Từ nhu cầu đến buổi học đầu tiên." text="Quy trình rõ ràng giúp phụ huynh, học viên và gia sư phối hợp dễ hơn."/><div className="public-steps__grid">{[['01','Tìm','Chọn môn học, khu vực, lịch, hình thức và ngân sách.'],['02','Kết nối','Xem hồ sơ, đánh giá, lịch trống và gửi yêu cầu.'],['03','Bắt đầu học','Thống nhất lịch học và bắt đầu buổi đầu tiên.']].map(([n,t,d]) => <div key={n}><b>{n}</b><h3>{t}</h3><p>{d}</p></div>)}</div></div></section>
-      <section className="public-section public-stories" id="stories"><div className="public-wrap"><SectionHead kicker="GÓC HỌC TẬP" title="Mẹo học dễ áp dụng mỗi ngày."/><div className="public-stories__grid"><article><img src={photo.story} alt="Học sinh đang học" loading="lazy"/><span>PHƯƠNG PHÁP HỌC</span><h3>5 câu hỏi nên đặt ra trước khi chọn một gia sư.</h3><p>Đừng chỉ nhìn học phí. Hãy xem mục tiêu, cách dạy, lịch và mức độ phù hợp.</p></article><article><span>ÔN THI</span><h3>Cách chia lộ trình 8 tuần trước kỳ thi.</h3><p>Một kế hoạch vừa sức sẽ giúp việc học đều đặn hơn.</p></article><article><span>NGOẠI NGỮ</span><h3>Học 1-1 khác gì lớp nhóm?</h3><p>Hiểu cách học nào phù hợp với mục tiêu hiện tại.</p></article></div></div></section>
-      <section className="public-section public-become"><div className="public-wrap public-become__grid"><div><span className="public-kicker">DÀNH CHO GIA SƯ</span><h2>Bạn giỏi một môn học?<br/>Có người đang cần bạn.</h2><p>Xây hồ sơ chuyên môn, chủ động lịch dạy và kết nối học viên phù hợp trong khu vực.</p><DemoLink to="/tutor" className="public-btn--yellow">Trở thành gia sư</DemoLink></div><div className="public-become__icon"><GraduationCap size={98} strokeWidth={1.2}/><span>Chủ động lịch dạy<br/>Kết nối học viên gần bạn</span></div></div></section>
-      <section className="public-final"><div className="public-wrap"><span>BẮT ĐẦU NGAY HÔM NAY</span><h2>Sẵn sàng tìm gia sư phù hợp?</h2><DemoLink to="/learner/search" className="public-btn--yellow">Tìm gia sư ngay</DemoLink></div></section>
-    </main><PublicFooter/>{dialog && <PublicDialog {...dialog} onClose={() => setDialog(null)}/>}
-  </div>;
+
+  const handleConsultSubmit = (e) => {
+    e.preventDefault();
+    setConsulted(true);
+  };
+
+  const scrollToPortal = () => {
+    document.getElementById('portal')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="public-page public-page--home">
+      <PublicHeader kind="home" />
+
+      <main>
+        {/* SECTION 1: HERO NỀN TẢNG TỔNG QUAN */}
+        <section className="public-hero public-hero--home">
+          <div className="public-wrap public-hero__grid">
+            <div className="public-hero__copy">
+              <span className="public-hero__eyebrow">
+                HỌC ĐÚNG NGƯỜI · HỌC ĐÚNG CÁCH
+              </span>
+              <h1>
+                Tìm đúng gia sư.
+                <br />
+                Học đúng cách.
+                <br />
+                Tiến bộ rõ ràng.
+              </h1>
+              <p>
+                Chọn gia sư theo môn học, khu vực, lịch rảnh và ngân sách. Xem hồ sơ rõ ràng trước khi kết nối.
+              </p>
+              <div className="public-hero__actions">
+                <button
+                  type="button"
+                  className="public-btn public-btn--yellow"
+                  onClick={scrollToPortal}
+                >
+                  Bắt đầu ngay <ArrowRight size={18} />
+                </button>
+                <Link to="/register" className="public-btn public-btn--outline">
+                  Đăng ký thành viên
+                </Link>
+              </div>
+              <div className="public-hero__proof">
+                <span>
+                  <strong>1.200+</strong> hồ sơ đã xác thực
+                </span>
+                <span>
+                  <strong>15.000+</strong> buổi học kết nối
+                </span>
+                <span>
+                  <strong>100%</strong> bảo vệ quyền lợi
+                </span>
+              </div>
+            </div>
+
+            <div className="public-hero__visual">
+              <img
+                className="public-hero__photo-main"
+                src={photo.homeHero}
+                alt="Gia sư và học viên đồng hành học tập"
+              />
+              <img
+                className="public-hero__photo-side"
+                src={photo.learnerHero}
+                alt="Không gian học tập tích cực"
+              />
+              <span className="public-float public-float--rating">
+                <Star size={20} fill="currentColor" /> <b>4.9/5</b>
+                <small>đánh giá chất lượng</small>
+              </span>
+              <span className="public-float public-float--location">
+                <ShieldCheck size={18} />
+                <b>Xác thực 100%</b>
+                <small>kiểm duyệt hồ sơ</small>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 2: KHỐI CHIA ĐÔI MÀN HÌNH (DUAL CHOICE SPLIT PORTAL) */}
+        <section className="public-portal-split" id="portal">
+          <div className="public-wrap">
+            <SectionHead
+              kicker="LỰA CHỌN KHÔNG GIAN CỦA BẠN"
+              title="Bạn tham gia TutorNearMe với vai trò nào?"
+              text="Chọn đúng cổng trải nghiệm để tiếp cận tính năng và tiện ích được thiết kế chuyên biệt cho nhu cầu của bạn."
+            />
+
+            <div className="public-portal-split__grid">
+              {/* NỬA TRÁI: DÀNH CHO NGƯỜI HỌC & PHỤ HUYNH */}
+              <div className="public-portal-card public-portal-card--learner">
+                <span className="public-portal-card__badge">DÀNH CHO NGƯỜI HỌC & PHỤ HUYNH</span>
+                <h3>Bạn đang tìm gia sư chất lượng cao?</h3>
+                <p className="public-portal-card__desc">
+                  Tiếp cận mạng lưới sinh viên và gia sư giỏi, so sánh hồ sơ minh bạch trước khi kết nối
+                  và nhận ưu đãi cho buổi học đầu tiên.
+                </p>
+                <img
+                  className="public-portal-card__image"
+                  src={photo.learnerHero}
+                  alt="Người học tìm kiếm gia sư"
+                />
+                <ul className="public-portal-card__bullets">
+                  <li>
+                    <Check size={18} />
+                    <span>Duyệt hồ sơ gia sư đã xác minh bằng cấp, chứng chỉ và trường đại học.</span>
+                  </li>
+                  <li>
+                    <Check size={18} />
+                    <span>Bộ lọc chuyên sâu theo môn học, khu vực gần bạn và mức học phí mong muốn.</span>
+                  </li>
+                  <li>
+                    <Check size={18} />
+                    <span>Trải nghiệm học thử buổi đầu, theo dõi lịch và tiến độ từng buổi học minh bạch.</span>
+                  </li>
+                </ul>
+                <div className="public-portal-card__actions">
+                  <Link to="/learner" className="public-btn public-btn--blue">
+                    Khám phá Cổng Người học <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* NỬA PHẢI: DÀNH CHO GIA SƯ & NGƯỜI DẠY KÈM */}
+              <div className="public-portal-card public-portal-card--tutor">
+                <span className="public-portal-card__badge">DÀNH CHO GIA SƯ & NGƯỜI DẠY KÈM</span>
+                <h3>Bạn muốn kết nối lớp dạy phù hợp?</h3>
+                <p className="public-portal-card__desc">
+                  Biến kiến thức chuyên môn thành thu nhập xứng đáng với sự chủ động tối đa về lịch rảnh,
+                  địa điểm dạy và mức thù lao.
+                </p>
+                <img
+                  className="public-portal-card__image"
+                  src={photo.tutorHero}
+                  alt="Gia sư nhận lớp dạy kèm"
+                />
+                <ul className="public-portal-card__bullets">
+                  <li>
+                    <Check size={18} />
+                    <span>Chủ động chọn lớp học theo khu vực địa lý thuận tiện và khung thời gian rảnh.</span>
+                  </li>
+                  <li>
+                    <Check size={18} />
+                    <span>Tự do đề xuất học phí phù hợp với năng lực chuyên môn và thâm niên giảng dạy.</span>
+                  </li>
+                  <li>
+                    <Check size={18} />
+                    <span>Đảm bảo thù lao minh bạch, có hệ thống hỗ trợ giải quyết tranh chấp công bằng.</span>
+                  </li>
+                </ul>
+                <div className="public-portal-card__actions">
+                  <Link to="/tutor" className="public-btn public-btn--red">
+                    Khám phá Cổng Gia sư <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3: 4 NĂNG LỰC NỀN TẢNG CỐT LÕI */}
+        <section className="public-features" id="features">
+          <div className="public-wrap">
+            <SectionHead
+              kicker="GIÁ TRỊ CỐT LÕI CỦA TUTORNEARME"
+              title="Nền tảng kết nối dựa trên sự minh bạch & tin cậy."
+              text="Chúng tôi xây dựng các giải pháp toàn diện giúp việc dạy và học trở nên thuận tiện, an toàn và đạt hiệu quả tối ưu."
+            />
+
+            <div className="public-features__grid">
+              <div className="public-feature-card">
+                <div className="public-feature-card__icon">
+                  <ShieldCheck size={26} />
+                </div>
+                <h3>Xác thực hồ sơ đa tầng</h3>
+                <p>
+                  Kiểm duyệt thẻ sinh viên, văn bằng chứng chỉ và thông tin cá nhân kỹ lưỡng trước khi
+                  công khai trên hệ thống.
+                </p>
+              </div>
+
+              <div className="public-feature-card">
+                <div className="public-feature-card__icon">
+                  <CalendarDays size={26} />
+                </div>
+                <h3>Quản lý lịch học thông minh</h3>
+                <p>
+                  Khớp nối khung giờ rảnh tự động, linh hoạt thỏa thuận dời lịch khi bận và nhắc nhở
+                  lịch học trước giờ hẹn.
+                </p>
+              </div>
+
+              <div className="public-feature-card">
+                <div className="public-feature-card__icon">
+                  <Award size={26} />
+                </div>
+                <h3>Bảo vệ quyền lợi 2 chiều</h3>
+                <p>
+                  Chính sách đối soát minh bạch, cơ chế giải quyết sự cố công bằng với quy tắc cảnh cáo
+                  và bảo vệ tài khoản nghiêm minh.
+                </p>
+              </div>
+
+              <div className="public-feature-card">
+                <div className="public-feature-card__icon">
+                  <CheckCircle2 size={26} />
+                </div>
+                <h3>Theo dõi tiến độ & Học phí</h3>
+                <p>
+                  Rõ ràng mức phí từng buổi học, không phát sinh phụ phí ẩn, lưu trữ lịch sử học tập
+                  và ghi nhận phản hồi đa chiều.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 4: KHỞI ĐẦU DỄ DÀNG & ĐẶC QUYỀN KHI ĐĂNG KÝ (ĐÃ GỘP) */}
+        <section className="public-benefits" id="benefits">
+          <div className="public-wrap">
+            <SectionHead
+              kicker="QUYỀN LỢI THÀNH VIÊN"
+              title="Khởi đầu dễ dàng. Đặc quyền trọn vẹn khi có tài khoản."
+              text="Quy trình 3 bước tinh gọn giúp bạn tiếp cận dịch vụ dạy & học ngay lập tức cùng những ưu đãi độc quyền dành cho thành viên."
+            />
+
+            <div className="public-benefits__grid">
+              {/* CỘT TRÁI: 3 BƯỚC QUY TRÌNH */}
+              <div className="public-benefits__steps">
+                <div className="public-benefit-step">
+                  <b>01</b>
+                  <div>
+                    <h4>Đăng ký tài khoản miễn phí</h4>
+                    <p>
+                      Chỉ mất 1 phút tạo tài khoản bằng email hoặc số điện thoại để mở khóa toàn bộ quyền
+                      lợi trên nền tảng.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="public-benefit-step">
+                  <b>02</b>
+                  <div>
+                    <h4>Chọn cổng vai trò & Kết nối</h4>
+                    <p>
+                      Truy cập Cổng Người học để tìm kiếm gia sư đúng nhu cầu, hoặc Cổng Gia sư để thiết lập
+                      hồ sơ nhận lớp.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="public-benefit-step">
+                  <b>03</b>
+                  <div>
+                    <h4>Bắt đầu buổi học an tâm</h4>
+                    <p>
+                      Thống nhất lịch học, trao đổi trực tiếp và được bảo đảm an toàn thù lao xuyên suốt
+                      toàn bộ quá trình học tập.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* CỘT PHẢI: CARD ĐẶC QUYỀN */}
+              <div className="public-benefits__card">
+                <span className="public-kicker" style={{ color: '#ffde59' }}>
+                  ĐẶC QUYỀN THÀNH VIÊN
+                </span>
+                <h3>Tạo tài khoản hôm nay, nhận trọn ưu đãi</h3>
+                <p>
+                  Trải nghiệm đầy đủ tính năng tương tác chuyên sâu mà khách vãng lai không có được:
+                </p>
+
+                <ul className="public-benefits__list">
+                  <li>
+                    <Sparkles size={18} />
+                    <span>Ưu đãi giảm 20% học phí buổi học đầu tiên</span>
+                  </li>
+                  <li>
+                    <Sparkles size={18} />
+                    <span>Lưu không giới hạn hồ sơ & cơ hội yêu thích</span>
+                  </li>
+                  <li>
+                    <Sparkles size={18} />
+                    <span>Nhắn tin trao đổi bảo mật trước khi chốt lịch</span>
+                  </li>
+                  <li>
+                    <Sparkles size={18} />
+                    <span>Hỗ trợ khiếu nại & đối soát sự cố 24/7 từ Admin</span>
+                  </li>
+                </ul>
+
+                <Link to="/register" className="public-btn public-btn--yellow">
+                  Đăng ký tài khoản miễn phí <ArrowRight size={18} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 5: TƯ VẤN ĐỊNH HƯỚNG NỀN TẢNG */}
+        <section className="public-section public-consult" id="consult">
+          <div className="public-wrap public-consult__grid">
+            <div className="public-consult__photo">
+              <img
+                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1100&q=82"
+                alt="Đội ngũ cố vấn trao đổi định hướng"
+              />
+              <span>
+                Cần hỗ trợ định hướng?
+                <br />
+                Đội ngũ TutorNearMe sẵn sàng đồng hành.
+              </span>
+            </div>
+
+            <form className="public-consult__form" onSubmit={handleConsultSubmit}>
+              <span className="public-kicker">TƯ VẤN ĐỊNH HƯỚNG NỀN TẢNG</span>
+              <h2>Chia sẻ nhu cầu. Nhận hỗ trợ từ chuyên viên.</h2>
+              <p>
+                Dành cho cả phụ huynh, học sinh và gia sư cần tư vấn phương pháp, lộ trình hoặc cách sử
+                dụng nền tảng.
+              </p>
+
+              <div>
+                <label>
+                  Họ và tên <span style={{ color: '#e11d48' }}>*</span>
+                  <input
+                    required
+                    placeholder="Tên của bạn"
+                    value={consultName}
+                    onChange={(e) => setConsultName(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Số điện thoại <span style={{ color: '#e11d48' }}>*</span>
+                  <input
+                    required
+                    inputMode="tel"
+                    placeholder="Số điện thoại liên hệ"
+                    value={consultPhone}
+                    onChange={(e) => setConsultPhone(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label>
+                  Bạn là
+                  <select
+                    value={consultRole}
+                    onChange={(e) => setConsultRole(e.target.value)}
+                  >
+                    <option value="learner">Phụ huynh / Học sinh</option>
+                    <option value="tutor">Gia sư / Người dạy kèm</option>
+                  </select>
+                </label>
+                <label>
+                  Nội dung cần tư vấn
+                  <select
+                    value={consultTopic}
+                    onChange={(e) => setConsultTopic(e.target.value)}
+                  >
+                    <option value="find_tutor">Hỗ trợ tìm gia sư phù hợp</option>
+                    <option value="become_tutor">Quy trình đăng ký hồ sơ gia sư</option>
+                    <option value="platform_policy">Chính sách bảo vệ & Học phí</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                Nội dung chi tiết (không bắt buộc)
+                <textarea
+                  rows={3}
+                  placeholder="Môn học, khu vực, khung giờ hoặc thắc mắc của bạn..."
+                  value={consultNote}
+                  onChange={(e) => setConsultNote(e.target.value)}
+                />
+              </label>
+
+              <button className="public-btn public-btn--blue" type="submit">
+                Gửi yêu cầu tư vấn <ArrowRight size={17} />
+              </button>
+
+              {consulted && (
+                <p role="status" className="public-form-success">
+                  Đã ghi nhận yêu cầu tư vấn trong hệ thống demo. Chuyên viên sẽ liên hệ trong thời gian sớm nhất!
+                </p>
+              )}
+            </form>
+          </div>
+        </section>
+
+        {/* SECTION 6: CALL TO ACTION CUỐI TRANG */}
+        <section className="public-final">
+          <div className="public-wrap">
+            <span>BẮT ĐẦU NGAY HÔM NAY</span>
+            <h2>Sẵn sàng trải nghiệm nền tảng học tập thông minh?</h2>
+            <p style={{ maxWidth: '600px', margin: '0 auto 24px', fontSize: '16px' }}>
+              Tham gia cùng hàng ngàn học viên và gia sư đang kết nối mỗi ngày. Tạo tài khoản miễn phí để
+              nhận trọn vẹn quyền lợi.
+            </p>
+            <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link to="/register" className="public-btn public-btn--yellow">
+                Tạo tài khoản ngay
+              </Link>
+              <button
+                type="button"
+                className="public-btn public-btn--outline"
+                style={{ color: '#fff', borderColor: '#ffffff80' }}
+                onClick={scrollToPortal}
+              >
+                Chọn vai trò
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <PublicFooter />
+    </div>
+  );
 }
