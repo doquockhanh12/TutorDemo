@@ -13,7 +13,7 @@ const tutorLinks = [
   ['Cơ hội dạy', '#opportunities'], ['Thu nhập tháng', '#income'], ['Tạo hồ sơ', '#profile'], ['Xem lớp hiện có', '#opportunities'],
 ];
 
-export function PublicHeader({ kind = 'home', onInfo, navigation, actions, onRegister }) {
+export function PublicHeader({ kind = 'home', onInfo, navigation, actions, onRegister, className = '', persistentActions = false }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrolling, setScrolling] = useState(false);
@@ -92,7 +92,7 @@ export function PublicHeader({ kind = 'home', onInfo, navigation, actions, onReg
     </>
   );
 
-  const headerClass = `public-header${scrolled ? ' is-scrolled' : ''}${scrolling ? ' is-scrolling' : ''}`;
+  const headerClass = `public-header ${className}${scrolled ? ' is-scrolled' : ''}${scrolling ? ' is-scrolling' : ''}`;
 
   return <header className={headerClass} id="top">
     <div className="public-header__inner">
@@ -104,16 +104,18 @@ export function PublicHeader({ kind = 'home', onInfo, navigation, actions, onReg
         </span>
       </Link>
       <nav className={`public-nav ${open ? 'is-open' : ''}`} aria-label="Điều hướng chính">
-        {(navigation || defaultNav).map(([label, href]) => navigation ? (
-          <Link key={label} to={href} onClick={() => setOpen(false)}>{label}</Link>
+        {(navigation || defaultNav).map(([label, href, current]) => navigation ? (
+          <Link key={label} to={href} aria-current={current ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</Link>
         ) : (
           <a key={label} href={pathname === landingPath ? href : `${landingPath}${href}`} onClick={() => setOpen(false)}>{label}</a>
         ))}
-        <div className="public-nav__mobile" onClick={() => setOpen(false)}>
+        {!persistentActions && <div className="public-nav__mobile" onClick={() => setOpen(false)}>
           {actions || defaultMobileActions}
-        </div>
+        </div>}
       </nav>
-      <div className="public-header__actions">
+      <div className={`public-header__actions${persistentActions ? ' public-header__actions--persistent' : ''}`}
+        onClick={persistentActions ? () => setOpen(false) : undefined}
+        onFocus={persistentActions ? () => setOpen(false) : undefined}>
         {actions || defaultDesktopActions}
       </div>
       <button className="public-header__menu" type="button" aria-label={open ? 'Đóng menu' : 'Mở menu'} aria-expanded={open} onClick={() => setOpen(!open)}>

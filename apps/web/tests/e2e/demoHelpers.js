@@ -31,6 +31,12 @@ export async function login(page, username, destination) {
 }
 
 export async function logout(page) {
+  const accountMenu = page.getByRole('button', { name: /^Menu tài khoản của / });
+  if (await accountMenu.count()) {
+    if (await accountMenu.getAttribute('aria-expanded') !== 'true') await accountMenu.click();
+    await page.getByRole('menuitem', { name: 'Đăng xuất', exact: true }).click();
+    return;
+  }
   if (await page.getByRole('button', { name: 'Đăng xuất', exact: true }).count() === 0) {
     await page.getByRole('button', { name: 'Mở menu', exact: true }).click();
   }

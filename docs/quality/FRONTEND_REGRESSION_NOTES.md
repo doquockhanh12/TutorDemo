@@ -1,5 +1,95 @@
 # Frontend Regression Notes
 
+## LACCOUNT-002 — Learner account identity accent (2026-10-10)
+
+### Scope and behavior
+
+Only two scoped rules in Learner `account-menu.css` change the UI. Account initials avatars (trigger and dropdown identity) use existing brand-primary #1346A0 with white text, contrast approximately 8.71:1. Trigger avatar remains circular and 28px. Trigger username retains real auth data and 14px size, with weight 700, brand-primary-deep #0A2E73 and -.01em tracking. Current minhanh trigger width does not increase (about 129.31px before / 129.30px after on desktop); target heights stay 40px desktop / 44px mobile/tablet. Navigation/header CSS, JSX, shared Avatar, menu items, auth/logout and data are untouched. Closed trigger remains transparent with no visible border; hover/open/focus states remain as in LHEADER-002.
+
+### Verification
+
+- Build passed; existing ~548 kB main JS chunk warning remains.
+- All nine `learner-account-menu.spec.js` cases passed via installed Edge and the existing ignored config: viewport geometry, keyboard/Tab/Escape, dismissal, routes/saved state/logout, parent identity and long username after reload.
+- Before/after browser comparison at 1440, 1366, 1024, 768, 390, 375 and 320px: no page overflow, unchanged header/main bounds and navigation styles, navigation geometry within 0.05px subpixel tolerance, trigger width no greater than before, heights and 28px avatar unchanged. Desktop/mobile hover and open states preserve trigger geometry; Escape returns focus. No permanent tests or dependencies added.
+- Visually reviewed before/after desktop, closed/hover/open desktop/mobile. Ignored artifacts: `apps/web/tmp/account-accent-*.png`, `account-accent-baseline.json` and `account-accent-results.json`.
+
+## LHEADER-002 — Balanced controls and a quiet closed account trigger (2026-10-10)
+
+### Scope and behavior
+
+Supersedes the visual sizing/state choices in LHEADER-001 following user review. Only Learner `header.css` and `account-menu.css` change in the UI. Shared control height is 40px above 900px, 44px in the existing mobile/tablet navigation mode; radius is 11px and the trigger avatar is 28px across viewports. Header heights and Search/hero/filter/card layouts remain unchanged. Desktop dropdown offsets compensate for the shorter trigger so the panel stays below the header.
+
+Default navigation/account trigger: transparent background and reserved transparent border, navy #33415C, weight 600. Hover: #F3F7FF with 160ms transitions. Navigation active: existing aria-current, #EAF1FF, #153F91, weight 700 and #CBDCF6 border; no underline or shadow. Closed account trigger has no persistent fill/visible border. Open account trigger uses the paler hover fill and a subtle border, with the existing chevron rotation; dimensions and username weight remain fixed. Keyboard focus remains a separate outline and global reduced motion still applies. Dropdown contents/handlers, routes including /learner#stories, auth/logout and domain data are unchanged; no JSX/shared/Public/Tutor/Admin styles changed.
+
+### Verification
+
+- Build passed; existing main JS chunk warning remains (~548 kB).
+- `learner-account-menu.spec.js` and `learner-search.spec.js`: 18 passed using installed Edge via ignored `tmp/playwright-edge.config.js`. Existing size assertions now check 40px desktop / 44px mobile, 28px avatar and identical trigger geometry when opened. Keyboard, Escape/Tab, dismissal, all account destinations, saved state/reload, parent/long identity and Search/filter behavior pass.
+- Browser review at 320, 375, 390, 768, 900, 901, 1024, 1366 and 1440px: expected navigation/account height, header height, bounds and center hit targets pass. Desktop/mobile state review checks transparent closed account background/border, a single active item on Search/Requests/detail, no active navigation on account Dashboard, stable navigation geometry on hover, stable trigger geometry when opened, keyboard focus and reduced motion.
+- Public landing header snapshots still match the earlier baseline; disabling Learner header/account styles leaves computed styles and geometry of Public/Tutor/Admin headers unchanged.
+- Screenshots visually reviewed: desktop/mobile default, active, hover, focus and open dropdown. Ignored artifacts: `apps/web/tmp/header-balanced-*.png` and `header-balanced-review-results.json`.
+
+## LHEADER-001 — Learner navigation pills (2026-10-10)
+
+Historical visual settings; superseded by LHEADER-002 above. Original verification is retained.
+
+### Scope and behavior
+
+LearnerHeader imports its own `header.css`; header rules previously in `search.css` move there without changing the Search layout. All selectors opt in through `.learner-app-header`. The three navigation links share 12px corners and 44px minimum targets with the account trigger. Default navy text, pale blue hover, and a stronger active fill/border/weight replace the underline. Active styling consumes existing `aria-current="page"` from the unchanged pathname matching, including request detail. Navigation and account trigger have visible keyboard outlines; global reduced-motion remains effective.
+
+Only the account trigger's visual treatment changes. Dropdown JSX, content, routes, keyboard handlers, dismissal, identity and logout are unchanged. At ≤360px the trigger hides its visual username to fit beside the brand and navigation button, retaining its accessible name and the full identity in the dropdown. Search header remains 72px desktop / 64px mobile; other header heights and scroll behavior remain unchanged. Public/Tutor/Admin, auth/domain and `/learner#stories` behavior are untouched, including the existing SPA anchor limitation recorded in LACCOUNT-001.
+
+### Verification
+
+- `npm.cmd run build` passed; the existing main JS chunk warning (>500 kB, approximately 548 kB) remains.
+- Existing Playwright suites `learner-account-menu.spec.js`, `learner-search.spec.js` and `responsive.spec.js`: 22 passed using installed Edge via the existing ignored `tmp/playwright-edge.config.js`. Coverage includes Search/filter behavior, dropdown keyboard/dismissal, saved state after reload, parent/long identity and connected public/Learner/Tutor screens.
+- Additional browser review at widths 320, 375, 390, 768, 900, 901, 1024, 1366 and 1440px: no header overflow or obscured control centers, navigation targets ≥44px and unchanged compact height. Request list/detail active state, navigation Tab focus and reduced motion checked. Public landing header snapshots match the before state; toggling Learner header/account CSS leaves Public/Tutor/Admin header geometry and computed styles identical.
+- Screenshots visually reviewed for desktop, tablet, narrow mobile, hover, focus, request active and account open. Ignored artifacts: `apps/web/tmp/header-before-*.png`, `header-after-*.png`, `header-hover.png`, `header-focus.png`, `header-requests.png`, `header-account.png` and `header-review-results.json`.
+
+## LACCOUNT-001 — Learner account dropdown (2026-10-10)
+
+### Scope and behavior
+
+LearnerHeader replaces the account link and standalone logout with one avatar/username/chevron button. The 280px menu shows session identity and accountType, with existing Dashboard, Requests and Dashboard saved-tutors destinations. Logout calls the unchanged auth callback. Menu buttons/items expose menu semantics and support arrows, Home/End, Enter/Space, Escape, Tab, outside pointer/focus dismissal and navigation dismissal. Escape restores trigger focus; outside clicks retain destination focus.
+
+PublicHeader's opt-in `persistentActions` renders this account control once, including mobile. Focusing/clicking Learner actions closes mobile navigation; clicking/focusing outside the dropdown closes it. Default public header behavior remains unchanged. CSS is scoped to `.learner-app-header`. Dashboard now honors existing hash targets instead of always resetting scroll; `#saved-tutors` receives focus. No auth/domain/route/data changes.
+
+### Parent corner analysis — unchanged
+
+“Góc phụ huynh” targets `/learner#stories`, three public guidance articles about choosing a tutor, maintaining a schedule and describing learning goals. It is not a parent account-management feature. Learner/Parent share role `learner`, distinguished by accountType. Browser inspection found an existing SPA anchor limitation: clicking from Search updates URL but does not scroll to stories (1366×600: scrollY=0, section y≈6337). This navigation/landing was deliberately left unchanged as requested.
+
+### Verification
+
+- Build passed (approximately 548 kB main JS chunk; existing >500 kB warning). Unit tests: 186 passed.
+- `learner-account-menu.spec.js`: six viewport cases plus keyboard, real routes/saved focus/logout persistence, and long parent identity. Browser screenshots reviewed at desktop, tablet and mobile, including the parent label. Menu bounds/hit testing, unchanged header/search positions and mobile navigation exclusion are asserted.
+- Responsive coverage: 1440×650, 1366×600, 1024×768, 768×1024, 390×844, 375×667. Existing Search, auth, account isolation and connected public/Tutor responsive suites passed (34 E2E cases including the nine account cases).
+- Final focused pass: 12 passed, rerunning the nine account cases with Space activation/mobile keyboard navigation, plus Admin header/logout and Learner appeal-entry regression checks (37 distinct E2E cases across both runs).
+- Browser: installed Microsoft Edge/Chromium via ignored temporary Playwright config; no library or runner-config changes committed. Screenshots remain ignored artifacts in `apps/web/test-results/`.
+
+## LSEARCH-001 — Search-first Learner UI (2026-10-10)
+
+### Scope and behavior
+
+`/learner/search` has a dedicated compact cream hero, keyword search inside the hero, one multi-select filter set, removable filter chips, and a 3/2/1-column tutor list. Mobile reuses the same filter controls in a scrollable dialog. Map access remains a link to `/learner/map`. Search CSS uses the exclusive `.learner-search-view` scope because other Learner pages also use `.learner-search-page`.
+
+Learner app navigation replaces the Tutor acquisition link with `/requests` and exposes route-based `aria-current`, including request detail. Only Search opts into the compact header. PublicHeader adds optional class/current-link rendering; public landing structure, Tutor/Admin workspaces, auth guards and shared domain data are unchanged.
+
+### Regression found and fixed
+
+At 390×844 and 375×667, signing in from the scrolled mobile login form carried the scroll offset into Search. The keyword field started at y=-237.61 / -322.61 instead of appearing in the first viewport. The two viewport tests failed before the fix and passed after Search resets scroll on mount before paint. Do not hide this regression by resetting scroll in test setup after login.
+
+Desktop filter popovers measure available viewport space, open above when needed, and scroll internally. Test the last checkbox as well as panel bounds; page-level overflow alone does not prove the dropdown is usable. Resizing an open mobile dialog to desktop closes it and releases the body scroll lock.
+
+### Verification
+
+- `npm run build`: passed; Vite reports a bundle over 500 kB (approximately 545 kB minified). Bundle splitting is outside this Learner UI batch.
+- `npm test`: 186 passed, 0 failed/skipped.
+- `tests/e2e/learner-search.spec.js`: 9 passed after the scroll fix. Covers first viewport, control bounds, dropdown scrolling, OR/AND multi-select, fee, keyword, sorting, empty reset, keyboard/focus/ESC, resize, saved-state reload and Learner navigation.
+- Existing `learner-tutor-interface`, `account-scoping`, `domain-regressions` and `responsive` suites: 25 passed. These exercise Learner routes, request propagation, account isolation and connected public/Tutor screens without React/page console errors.
+- Browser: installed Microsoft Edge (Chromium) through an ignored temporary Playwright config, because this environment does not have Playwright's downloaded Chromium binary. No dependency or committed runner-config change.
+- Visual review: 1440×650, 1366×600, 1024×768, 768×1024, 390×844 and 375×667. No page overflow or horizontally clipped controls. Hero is about 240–245px desktop/tablet and 281px mobile; keyword field ends at y≈283 desktop and y≈263 mobile. At 1366×600 the first tutor row begins at y≈548.
+- Screenshots are local ignored artifacts in `apps/web/tmp/` and `apps/web/test-results/`; the search page uses no remote illustration. Public landing image loading still depends on its existing external assets.
+
 ## ADM-REG-005 — Mobile table actions clipped inside cells
 
 ### Symptom

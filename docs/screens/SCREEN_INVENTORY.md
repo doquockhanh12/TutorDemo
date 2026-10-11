@@ -22,7 +22,7 @@ Learner/Tutor ưu tiên current implementation/behavior; Figma chỉ historical/
 | L12 | Learner Account/Profile | Recommended | Implemented `/learner/dashboard`; sửa hồ sơ/địa chỉ |
 | L13 | Bản đồ gia sư gần bạn | Approved demo extension | Implemented `/learner/map`; vị trí/khoảng cách minh họa |
 
-L03/L04 giữ hero Learner; cột lọc và cột hỗ trợ cùng khung trắng/viền/bo góc. Các trang app dùng LearnerHeader có avatar/username và Đăng xuất. L08 không có nút tạo yêu cầu; nút chỉ ở L09 và dẫn tới gia sư trong request.
+L03/L04 dùng hero Search riêng nhỏ gọn, tìm kiếm trong viewport đầu tiên và một bộ lọc nhiều lựa chọn; desktop dùng dropdown, mobile dùng dialog. Danh sách 3/2/1 cột có link tới L13; không còn hai sidebar và bộ lọc trùng lặp. Landing `/learner` giữ hero public hiện có. Các trang app dùng LearnerHeader có Tìm gia sư, Yêu cầu học (`/requests`), Góc phụ huynh (`/learner#stories`) và dropdown avatar/username; active state theo route. Dropdown dẫn tới L11, `/requests`, phần `#saved-tutors` của L11 và Đăng xuất hiện có; không tạo màn gia sư đã lưu riêng. L08 không có nút tạo yêu cầu; nút chỉ ở L09 và dẫn tới gia sư trong request.
 
 ## Tutor
 

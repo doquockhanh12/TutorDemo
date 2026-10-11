@@ -1,5 +1,5 @@
 ﻿import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, BookOpen, CalendarDays, Heart, Search, MapPin } from 'lucide-react';
 import useDemoAuth from '../auth/DemoAuthContext.jsx';
 import { useSavedTutors } from '../domain/DemoDomainContext.jsx';
@@ -15,6 +15,7 @@ import './dashboard.css';
 
 export default function LearnerDashboard() {
   const { user } = useDemoAuth();
+  const { hash, key: locationKey } = useLocation();
   const tutors = useScheduledTutors();
   const [saved, setSaved] = useSavedTutors();
   const [requests] = useLearnerRequests();
@@ -22,7 +23,13 @@ export default function LearnerDashboard() {
   const confirmed = requests.filter((request) => request.status === 'accepted' && !request.completed);
   const pending = requests.filter((request) => request.status === 'pending');
   const initials = (user.fullName || user.username).split(' ').slice(-2).map((part) => part[0]).join('');
-  useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, []);
+  useLayoutEffect(() => {
+    const target = hash && document.getElementById(hash.slice(1));
+    if (target) {
+      target.scrollIntoView({ block: 'start', behavior: 'instant' });
+      if (hash === '#saved-tutors') target.focus({ preventScroll: true });
+    } else window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [hash, locationKey]);
   return <div className="public-page public-page--learner learner-search-page learner-dashboard-page density-comfortable">
     <LearnerHeader />
     <main className="learner-container learner-dashboard-main">
@@ -31,7 +38,7 @@ export default function LearnerDashboard() {
       <div className="learner-dashboard-stats"><Stat icon={BookOpen} value={pending.length} label="Yêu cầu chờ phản hồi" to="/requests" /><Stat icon={CalendarDays} value={confirmed.length} label="Yêu cầu đã xác nhận" to="/requests" /><Stat icon={Heart} value={savedTutors.length} label="Gia sư đã lưu" to="#saved-tutors" anchor /></div>
       <nav className="learner-dashboard-shortcuts" aria-label="Mục trong tài khoản"><a href="#account-profile">Thông tin cá nhân</a><a href="#account-address">Địa chỉ</a><a href="#learning-requests">Yêu cầu học</a><a href="#saved-tutors">Gia sư đã lưu</a><Link to="/appeals">Kháng cáo</Link></nav>
       <div className="learner-dashboard-grid"><div className="learner-dashboard-column"><LearnerAccountPanel /><LearnerAccountPanel addressOnly />
-        <section className="learner-dashboard-panel" id="saved-tutors"><div className="learner-dashboard-section-head"><div><span className="learner-dashboard-kicker">DANH SÁCH QUAN TÂM</span><h2><Heart size={21} />Gia sư đã lưu <span className="learner-dashboard-count">{savedTutors.length}</span></h2></div></div>
+        <section className="learner-dashboard-panel" id="saved-tutors" tabIndex={-1} aria-labelledby="saved-tutors-title"><div className="learner-dashboard-section-head"><div><span className="learner-dashboard-kicker">DANH SÁCH QUAN TÂM</span><h2 id="saved-tutors-title"><Heart size={21} />Gia sư đã lưu <span className="learner-dashboard-count">{savedTutors.length}</span></h2></div></div>
           {savedTutors.length ? <div className="learner-dashboard-saved-list">{savedTutors.map((tutor) => <article key={tutor.id}><Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone} /><div><Link to={`/tutors/${tutor.id}`}><strong>{tutor.name}</strong></Link><p>{tutor.subjects.join(' · ')}</p><small><MapPin size={14} />{tutor.location} · {tutor.price.toLocaleString('vi-VN')}đ/buổi</small></div><button className="learner-dashboard-unsave" aria-label={`Bỏ lưu ${tutor.name}`} onClick={() => setSaved(saved.filter((id) => id !== tutor.id))}><Heart size={19} fill="currentColor" /></button></article>)}</div> : <Empty icon={Heart} title="Lưu lại gia sư bạn yêu thích" text="Nhấn biểu tượng trái tim trên hồ sơ gia sư để dễ tìm lại và so sánh." />}
           <Link className="learner-dashboard-text-link" to="/learner/search">Khám phá thêm gia sư <ArrowRight size={16} /></Link>
         </section></div>

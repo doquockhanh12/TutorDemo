@@ -1,0 +1,90 @@
+/* Opt-in Learner account controls; public and workspace headers keep their UI. */
+.learner-app-header .public-header__actions > .learner-account-menu {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  white-space: normal;
+  box-shadow: none;
+  transform: none;
+  transition: none;
+}
+.learner-app-header .learner-account-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: var(--learner-header-control-height);
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--learner-header-radius);
+  background: transparent;
+  color: var(--learner-header-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast);
+}
+.learner-app-header .learner-account-menu__trigger:hover { background: var(--learner-header-hover-bg); }
+.learner-app-header .learner-account-menu__trigger[aria-expanded="true"] { background: var(--learner-header-hover-bg); border-color: var(--learner-header-border); }
+.learner-app-header .learner-account-menu__username { max-width: 140px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--brand-primary-deep); font-weight: 700; letter-spacing: -.01em; }
+.learner-app-header .learner-account-menu .avatar { background: var(--brand-primary); color: var(--surface-white); }
+.learner-app-header .learner-account-menu__trigger .avatar,
+.learner-app-header .learner-account-menu__chevron { flex: none; }
+.learner-app-header .learner-account-menu__trigger .avatar { width: 28px; height: 28px; font-size: 11px; }
+.learner-app-header .learner-account-menu__chevron { color: var(--learner-header-icon); transition: transform var(--motion-fast); }
+.learner-app-header .learner-account-menu__trigger[aria-expanded="true"] .learner-account-menu__chevron { transform: rotate(180deg); }
+.learner-app-header .learner-account-menu__panel {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 26px);
+  right: 0;
+  width: 280px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 112px);
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--surface-white);
+  box-shadow: 0 12px 32px rgb(20 35 65 / 12%);
+  color: var(--text-primary);
+}
+.learner-app-header .learner-account-menu__identity { display: flex; align-items: center; gap: 12px; padding: 12px 8px 16px; margin-bottom: 8px; border-bottom: 1px solid var(--color-border); }
+.learner-app-header .learner-account-menu__identity > div { min-width: 0; display: grid; gap: 4px; }
+.learner-app-header .learner-account-menu__identity strong { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+.learner-app-header .learner-account-menu__identity div > span { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.learner-app-header .learner-account-menu__item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 12px; border: 0; border-radius: 8px; background: transparent; color: var(--text-primary); font: inherit; font-size: 14px; font-weight: 700; line-height: 1.4; text-align: left; cursor: pointer; }
+.learner-app-header .learner-account-menu__item svg { flex: none; color: var(--text-muted); }
+.learner-app-header .learner-account-menu__item:hover,
+.learner-app-header .learner-account-menu__item:focus-visible { background: var(--surface-light-blue); color: var(--brand-primary); }
+.learner-app-header .learner-account-menu__separator { height: 1px; margin: 8px; background: var(--color-border); }
+.learner-app-header .learner-account-menu__item--logout,
+.learner-app-header .learner-account-menu__item--logout svg { color: var(--status-danger); }
+.learner-app-header .learner-account-menu__item--logout:hover,
+.learner-app-header .learner-account-menu__item--logout:focus-visible { background: var(--status-danger-bg); color: var(--status-danger); }
+.learner-app-header .learner-account-menu__trigger:focus-visible { outline: 2px solid var(--learner-header-focus); outline-offset: 3px; }
+.learner-app-header .learner-account-menu__item:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+.learner-app-header--compact .learner-account-menu__panel { top: calc(100% + 18px); }
+
+@media (max-width: 900px) {
+  .learner-app-header .public-header__actions--persistent { display: flex; flex: 0 1 auto; min-width: 0; margin-left: auto; }
+  .learner-app-header .public-header__menu { flex: none; margin-left: 0; width: 44px; height: 44px; }
+}
+@media (max-width: 360px) {
+  .learner-app-header .learner-account-menu__username { display: none; }
+}
+@media (max-width: 767px) {
+  .learner-app-header .public-header__inner { gap: 8px; }
+  .learner-app-header .public-brand { gap: 8px; }
+  .learner-app-header .public-brand__mark { width: 32px; height: 32px; font-size: 13px; }
+  .learner-app-header .learner-account-menu__trigger { gap: 6px; padding-inline: 4px; }
+  .learner-app-header .learner-account-menu__username { max-width: 72px; }
+  .learner-app-header .learner-account-menu__panel { position: fixed; right: 16px; top: 80px; max-height: calc(100dvh - 96px); }
+  .learner-app-header--compact .learner-account-menu__panel { top: 72px; max-height: calc(100dvh - 88px); }
+}
