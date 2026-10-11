@@ -90,8 +90,9 @@
 .learner-search-view .search-filter.is-open .search-filter__options { display: block; }
 .learner-search-view .search-checkbox-group { padding: 0; border: 0; }
 .learner-search-view .search-checkbox-group legend { float: none; font-size: var(--text-compact); }
-.learner-search-view .search-checkbox-group label { min-height: 44px; }
-.learner-search-view .search-checkbox-group input { margin: 0; }
+.learner-search-view .search-checkbox-group label { min-height: 44px; cursor: pointer; width: 100%; }
+.learner-search-view .search-checkbox-group label span { cursor: pointer; flex: 1; }
+.learner-search-view .search-checkbox-group input { margin: 0; cursor: pointer; }
 .learner-search-view .learner-search-price select { width: 100%; min-width: 0; height: 48px; padding-inline: var(--space-3); border-radius: var(--radius-base); font-size: var(--text-compact); }
 .learner-search-view .learner-search-clear { justify-content: center; min-height: 48px; padding-inline: var(--space-2); font-size: var(--text-compact); }
 .learner-search-view .learner-search-clear:disabled { color: var(--text-muted); opacity: .65; text-decoration: none; }

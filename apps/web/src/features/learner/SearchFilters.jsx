@@ -2,24 +2,48 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export function CheckboxFilter({ title, options, selected, onChange }) {
-  const baseId = useId();
+  const baseId = useId().replace(/:/g, '');
+
+  const toggleOption = (option) => {
+    const next = selected.includes(option)
+      ? selected.filter((value) => value !== option)
+      : [...selected, option];
+    onChange(next);
+  };
 
   return (
     <fieldset className="search-checkbox-group">
       <legend>{title}</legend>
       {options.slice(1).map((option, index) => {
-        const optionId = `${baseId}-${index}`;
+        const optionId = `filter-${baseId}-${index}`;
         return (
-          <label key={option} htmlFor={optionId}>
+          <label
+            key={option}
+            htmlFor={optionId}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+            onClick={(e) => {
+              if (e.target.tagName === 'INPUT') return;
+              e.preventDefault();
+              toggleOption(option);
+            }}
+          >
             <input
               id={optionId}
               type="checkbox"
               checked={selected.includes(option)}
-              onChange={() => onChange(
-                selected.includes(option) ? selected.filter((value) => value !== option) : [...selected, option]
-              )}
+              onChange={() => toggleOption(option)}
+              style={{ cursor: 'pointer' }}
             />
-            <span>{option}</span>
+            <span
+              style={{ cursor: 'pointer' }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleOption(option);
+              }}
+            >
+              {option}
+            </span>
           </label>
         );
       })}
