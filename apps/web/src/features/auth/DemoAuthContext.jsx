@@ -49,7 +49,7 @@ export function DemoAuthProvider({ children }) {
   };
   const updateProfile = (changes) => {
     if (!state.user) return { error: 'Bạn cần đăng nhập để cập nhật hồ sơ.' };
-    const allowed = ['fullName', 'email', 'phone', 'accountType', 'address'];
+    const allowed = ['fullName', 'email', 'phone', 'birthDate', 'accountType', 'address'];
     const fields = Object.fromEntries(allowed.filter((key) => key in changes).map((key) => [key, String(changes[key]).trim()]));
     if ('phone' in fields) {
       const rawPhone = fields.phone;
@@ -104,7 +104,15 @@ export function DemoAuthProvider({ children }) {
     const accounts = [...(state.accounts || []), user]; persist({ accounts, user }); return { user };
   };
   const logout = () => persist({ ...state, user: null });
-  const value = useMemo(() => ({ user: state.user, authenticated: Boolean(state.user), login, loginProvider, loginForAppeal, register, logout, updateProfile }), [state, state.user]);
+  const changePassword = (currentPassword, nextPassword) => {
+    if (!state.user || state.user.password !== currentPassword) return { error: 'Mật khẩu hiện tại chưa đúng.' };
+    const user = { ...state.user, password: nextPassword };
+    let remember = true;
+    try { remember = Boolean(localStorage.getItem(STORAGE_KEY)); } catch { /* storage unavailable */ }
+    persist({ ...state, user, accounts: [...(state.accounts || []).filter((account) => account.id !== user.id), user] }, remember);
+    return { user };
+  };
+  const value = useMemo(() => ({ user: state.user, authenticated: Boolean(state.user), login, loginProvider, loginForAppeal, register, logout, updateProfile, changePassword }), [state, state.user]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 export default function useDemoAuth() {

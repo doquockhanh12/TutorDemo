@@ -11,7 +11,7 @@ const navigation = [
   { label: 'Kháng cáo', icon: Scale, to: '/appeals' },
   { label: 'Đánh giá', icon: Star },
   { label: 'Tin nhắn', icon: MessageSquare },
-  { label: 'Cài đặt', icon: Settings },
+  { label: 'Cài đặt', icon: Settings, to: '/tutor/settings' },
 ];
 
 export default function TutorSidebar({ open, onClose, pendingCount }) {

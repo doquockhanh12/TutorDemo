@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { DemoAuthProvider } from './features/auth/DemoAuthContext.jsx';
+import { ThemeProvider } from './features/theme/ThemeContext.jsx';
 import '@fontsource/nunito/latin-400.css';
 import '@fontsource/nunito/latin-700.css';
 import '@fontsource/nunito/latin-800.css';
@@ -25,11 +26,13 @@ import './features/admin/admin.css';
 import './features/public/public.css';
 import './features/auth/auth.css';
 import './styles/flows.css';
+import './features/tutor/settings.css';
+import './styles/dark.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <DemoAuthProvider><App /></DemoAuthProvider>
+      <ThemeProvider><DemoAuthProvider><App /></DemoAuthProvider></ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

@@ -6,6 +6,7 @@ import { containsRange, getBookableRanges, proposedLessons, isValidAvailability 
 export const classSearchMetadata = Object.fromEntries(demoReferenceData.requests.filter((r) => r.sessionFee != null).map((r) => [r.id, { subject: r.catalogSubject || r.subjects?.[0] || r.subject, sessionFee: r.sessionFee }]));
 export const requestMetadata = (request) => ({ subject: request.catalogSubject || request.subjects?.[0] || classSearchMetadata[request.id]?.subject || request.subject, sessionFee: request.sessionFee ?? classSearchMetadata[request.id]?.sessionFee });
 export const feeBounds = { min: 0, max: 500000, step: 10000 };
+export const classSearchAreas = ['Biên Hòa', 'Long Thành', 'Trảng Bom', 'Nhơn Trạch', 'TP.HCM'];
 export const formatFee = (value) => new Intl.NumberFormat('vi-VN').format(value) + 'đ';
 export const savedFreeRanges = (availability, lessons) => getBookableRanges(availability, lessons);
 export function fitsSavedAvailability(proposals, availability, lessons) {

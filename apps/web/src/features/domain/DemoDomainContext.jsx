@@ -20,6 +20,7 @@ import {
 import { normalizeRanges, normalizeSessionMinutes, isValidAvailability, overlaps } from '../../data/tutorSchedule.js';
 import { selectTutorIncome } from './incomeSelectors.js';
 import { submitAppeal, reviewAppeal } from './appeals.js';
+import { subjectById, subjectIdsFromNames } from '../../data/subjectCatalog.js';
 
 const Context = createContext(null);
 export function DemoDomainProvider({ children }) {
@@ -66,14 +67,16 @@ export function DemoDomainProvider({ children }) {
       settings: duration === undefined ? current.settings : { ...current.settings, [tutorId]: { sessionMinutes: normalizeSessionMinutes(duration) } } })); return '';
   };
   const setSessionMinutes = (duration) => setState((current) => ({ ...current, settings: { ...current.settings, [tutorId]: { sessionMinutes: normalizeSessionMinutes(duration) } } }));
-  const saveTutorProfile = (draft) => {
+  const saveTutorProfile = (draft, { syncIdentity = true } = {}) => {
     if (!tutorId) return;
-    updateProfile({ fullName: draft.name });
+    if (syncIdentity) updateProfile({ fullName: draft.name });
     setState((current) => ({ ...current, profiles: current.profiles.map((profile) => profile.id === tutorId ? {
       ...profile, name: draft.name.trim(), initials: draft.name.trim().split(/\s+/).slice(-2).map((s) => s[0]).join(''),
-      subjects: draft.subjects.split(',').map((s) => s.trim()).filter(Boolean), levels: [...draft.levels],
+      subjects: (draft.subjectIds || subjectIdsFromNames(draft.subjects.split(',').map((s) => s.trim()))).map((id) => subjectById(id)?.name).filter(Boolean),
+      subjectIds: draft.subjectIds || subjectIdsFromNames(draft.subjects.split(',').map((s) => s.trim())), levels: [...draft.levels],
       location: draft.area.trim(), areas: [draft.area.trim()], price: Number(draft.fee), intro: draft.bio,
       sessionMinutes: normalizeSessionMinutes(draft.sessionMinutes),
+      formats: draft.formats ? [...draft.formats] : profile.formats,
     } : profile), settings: { ...current.settings, [tutorId]: { sessionMinutes: normalizeSessionMinutes(draft.sessionMinutes) } } }));
   };
   const completeLesson = (id) => setState((current) => completeDomainLesson(current, tutorId, id));
@@ -162,8 +165,9 @@ export function useTutorProfile() {
   const state = useDemoDomain(); const { user } = useDemoAuth();
   const profile = state.profiles.find((p) => p.id === state.tutorId);
   return [{ name: profile?.name || user?.fullName || '', subjects: profile?.subjects.join(', ') || user?.subjects?.join(', ') || '',
+    subjectIds: profile?.subjectIds || subjectIdsFromNames(profile?.subjects || user?.subjects || []),
     levels: profile?.levels || [], area: profile?.location || user?.area || '', fee: profile?.price ?? user?.fee ?? '',
-    bio: profile?.intro || '', rating: profile?.rating, sessionMinutes: normalizeSessionMinutes(state.settings[state.tutorId]?.sessionMinutes ?? user?.duration) }, state.saveTutorProfile];
+    bio: profile?.intro || '', formats: profile?.formats || [], rating: profile?.rating, sessionMinutes: normalizeSessionMinutes(state.settings[state.tutorId]?.sessionMinutes ?? user?.duration) }, state.saveTutorProfile];
 }
 export function usePublicTutors() {
   return useDemoDomain().profiles.map((tutor) => ({ ...tutor, subject: tutor.subjects[0], area: tutor.location,

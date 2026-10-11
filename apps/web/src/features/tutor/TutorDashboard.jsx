@@ -16,8 +16,7 @@ import {
   localDateKey,
 } from '../../data/tutorSchedule.js';
 
-import TutorSidebar from './TutorSidebar.jsx';
-import TutorHeader from './TutorHeader.jsx';
+import TutorWorkspaceLayout from './TutorWorkspaceLayout.jsx';
 import TutorDashboardSupport from './TutorDashboardSupport.jsx';
 import TutorScheduleChecks from './TutorScheduleChecks.jsx';
 
@@ -173,11 +172,6 @@ function DashboardRequests({
 export default function TutorDashboard() {
   const [profile] = useTutorProfile();
   const income = useTutorIncome();
-  const [
-    sidebarOpen,
-    setSidebarOpen,
-  ] = useState(false);
-
   const {
     requests: allRequests,
     lessons,
@@ -232,33 +226,7 @@ export default function TutorDashboard() {
   ];
 
   return (
-    <div className="workspace tutor-workspace density-standard tutor-reference-workspace">
-      <TutorSidebar
-        open={sidebarOpen}
-        onClose={() =>
-          setSidebarOpen(false)
-        }
-        pendingCount={pending}
-      />
-
-      {sidebarOpen && (
-        <button
-          className="workspace-scrim"
-          type="button"
-          onClick={() =>
-            setSidebarOpen(false)
-          }
-          aria-label="Đóng điều hướng"
-        />
-      )}
-
-      <div className="workspace__main">
-        <TutorHeader
-          onOpen={() =>
-            setSidebarOpen(true)
-          }
-        />
-
+    <TutorWorkspaceLayout className="tutor-reference-workspace">
         <main className="reference-dashboard">
           <div className="reference-dashboard__primary">
             <div className="reference-greeting">
@@ -362,7 +330,6 @@ export default function TutorDashboard() {
 
           <TutorDashboardSupport />
         </main>
-      </div>
-    </div>
+    </TutorWorkspaceLayout>
   );
 }

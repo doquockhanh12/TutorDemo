@@ -26,7 +26,7 @@ test('BUG-011 newly registered tutor owns profile schedule and no canonical tuto
   await expect(page.locator('#tutor-profile-summary')).toContainText('Chưa có đánh giá');
   await page.goto('/tutor/profile');
   await page.getByLabel('THCS', { exact: true }).check();
-  await page.getByRole('button', { name: 'Lưu hồ sơ demo' }).click();
+  await page.getByRole('button', { name: 'Lưu hồ sơ', exact: true }).click();
   await page.goto('/tutor/timetable');
   await expect(page.locator('.weekly-timeline-block.lesson')).toHaveCount(0);
   await page.getByRole('button', { name: 'Thêm lịch rảnh Thứ 2', exact: true }).click();

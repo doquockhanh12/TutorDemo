@@ -20,6 +20,7 @@ import TutorProfilePage from './features/learner/TutorProfilePage.jsx';
 import { TutorProfile, TutorRequestDetail, TutorRequests } from './features/tutor/TutorPages.jsx';
 import TutorTimetable from './features/tutor/TutorTimetable.jsx';
 import TutorIncome from './features/tutor/TutorIncome.jsx';
+import TutorSettingsPage from './features/tutor/TutorSettingsPage.jsx';
 import { TutorWorkspaceProvider } from './features/tutor/TutorWorkspaceState.jsx';
 import LoginPage from './features/auth/LoginPage.jsx';
 import RegistrationPage from './features/auth/RegistrationPage.jsx';
@@ -36,6 +37,7 @@ export default function App() {
     <Route path="/learner/dashboard" element={<Protected role="learner"><LearnerDashboard /></Protected>} />
     <Route path="/tutor/timetable" element={<Protected role="tutor"><TutorTimetable /></Protected>} />
     <Route path="/tutor/income" element={<Protected role="tutor"><TutorIncome /></Protected>} />
+    <Route path="/tutor/settings" element={<Protected role="tutor"><TutorSettingsPage /></Protected>} />
     <Route path="/tutor/map" element={<Protected role="tutor"><TutorClassMap /></Protected>} />
     <Route path="/tutor/find-students" element={<Protected role="tutor"><TutorClassSearch /></Protected>} />
     <Route path="/tutors/:id" element={<Protected role="learner"><TutorProfilePage /></Protected>} />

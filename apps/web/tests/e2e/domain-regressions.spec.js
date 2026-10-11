@@ -161,14 +161,17 @@ test('BUG-012 tutor edits propagate to learner profile search and saved dashboar
   await logout(page);
   await login(page, 'giabao', '/tutor/profile');
   await page.getByLabel('Họ và tên', { exact: true }).fill(source.name);
-  await page.getByLabel('Môn có thể dạy', { exact: true }).fill(source.subjects.join(', '));
+  for (const name of source.subjects) {
+    await page.getByLabel('Tìm môn học hoặc kỹ năng').fill(name);
+    await page.locator('.profile-subjects__options').getByRole('button', { name, exact: true }).click();
+  }
   await page.getByLabel('THCS', { exact: true }).uncheck();
   await page.getByLabel('THPT', { exact: true }).check();
   await page.getByLabel('Khu vực dạy', { exact: true }).fill(source.location);
   await page.getByLabel('Mức phí mỗi buổi', { exact: true }).fill(String(source.price));
   await page.getByLabel('Thời gian dạy cho một buổi').selectOption('90');
   await page.getByLabel('Giới thiệu cách dạy').fill(source.intro);
-  await page.getByRole('button', { name: 'Lưu hồ sơ demo' }).click();
+  await page.getByRole('button', { name: 'Lưu hồ sơ', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Đã lưu hồ sơ');
   await logout(page);
   await login(page, 'minhanh', '/tutors/quoc-bao');

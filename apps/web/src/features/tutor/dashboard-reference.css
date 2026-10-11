@@ -1,14 +1,8 @@
-.tutor-reference-workspace { --sidebar-tutor: 210px; --page-padding: 25px; --reference-blue: #2563eb; background: #f7f9fc; color: #141d32; }
+.tutor-reference-workspace { --page-padding: var(--space-6); --reference-blue: #2563eb; background: #f7f9fc; color: #141d32; }
 .tutor-sidebar__reference-brand { display: grid; gap: 2px; color: #141d32; }
 .tutor-sidebar__reference-brand strong { font-size: 21px; font-weight: 900; letter-spacing: -.6px; }
 .tutor-sidebar__reference-brand small { color: #687e9f; font-size: 10px; }
-.tutor-reference-workspace .tutor-sidebar__brand { border-bottom: 0; padding: 0 26px; }
-.tutor-reference-workspace .tutor-sidebar__nav { gap: 6px; padding: 18px 14px; }
-.tutor-sidebar__nav .sidebar-item { min-height: 42px; padding: 11px 12px; gap: 8px; color: #141d32; font-size: 14px; font-weight: 600; }
-.tutor-sidebar__nav .sidebar-item svg { width: 14px; height: 14px; }
-.tutor-sidebar__nav .sidebar-item.is-active { color: #2563eb; background: #eff6ff; }
-.tutor-sidebar__nav .sidebar-item__count { margin-left: 0; background: transparent; color: inherit; font-size: 14px; }
-.reference-dashboard { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; padding: 14px 25px 74px; max-width: 1600px; margin: 0 auto; font-size: 14px; line-height: 1.4; }
+.reference-dashboard { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; width: min(100%, 1540px); padding: 28px var(--page-padding) 60px; margin: 0 auto; font-size: 14px; line-height: 1.4; }
 .reference-dashboard__primary { min-width: 0; }
 .reference-greeting { margin: 8px 0 16px; }
 .reference-greeting h1 { display: flex; align-items: center; gap: 7px; margin: 0 0 3px; font-size: 28px; line-height: 1.35; font-weight: 800; letter-spacing: -.6px; }
@@ -112,7 +106,7 @@
 .reference-quick__grid a span { color: #141d32; }
 .reference-quick > p { margin-top: 30px; color: #687e9f; font-size: 11px; }
 @media (min-width: 1280px) and (max-width: 1399px) {
-  .reference-dashboard { grid-template-columns: minmax(0, 1fr) 300px; padding-inline: 20px; gap: 16px; }
+  .reference-dashboard { grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; }
   .reference-stat { padding-inline: 10px; }.reference-stat > strong { font-size: 21px; }
   .reference-dashboard__work { gap: 16px; }
   .reference-request__top h3 { margin-left: 0; }.reference-request__top > strong { width: 100%; }
@@ -128,8 +122,7 @@
   .reference-income__list > div > span:first-child { grid-column: 1 / -1; }
 }
 @media (max-width: 767px) {
-  .tutor-reference-workspace { --page-padding: 16px; }
-  .reference-dashboard { padding: 20px 16px 40px; }
+  .reference-dashboard { padding-bottom: 40px; }
   .reference-greeting h1 { display: block; font-size: 24px; }
   .reference-greeting h1 svg { vertical-align: middle; }
   .reference-stats { grid-template-columns: 1fr 1fr; gap: 10px; }

@@ -211,3 +211,27 @@ for (const width of [1440, 1024, 390]) {
     await page.screenshot({ path: testInfo.outputPath(`user-appeals-${width}.png`), fullPage: true });
   });
 }
+
+test('Appeal file chooser text remains readable in dark theme', async ({ page }, testInfo) => {
+  await login(page, 'giabao', '/appeals');
+  await page.evaluate(() => localStorage.setItem('theme', 'dark'));
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  const chooser = page.getByLabel('Tệp bằng chứng');
+  await expect(chooser).toBeVisible();
+  const contrast = await chooser.evaluate(input => {
+    const style = getComputedStyle(input, '::file-selector-button');
+    const luminance = value => {
+      const channels = value.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+      return channels.map(channel => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      }).reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+    };
+    const foreground = luminance(style.color);
+    const background = luminance(style.backgroundColor);
+    return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+  });
+  expect(contrast).toBeGreaterThanOrEqual(4.5);
+  await page.screenshot({ path: testInfo.outputPath('appeal-file-chooser-dark.png'), fullPage: true });
+});

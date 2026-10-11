@@ -45,8 +45,9 @@ L03/L04 giữ hero Learner; cột lọc và cột hỗ trợ cùng khung trắng
 | T15 | Tìm học viên mới | Approved demo extension | Implemented `/tutor/find-students` |
 | T16 | Tìm lớp gần tôi | Approved demo extension | Implemented `/tutor/map`, bản đồ minh họa |
 | T17 | Thu nhập | Approved demo extension | Implemented protected `/tutor/income`; monthly summary, SVG 6 tháng và danh sách buổi tạo thu nhập từ shared Lessons |
+| T18 | Cài đặt gia sư | User-approved demo extension | Implemented protected `/tutor/settings`; tài khoản, vị trí/quyền riêng tư, thông báo, bảo mật, giao diện, nhận lớp và hỗ trợ |
 
-T03 hiện dùng header workspace với map/tổng quan/avatar/logout và grouping đã phát triển từ Figma cũ; đây là mô tả current implementation, không phải chỉ thị restore Figma. Sidebar hiện có 9 mục; nhãn chưa có route không phải page đã implement. Preview Sáng/Chiều/Tối chỉ đọc và nhóm availability range đã lưu, link tới timetable để chỉnh range; không chỉnh lịch trực tiếp tại dashboard. T08/T12 dùng chung timeline range 7 ngày từ 06:00–24:00, thời điểm bắt đầu muộn nhất 22:00, session 45 hoặc 90 phút. `/tutor/availability` và `/tutor/lessons` chỉ là protected redirects.
+T03 hiện dùng header workspace với map/tổng quan/avatar/logout và grouping đã phát triển từ Figma cũ; đây là mô tả current implementation, không phải chỉ thị restore Figma. Sidebar giữ các mục hiện có; nhãn chưa có route không phải page đã implement. Preview Sáng/Chiều/Tối chỉ đọc và nhóm availability range đã lưu, link tới timetable để chỉnh range; không chỉnh lịch trực tiếp tại dashboard. T08/T12 dùng chung timeline range 7 ngày từ 06:00–24:00, thời điểm bắt đầu muộn nhất 22:00, session 45 hoặc 90 phút. `/tutor/availability` và `/tutor/lessons` chỉ là protected redirects.
 
 ## Admin
 

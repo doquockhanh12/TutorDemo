@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   Link,
@@ -14,13 +14,13 @@ import {
 
 import Badge from '../../components/Badge.jsx';
 import { requestLabel, requestTone } from '../domain/statusMetadata.js';
-import TutorHeader from './TutorHeader.jsx';
+import TutorWorkspaceLayout from './TutorWorkspaceLayout.jsx';
 import { useTutorProfile } from '../domain/DemoDomainContext.jsx';
-import { teachingLevels } from '../../data/tutorProfiles.js';
+import { subjectById } from '../../data/subjectCatalog.js';
+import { ImageUpload, StudentLevelSelector, SubjectSelector } from './TutorProfileFields.jsx';
 
 
 
-import TutorSidebar from './TutorSidebar.jsx';
 
 import useTutorWorkspace from './TutorWorkspaceState.jsx';
 
@@ -64,51 +64,15 @@ export function TutorShell({
   title,
   subtitle,
   children,
+  eyebrow = 'KHÔNG GIAN GIA SƯ · DEMO',
 }) {
-  const [open, setOpen] =
-    useState(false);
-
-  const { requests } =
-    useTutorWorkspace();
-
   return (
-    <div className="workspace tutor-workspace density-standard">
-      <TutorSidebar
-        open={open}
-        onClose={() =>
-          setOpen(false)
-        }
-        pendingCount={
-          requests.filter(
-            (item) =>
-              item.status ===
-              'pending'
-          ).length
-        }
-      />
-
-      {open && (
-        <button
-          className="workspace-scrim"
-          aria-label="Đóng điều hướng"
-          onClick={() =>
-            setOpen(false)
-          }
-        />
-      )}
-
-      <div className="workspace__main">
-        <TutorHeader
-          onOpen={() =>
-            setOpen(true)
-          }
-        />
-
+    <TutorWorkspaceLayout>
         <main className="tutor-main tutor-flow">
           <div className="tutor-page-head">
             <div>
               <span className="eyebrow">
-                KHÔNG GIAN GIA SƯ · DEMO
+                {eyebrow}
               </span>
 
               <h1>{title}</h1>
@@ -119,8 +83,7 @@ export function TutorShell({
 
           {children}
         </main>
-      </div>
-    </div>
+    </TutorWorkspaceLayout>
   );
 }
 
@@ -138,12 +101,24 @@ export function TutorProfile() {
   const [draft, setDraft] =
     useState(() => ({
       ...profile,
-      levels: Array.isArray(profile.levels) ? profile.levels : ['THCS', 'THPT'],
+      levels: Array.isArray(profile.levels) ? profile.levels : [],
       sessionMinutes,
     }));
 
   const [saved, setSaved] =
     useState(false);
+  const [images, setImages] = useState({ avatar: null, front: null, back: null });
+  const imageUrls = useRef([]);
+  const [imageNotice, setImageNotice] = useState('');
+  useEffect(() => () => imageUrls.current.forEach((url) => URL.revokeObjectURL(url)), []);
+  const changeImage = (key, file) => {
+    const previous = images[key]?.url;
+    if (previous) { URL.revokeObjectURL(previous); imageUrls.current = imageUrls.current.filter((url) => url !== previous); }
+    const url = file ? URL.createObjectURL(file) : null;
+    if (url) imageUrls.current.push(url);
+    setImages({ ...images, [key]: file ? { file, url } : null });
+    setImageNotice('Ảnh chỉ được giữ trong phiên hiện tại; chưa gửi lên máy chủ.');
+  };
 
   const change = (
     key,
@@ -160,7 +135,8 @@ export function TutorProfile() {
   return (
     <TutorShell
       title="Hồ sơ gia sư"
-      subtitle="Xem và chỉnh thông tin hiển thị trong hồ sơ demo."
+      subtitle="Xem và chỉnh thông tin hiển thị trong hồ sơ gia sư."
+      eyebrow="KHÔNG GIAN GIA SƯ"
     >
       <div className="tutor-flow__grid">
         <form
@@ -196,31 +172,10 @@ export function TutorProfile() {
             />
           </label>
 
-          <label>
-            Môn có thể dạy
-
-            <input
-              required
-              value={
-                draft.subjects
-              }
-              onChange={(event) =>
-                change(
-                  'subjects',
-                  event.target.value
-                )
-              }
-            />
-          </label>
-
-          <fieldset className="tutor-level-options">
-            <legend>Cấp độ có thể dạy</legend>
-            <p>Chọn một hoặc nhiều cấp độ phù hợp.</p>
-            <div>{teachingLevels.map((level) => <label key={level}>
-              <input type="checkbox" checked={draft.levels.includes(level)} onChange={() => change('levels', draft.levels.includes(level) ? draft.levels.filter((item) => item !== level) : [...draft.levels, level])}/>
-              <span>{level}</span>
-            </label>)}</div>
-          </fieldset>
+          <SubjectSelector selectedIds={draft.subjectIds} onChange={(ids) => change('subjectIds', ids)}/>
+          <StudentLevelSelector selected={draft.levels} onChange={(levels) => change('levels', levels)}/>
+          <div className="profile-upload-grid"><ImageUpload label="Ảnh đại diện" description="Ảnh hiển thị khi xem trước hồ sơ." value={images.avatar} onChange={(file) => changeImage('avatar', file)}/><ImageUpload label="CCCD mặt trước" description="Chỉ phục vụ xác minh thông tin, không hiển thị công khai." value={images.front} onChange={(file) => changeImage('front', file)}/><ImageUpload label="CCCD mặt sau" description="Chỉ phục vụ xác minh thông tin, không hiển thị công khai." value={images.back} onChange={(file) => changeImage('back', file)}/></div>
+          {imageNotice && <p role="status" className="profile-image-notice">{imageNotice}</p>}
 
           <label>
             Khu vực dạy
@@ -299,7 +254,7 @@ export function TutorProfile() {
             className="button button--primary"
             type="submit"
           >
-            Lưu hồ sơ demo
+            Lưu hồ sơ
           </button>
 
           {saved && (
@@ -323,7 +278,7 @@ export function TutorProfile() {
           </h3>
 
           <p>
-            {draft.subjects} ·{' '}
+            {draft.subjectIds.map((id) => subjectById(id)?.name).filter(Boolean).join(', ') || 'Chưa chọn môn học'} ·{' '}
             {draft.area}
           </p>
 
@@ -349,7 +304,7 @@ export function TutorProfile() {
           <p>
             {draft.bio}
           </p>
-          <p>Cấp độ: {draft.levels.join(', ') || 'Chưa chọn cấp độ'}</p>
+          <p>Đối tượng học viên: {draft.levels.join(', ') || 'Chưa chọn'}</p>
 
           <Link
             className="text-link"

@@ -46,6 +46,8 @@ Tutor schedule update: gộp lịch rảnh/lịch dạy ở `/tutor/timetable` t
 
 Tutor lesson detail update (2026-10-04): nhấn lớp trên timetable mở modal giữa màn hình, thay phần chi tiết bên dưới lịch. Modal có môn học, người học, ngày/giờ, địa điểm, trạng thái, ghi chú và action đánh dấu hoàn tất. Lưu ghi chú lưu riêng theo lesson trong workspace local; đánh dấu hoàn tất đồng thời lưu nội dung ghi chú hiện tại và cập nhật trạng thái ngay trong modal. Lớp hoàn tất chuyển sang xám mờ, vẫn mở được để xem/sửa ghi chú; các lớp khác giữ màu hiện có. Modal hỗ trợ ESC, focus trap/return focus và cuộn nội bộ trên màn nhỏ.
 
+Tutor Settings update (2026-10-10): mục Cài đặt hiện có trong sidebar dẫn tới protected `/tutor/settings` qua React Router, dùng TutorShell hiện hành. Thông tin tài khoản dùng mock auth theo account ID; tên/khu vực/phí/hình thức dạy dùng canonical Tutor profile. Tùy chọn vị trí, thông báo và nhận lớp khác lưu localStorage theo account ID để mô phỏng UI; chưa áp thành quy tắc tìm kiếm/matching. Đổi mật khẩu thay mock credential cục bộ; ảnh đại diện chỉ preview trong phiên. Thiết bị đăng nhập, xác thực điện thoại, hỗ trợ và xóa tài khoản là tương tác mô phỏng, không phải dịch vụ thật. Theme toàn app gồm light/dark/system, lựa chọn lưu ở key `theme`; system theo `prefers-color-scheme`, CSS tokens và các màn có hardcoded colors được override cho dark mode. Không có backend cho Settings.
+
 **Frontend-only interactive prototype** dùng mock data và local frontend state. Tập trung vào UI, navigation, responsive, validation phía client và tương tác có thể thử. Trạng thái yêu cầu, hồ sơ gia sư, lịch/buổi học và review chỉ phục vụ hiển thị demo; chưa phải quy tắc nghiệp vụ cuối cùng. Không triển khai auth/authorization backend, API thật, database, ORM, migration hoặc transaction.
 
 ### Core journey cần thể hiện
@@ -142,3 +144,17 @@ Các quyết định còn mở không phải chỉ thị triển khai backend. C
 - Account suspended có lối xác thực giới hạn dành riêng cho kháng cáo; không unlock Learner/Tutor workspace. Shared login/auth guard chính giữ behavior cũ.
 - Acceptance là kết quả xem xét kháng cáo, không tự hủy cảnh cáo hay mở khóa. Policy tác động lên warning/suspension và kiểm chứng bằng chứng thật vẫn UNKNOWN/chưa triển khai.
 - Frontend-only: file lưu nội dung trong demo storage, không server upload. Tối đa 3 bằng chứng; mỗi tệp 500 KB, tổng 1 MB. Không tuyên bố dữ liệu đã xác minh hoặc application đã đủ production security.
+
+## Tutor profile and workspace refinements (2026-10-11)
+
+- Tutor profile subjects are selected from a frontend category catalog by ID. Search accepts aliases and Vietnamese accent-insensitive input; an unknown skill may be requested with local PENDING status, without adding it to the selected catalog. Existing public profile subject names remain a display projection of selected IDs.
+- Learner groups are independent of subjects. Selecting Mọi độ tuổi replaces narrower groups; selecting a narrower group clears Mọi độ tuổi.
+- Tutor profile avatar and front/back CCCD use validated image previews held in the current page session only. CCCD images are private form previews and are never projected to public tutor data. Real upload, review and verification remain future API work.
+- Tutor discovery filters combine selected subject, area, fee range and saved availability against shared pending mock requests. Settings keeps teaching formats and request/privacy controls; area and fee remain in Tutor profile.
+
+## Tutor filter, switch and shell follow-up (2026-10-11)
+
+- `Tìm học viên mới` dùng section mở/đóng cho Môn học và Khu vực. Danh mục môn lấy từ subject catalog; khu vực gồm lựa chọn minh họa và khu vực trong shared pending requests. Có thể chọn nhiều, tìm môn, kéo khoảng học phí và reset. Bộ lọc vẫn thao tác được khi chưa lưu lịch rảnh; kết quả cần lịch rảnh đã lưu theo behavior hiện hành.
+- Danh sách yêu cầu canonical giữ đúng 9 record theo invariant đã duyệt; không tạo Request store thứ hai chỉ để lấp đầy kết quả lọc. Các lựa chọn chưa có request phù hợp sẽ cho empty state. `Khung giờ đã lưu` mở/đóng bằng details và điều hướng về timetable.
+- SettingToggle dùng một native checkbox với role switch và lưu qua settings localStorage hiện có. ON/OFF được phân biệt bằng track, vị trí thumb và aria state trong cả hai theme.
+- Dashboard và các trang Tutor dùng chung workspace layout, sidebar width 228px, cùng padding/nav item geometry. Active item chỉ đổi màu và nền.
