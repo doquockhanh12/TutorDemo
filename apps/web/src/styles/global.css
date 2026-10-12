@@ -1,3 +1,4 @@
+html { scrollbar-gutter: stable; }
 body { min-width: 320px; background: var(--color-canvas); color: var(--color-ink); font-family: var(--font-ui); font-size: var(--text-body); line-height: 1.5; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { color: inherit; }
 button { border: 0; }

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { MapPin, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
+import { Banknote, MapPin, Search, SlidersHorizontal, Sparkles, Star, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Brand from '../../components/Brand.jsx';
 import Button from '../../components/Button.jsx';
@@ -17,10 +17,21 @@ export default function LearnerSearch() {
   const tutors = useScheduledTutors();
   const subjectOptions = ['Tất cả môn', ...new Set(tutors.flatMap((tutor) => tutor.subjects))];
   const locationOptions = ['Tất cả khu vực', ...new Set(tutors.map((tutor) => tutor.location).filter(Boolean))];
+  const priceOptions = [
+    { label: 'Mọi mức phí', value: 'all' },
+    { label: 'Đến 160.000đ / buổi', value: '160000' },
+    { label: 'Đến 180.000đ / buổi', value: '180000' },
+    { label: 'Đến 200.000đ / buổi', value: '200000' },
+  ];
+  const sortOptions = [
+    { label: 'Phù hợp nhất', value: 'recommended', icon: Sparkles },
+    { label: 'Đánh giá cao nhất', value: 'rating', icon: Star },
+    { label: 'Học phí thấp nhất', value: 'price', icon: Banknote },
+  ];
   const [query, setQuery] = useState('');
-  const [subject, setSubject] = useState([]);
-  const [location, setLocation] = useState([]);
-  const [availability, setAvailability] = useState([]);
+  const [subject, setSubject] = useState('');
+  const [location, setLocation] = useState('');
+  const [availability, setAvailability] = useState('');
   const [maxPrice, setMaxPrice] = useState('all');
   const [sortBy, setSortBy] = useState('recommended');
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -43,9 +54,9 @@ export default function LearnerSearch() {
     const normalized = query.trim().toLocaleLowerCase('vi-VN');
     const filtered = tutors.filter((tutor) => (
       (!normalized || [tutor.name, tutor.university, tutor.location, ...tutor.subjects].join(' ').toLocaleLowerCase('vi-VN').includes(normalized)) &&
-      (!subject.length || subject.some((value) => tutor.subjects.includes(value))) &&
-      (!location.length || location.includes(tutor.location)) &&
-      (!availability.length || availability.some((value) => tutor.availability.includes(value))) &&
+      (!subject || tutor.subjects.includes(subject)) &&
+      (!location || tutor.location === location) &&
+      (!availability || tutor.availability.includes(availability)) &&
       (maxPrice === 'all' || tutor.price <= Number(maxPrice))
     ));
     return [...filtered].sort((a, b) => {
@@ -55,15 +66,15 @@ export default function LearnerSearch() {
     });
   }, [tutors, query, subject, location, availability, maxPrice, sortBy]);
 
-  const activeFilterCount = subject.length + location.length + availability.length + Number(maxPrice !== 'all');
+  const activeFilterCount = Number(Boolean(subject)) + Number(Boolean(location)) + Number(Boolean(availability)) + Number(maxPrice !== 'all');
   const toggleSave = (id) => setSavedIds((ids) => ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id]);
-  const clearFilters = () => { setQuery(''); setSubject([]); setLocation([]); setAvailability([]); setMaxPrice('all'); };
+  const clearFilters = () => { setQuery(''); setSubject(''); setLocation(''); setAvailability(''); setMaxPrice('all'); };
   const filterGroups = [
     { title: 'Môn học', options: subjectOptions, selected: subject, onChange: setSubject },
     { title: 'Khu vực', options: locationOptions, selected: location, onChange: setLocation },
     { title: 'Thời gian rảnh', options: availabilityOptions, selected: availability, onChange: setAvailability },
+    { title: 'Học phí tối đa', options: priceOptions, selected: maxPrice, onChange: setMaxPrice, defaultValue: 'all' },
   ];
-  const priceLabel = `Đến ${Number(maxPrice).toLocaleString('vi-VN')}đ / buổi`;
   const showResults = (event) => {
     event.preventDefault();
     resultsRef.current?.focus({ preventScroll: true });
@@ -98,34 +109,14 @@ export default function LearnerSearch() {
                 <X size={20} aria-hidden="true" />
               </button>
             </div>
-            <div className="learner-search-filter-grid">
-              {filterGroups.map((group) => <QuickFilter key={group.title} {...group} />)}
-              <label className="learner-search-price" htmlFor="filter-price">Học phí tối đa
-                <select id="filter-price" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)}>
-                  <option value="all">Mọi mức phí</option>
-                  <option value="160000">Đến 160.000đ / buổi</option>
-                  <option value="180000">Đến 180.000đ / buổi</option>
-                  <option value="200000">Đến 200.000đ / buổi</option>
-                </select>
-              </label>
+            <div className="learner-search-filter-bar">
+              <div className="learner-search-filter-grid">
+                {filterGroups.map((group) => <QuickFilter key={group.title} {...group} />)}
+              </div>
               <button className="text-button learner-search-clear" type="button" disabled={!activeFilterCount && !query} onClick={clearFilters}>Xóa bộ lọc</button>
             </div>
             <Button className="learner-search-filters__apply" onClick={() => setFiltersOpen(false)}>Xem {results.length} gia sư</Button>
           </div>
-          {activeFilterCount > 0 && (
-            <div className="learner-search-chips" aria-label="Bộ lọc đang áp dụng">
-              {filterGroups.flatMap(({ title, selected, onChange }) => selected.map((value) => (
-                <button key={`${title}-${value}`} type="button" aria-label={`Bỏ ${title.toLocaleLowerCase('vi-VN')}: ${value}`} onClick={() => onChange(selected.filter((item) => item !== value))}>
-                  {value}<X size={14} aria-hidden="true" />
-                </button>
-              )))}
-              {maxPrice !== 'all' && (
-                <button type="button" aria-label={`Bỏ học phí: ${priceLabel}`} onClick={() => setMaxPrice('all')}>
-                  {priceLabel}<X size={14} aria-hidden="true" />
-                </button>
-              )}
-            </div>
-          )}
         </section>
 
         <section ref={resultsRef} tabIndex={-1} className="learner-container learner-content learner-search-results" id="ket-qua" aria-label="Kết quả tìm gia sư">
@@ -134,18 +125,23 @@ export default function LearnerSearch() {
               <h2>Gia sư phù hợp</h2>
               <p role="status" aria-live="polite">{results.length} gia sư phù hợp tại TP. Hồ Chí Minh</p>
             </div>
-            <div className="learner-results__actions">
-              <Link className="learner-search-map-link" to="/learner/map"><MapPin size={17} aria-hidden="true" /> Xem bản đồ</Link>
-              <label htmlFor="sort-tutors">Sắp xếp</label>
-              <select id="sort-tutors" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
-                <option value="recommended">Đề xuất</option>
-                <option value="rating">Đánh giá cao</option>
-                <option value="price">Học phí thấp</option>
-              </select>
+            <div className="learner-results__actions flex items-center gap-4">
+              <Link className="learner-search-map-link" to="/map">
+                <MapPin size={17} aria-hidden="true" /> Xem bản đồ
+              </Link>
+              <div className="learner-sort-control flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg bg-white shadow-sm">
+                <QuickFilter
+                  className="search-filter--sort"
+                  title="Sắp xếp"
+                  options={sortOptions}
+                  selected={sortBy}
+                  onChange={setSortBy}
+                />
+              </div>
             </div>
           </div>
           {results.length ? (
-            <div className="tutor-results-grid">
+            <div className="tutor-results-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {results.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} saved={savedIds.includes(tutor.id)} onSave={toggleSave} />)}
             </div>
           ) : (

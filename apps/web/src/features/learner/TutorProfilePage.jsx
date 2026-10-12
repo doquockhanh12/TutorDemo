@@ -1,44 +1,24 @@
-import {
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
-
-import {
-  Link,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
-
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   BadgeCheck,
-  Bookmark,
-  Clock3,
+  BookOpen,
+  GraduationCap,
+  Heart,
   MapPin,
+  MessageCircle,
+  Play,
   Star,
 } from 'lucide-react';
 
 import Avatar from '../../components/Avatar.jsx';
 import Brand from '../../components/Brand.jsx';
+import useDemoDomain, { useSavedTutors } from '../domain/DemoDomainContext.jsx';
 
-import useDemoDomain from '../domain/DemoDomainContext.jsx';
-
-import ProfileCalendar from './ProfileCalendar.jsx';
-import ProfileChoices from './ProfileChoices.jsx';
-
-import {
-  removeSelectedProposal,
-} from './profileSelection.js';
-
-import {
-  usePublicTutorSchedule,
-} from '../tutor/TutorWorkspaceState.jsx';
-
-import { useSavedTutors } from '../domain/DemoDomainContext.jsx';
+import BookingModal from './BookingModal.jsx';
 import LearnerHeader from './LearnerHeader.jsx';
-import TutorRequestForm from './TutorRequestForm.jsx';
+import ProfileCalendar from './ProfileCalendar.jsx';
 
 import './search.css';
 import './profile.css';
@@ -48,602 +28,403 @@ export default function TutorProfilePage() {
   const domain = useDemoDomain();
   const tutors = domain.profiles || [];
   const reviews = domain.reviews || [];
-
-  const { hash } =
-    useLocation();
+  const { hash } = useLocation();
 
   useLayoutEffect(() => {
-    const target =
-      hash &&
-      document.getElementById(
-        hash.slice(1)
-      );
+    const target = hash && document.getElementById(hash.slice(1));
 
     if (target) {
-      target.scrollIntoView({
-        behavior: 'instant',
-      });
+      target.scrollIntoView({ behavior: 'instant' });
     } else {
-      window.scrollTo({
-        top: 0,
-        behavior: 'instant',
-      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [id, hash]);
 
-  const rawTutor =
-    tutors.find(
-      (item) =>
-        item.id === id
-    );
-  const tutor = (rawTutor && (rawTutor.moderationStatus || 'approved') === 'approved') ? rawTutor : null;
+  const rawTutor = tutors.find((item) => item.id === id);
+  const tutor = rawTutor && (rawTutor.moderationStatus || 'approved') === 'approved'
+    ? rawTutor
+    : null;
 
   return (
-    <div className="public-page public-page--learner learner-page learner-search-page density-comfortable">
-      <LearnerHeader />
+    <div className="public-page public-page--learner learner-page learner-search-page density-comfortable tutor-profile-shell bg-slate-50 min-h-screen">
+      <LearnerHeader compact />
 
-      <main className="learner-container tutor-profile-page">
-        <nav
-          className="profile-breadcrumb"
-          aria-label="Đường dẫn"
-        >
-          <Link to="/learner/search">
-            <ArrowLeft size={17} />
-            Tìm gia sư
+      <main className="tutor-profile-page bg-slate-50 min-h-screen py-6">
+        <div className="tutor-profile-page__container max-w-6xl mx-auto px-4 flex flex-col gap-6">
+          <Link className="profile-back-link" to="/learner/search">
+            <ArrowLeft size={17} aria-hidden="true" />
+            Quay lại tìm kiếm
           </Link>
 
-          <span>/</span>
-
-          <span>
-            Hồ sơ gia sư
-          </span>
-        </nav>
-
-        {tutor ? (
-          <ProfileContent
-            key={id}
-            tutor={tutor}
-            reviews={reviews}
-          />
-        ) : (
-          <section className="learner-empty">
-            <h1>
-              Không tìm thấy gia sư
-            </h1>
-
-            <p>
-              Hồ sơ này không có trong
-              dữ liệu minh họa.
-            </p>
-
-            <Link
-              className="button button--primary button--md"
-              to="/learner/search"
-            >
-              Trở về tìm kiếm
-            </Link>
-          </section>
-        )}
+          {tutor ? (
+            <ProfileContent key={id} tutor={tutor} reviews={reviews} />
+          ) : (
+            <section className="learner-empty">
+              <h1>Không tìm thấy gia sư</h1>
+              <p>Hồ sơ này không có trong dữ liệu minh họa.</p>
+              <Link className="button button--primary button--md" to="/learner/search">
+                Trở về tìm kiếm
+              </Link>
+            </section>
+          )}
+        </div>
       </main>
 
       <footer className="learner-footer">
         <div className="learner-container">
           <Brand compact />
-
-          <p>
-            Kết nối đúng người. Học theo
-            cách của bạn.
-          </p>
-
-          <span>
-            Hồ sơ và đánh giá minh họa ·
-            TutorNearMe
-          </span>
+          <p>Kết nối đúng người. Học theo cách của bạn.</p>
+          <span>Hồ sơ và đánh giá minh họa · TutorNearMe</span>
         </div>
       </footer>
     </div>
   );
 }
 
-function ProfileContent({
-  tutor,
-  reviews: propReviews,
-}) {
+function ProfileContent({ tutor, reviews: allReviews }) {
   const domain = useDemoDomain();
-  const reviews = propReviews || domain.reviews || [];
+  const reviews = allReviews || domain.reviews || [];
+  const { hash } = useLocation();
+  const [savedTutors, setSavedTutors] = useSavedTutors();
+  const [bookingOpen, setBookingOpen] = useState(hash === '#profile-request');
+  const [videoNotice, setVideoNotice] = useState(false);
 
-  const visibleReviews = useMemo(() => {
-    const tid = tutor?.id;
-    return reviews.filter(
-      (r) =>
-        (r.tutorId === tid || r.tutorId === tutor?.id) &&
-        (r.moderationStatus || 'approved') === 'approved' &&
-        (r.visibility || 'public') === 'public'
-    );
-  }, [reviews, tutor?.id]);
+  useEffect(() => {
+    if (hash === '#profile-request') setBookingOpen(true);
+  }, [hash]);
+
+  const visibleReviews = useMemo(
+    () => reviews.filter(
+      (review) => review.tutorId === tutor.id
+        && (review.moderationStatus || 'approved') === 'approved'
+        && (review.visibility || 'public') === 'public'
+    ),
+    [reviews, tutor.id]
+  );
 
   const ratingSummary = useMemo(() => {
     if (!visibleReviews.length) {
       return { averageRating: 0, reviewCount: 0, hasReviews: false };
     }
-    const sum = visibleReviews.reduce((acc, r) => acc + (r.rating || 0), 0);
-    const avg = Number((sum / visibleReviews.length).toFixed(1));
-    return { averageRating: avg, reviewCount: visibleReviews.length, hasReviews: true };
+
+    const total = visibleReviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    return {
+      averageRating: Number((total / visibleReviews.length).toFixed(1)),
+      reviewCount: visibleReviews.length,
+      hasReviews: true,
+    };
   }, [visibleReviews]);
 
-  const [saved, setSaved] =
-    useSavedTutors();
-
-  const [params] =
-    useSearchParams();
-
-  const [
-    validationErrors,
-    setValidationErrors,
-  ] = useState({});
-
-  const [
-    selection,
-    setSelection,
-  ] = useState(() => ({
-    subjects: [
-      ...new Set(
-        params
-          .getAll('subject')
-          .filter((subject) =>
-            tutor.subjects.includes(
-              subject
-            )
-          )
-      ),
-    ],
-
-    levels: [],
-    proposals: [],
-    formats: [],
-    areas: [],
-  }));
-
-  const toggleChoice = (
-    key,
-    value
-  ) =>
-    setSelection(
-      (current) => ({
-        ...current,
-
-        [key]:
-          current[
-            key
-          ].includes(value)
-            ? current[key].filter(
-                (item) =>
-                  item !== value
-              )
-            : [
-                ...current[key],
-                value,
-              ],
-      })
-    );
-
-  const removeRange = (
-    range
-  ) =>
-    setSelection(
-      (current) => ({
-        ...current,
-
-        proposals:
-          removeSelectedProposal(
-            current.proposals,
-            range
-          ),
-      })
-    );
-
-  const {
-    sessionMinutes,
-  } = usePublicTutorSchedule(
-    tutor
+  const featuredReviews = useMemo(
+    () => [...visibleReviews]
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0)
+        || new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .slice(0, 2),
+    [visibleReviews]
   );
 
-  const profile = tutor;
+  const isSaved = savedTutors.includes(tutor.id);
+  const price = new Intl.NumberFormat('vi-VN').format(tutor.price);
 
-  const isSaved =
-    saved.includes(tutor.id);
-
-  const subjectInvalid =
-    Boolean(
-      validationErrors.subjects || validationErrors.levels
-    );
-
-  const calendarInvalid =
-    Boolean(
-      validationErrors.proposals
-    );
-
-  const locationInvalid =
-    Boolean(
-      validationErrors.formats ||
-        validationErrors.areas
-    );
+  const toggleSaved = () => {
+    setSavedTutors((current) => isSaved
+      ? current.filter((value) => value !== tutor.id)
+      : [...current, tutor.id]);
+  };
 
   return (
-    <div className="tutor-profile-layout">
-      <div className="tutor-profile-main">
-        <section className="profile-identity">
-          <Avatar
-            initials={
-              tutor.initials
-            }
-            name={
-              tutor.name
-            }
-            tone={
-              tutor.avatarTone
-            }
-            size="xl"
-          />
+    <>
+      <div className="profile-landing flex flex-col gap-6">
+        <div className="profile-landing__hero grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="profile-landing__media lg:col-span-8">
+            <TutorMediaBox
+              tutor={tutor}
+              notice={videoNotice}
+              onPlay={() => setVideoNotice(true)}
+            />
+          </div>
 
-          <div className="profile-identity__info">
-            <span className="eyebrow">
-              HỒ SƠ GIA SƯ · DEMO
-            </span>
-
-            <h1>
-              {tutor.name}
-            </h1>
-
-            <span
-              className={`profile-verification ${
-                tutor.verified
-                  ? 'is-verified'
-                  : ''
-              }`}
-            >
-              <BadgeCheck
-                size={16}
-              />
-
-              {tutor.verified
-                ? 'Hồ sơ demo đã xác minh'
-                : 'Hồ sơ demo chưa xác minh'}
-            </span>
-
-            <p>
-              {tutor.university}
-              {' · '}
-              {
-                tutor.experience
-              }
+          <section className="profile-bento__box profile-bento__cta profile-landing__cta bg-white rounded-3xl p-8 shadow-sm flex flex-col gap-4 lg:col-span-4" aria-label="Học phí và liên hệ">
+            <span className="profile-bento__eyebrow">HỌC PHÍ THEO BUỔI</span>
+            <p className="profile-bento__price">
+              {price}đ <small>/ buổi</small>
             </p>
-
-            {ratingSummary.hasReviews ? (
-              <span className="profile-rating">
-                <Star
-                  size={17}
-                  fill="currentColor"
-                />
-
-                <strong>
-                  {ratingSummary.averageRating}/5
-                </strong>
-
-                {' · '}
-                {ratingSummary.reviewCount}{' '}
-                đánh giá
-              </span>
-            ) : (
-              <span className="profile-rating">Chưa có đánh giá</span>
-            )}
-          </div>
-
-          <div className="profile-identity__action">
-            <strong>
-              {new Intl.NumberFormat(
-                'vi-VN'
-              ).format(
-                tutor.price
-              )}
-              đ{' '}
-
-              <small>
-                / buổi
-              </small>
-            </strong>
-
-            <span>
-              <Clock3
-                size={15}
-              />
-
-              {sessionMinutes}{' '}
-              phút / buổi
-            </span>
-
             <button
-              className="button button--secondary button--sm"
-              aria-pressed={
-                isSaved
-              }
-              onClick={() =>
-                setSaved(
-                  (ids) =>
-                    isSaved
-                      ? ids.filter(
-                          (
-                            value
-                          ) =>
-                            value !==
-                            tutor.id
-                        )
-                      : [
-                          ...ids,
-                          tutor.id,
-                        ]
-                )
-              }
+              className="button button--primary button--md profile-bento__book"
+              type="button"
+              onClick={() => setBookingOpen(true)}
             >
-              <Bookmark
-                size={17}
-                fill={
-                  isSaved
-                    ? 'currentColor'
-                    : 'none'
-                }
-              />
-
-              {isSaved
-                ? 'Đã lưu hồ sơ'
-                : 'Lưu hồ sơ'}
+              ĐẶT LỊCH HỌC
             </button>
+            <button
+              className="button button--secondary button--md profile-bento__message"
+              type="button"
+              disabled
+              aria-describedby="profile-message-status"
+            >
+              <MessageCircle size={18} aria-hidden="true" />
+              Nhắn tin
+            </button>
+            <span className="sr-only" id="profile-message-status">
+              Tính năng nhắn tin chưa có trong bản demo.
+            </span>
+          </section>
+        </div>
+
+        <TutorIdentityBox
+          tutor={tutor}
+          isSaved={isSaved}
+          onToggleSaved={toggleSaved}
+          ratingSummary={ratingSummary}
+        />
+
+        <section className="profile-bento__box profile-bento__intro profile-landing__intro bg-white rounded-3xl shadow-sm p-8">
+          <div className="profile-bento__section-heading">
+            <span className="profile-bento__eyebrow">LÀM QUEN VỚI GIA SƯ</span>
+            <h2>Giới thiệu & phương pháp</h2>
           </div>
-        </section>
-
-        <section className="profile-section">
-          <h2>
-            Giới thiệu
-          </h2>
-
-          <p>
-            {tutor.intro}
+          <div className="profile-bento__intro-copy">
+            <article>
+              <h3>Đôi nét về {tutor.name}</h3>
+              <p>{tutor.intro || 'Gia sư chưa cập nhật phần giới thiệu.'}</p>
+            </article>
+            <article>
+              <h3>Cách đồng hành</h3>
+              <p>{tutor.approach || 'Gia sư chưa cập nhật phương pháp giảng dạy.'}</p>
+            </article>
+          </div>
+          <p className="profile-bento__detail-note">
+            Địa điểm cụ thể sẽ được trao đổi khi gia sư phản hồi yêu cầu.
           </p>
-
-          <h3>
-            Phương pháp đồng hành
-          </h3>
-
-          <p>
-            {profile.approach}
-          </p>
-        </section>
-
-        <section
-          className={
-            'profile-section' +
-            (subjectInvalid
-              ? ' is-validation-error'
-              : '')
-          }
-          id="profile-subjects"
-          aria-invalid={
-            subjectInvalid ||
-            undefined
-          }
-        >
-          <h2>
-            Môn dạy & cấp độ
-          </h2>
-
-          <p>
-            Chọn ít nhất một môn và một cấp độ. Các
-            lựa chọn tự thêm vào form gửi
-            yêu cầu.
-          </p>
-
-          <ProfileChoices
-            title="Môn học"
-            options={
-              tutor.subjects
-            }
-            selected={
-              selection.subjects
-            }
-            onToggle={(
-              value
-            ) =>
-              toggleChoice(
-                'subjects',
-                value
-              )
-            }
-          />
-
-          <ProfileChoices
-            title="Cấp độ *"
-            options={
-              profile.levels
-            }
-            selected={
-              selection.levels
-            }
-            onToggle={(
-              value
-            ) =>
-              toggleChoice(
-                'levels',
-                value
-              )
-            }
-          />
         </section>
 
         <ProfileCalendar
           tutor={tutor}
-          selected={
-            selection.proposals
-          }
-          invalid={
-            calendarInvalid
-          }
-          onAdd={(
-            proposal
-          ) =>
-            setSelection(
-              (current) => ({
-                ...current,
-
-                proposals: [
-                  ...current.proposals,
-                  proposal,
-                ],
-              })
-            )
-          }
-          onRemove={
-            removeRange
-          }
+          readOnly
+          id="profile-calendar-overview"
+          className="profile-bento__box profile-bento__schedule profile-landing__schedule"
         />
 
-        <section
-          className={
-            'profile-section' +
-            (locationInvalid
-              ? ' is-validation-error'
-              : '')
-          }
-          id="profile-location"
-          aria-invalid={
-            locationInvalid ||
-            undefined
-          }
-        >
-          <h2>
-            <MapPin
-              size={21}
-            />
-            Khu vực & hình thức dạy
-          </h2>
-
-          <ProfileChoices
-            title="Hình thức học"
-            options={
-              profile.formats
-            }
-            selected={
-              selection.formats
-            }
-            onToggle={(
-              value
-            ) =>
-              toggleChoice(
-                'formats',
-                value
-              )
-            }
-          />
-
-          <ProfileChoices
-            title="Khu vực học"
-            options={
-              profile.areas
-            }
-            selected={
-              selection.areas
-            }
-            onToggle={(
-              value
-            ) =>
-              toggleChoice(
-                'areas',
-                value
-              )
-            }
-          />
-
-          <p>
-            Có thể chọn nhiều phương án
-            phù hợp. Địa điểm cụ thể sẽ
-            được trao đổi khi gia sư phản
-            hồi.
-          </p>
-        </section>
+        <TutorReviews
+          reviews={featuredReviews}
+          allReviews={visibleReviews}
+          ratingSummary={ratingSummary}
+        />
       </div>
 
-      <aside className="tutor-profile-aside">
-        <TutorRequestForm
-          tutor={tutor}
-          selection={
-            selection
-          }
-          onToggle={
-            toggleChoice
-          }
-          onRemoveRange={
-            removeRange
-          }
-          onValidationErrors={
-            setValidationErrors
-          }
+      <BookingModal
+        tutor={tutor}
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+      />
+    </>
+  );
+}
+
+function TutorMediaBox({ tutor, notice, onPlay }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (tutor.videoUrl) {
+    return (
+      <section className="profile-bento__box profile-bento__media aspect-video rounded-3xl" aria-label={`Video giới thiệu của ${tutor.name}`}>
+        <video controls playsInline poster={tutor.image} src={tutor.videoUrl}>
+          Trình duyệt của bạn không hỗ trợ phát video.
+        </video>
+      </section>
+    );
+  }
+
+  return (
+    <section className="profile-bento__box profile-bento__media aspect-video rounded-3xl" aria-label={`Ảnh giới thiệu của ${tutor.name}`}>
+      <div className="profile-bento__poster-fallback" aria-hidden="true">
+        <Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone} size="xl" />
+      </div>
+      {!imageFailed && tutor.image && (
+        <img
+          className="profile-bento__poster"
+          src={tutor.image}
+          alt={`Ảnh hồ sơ của ${tutor.name}`}
+          onError={() => setImageFailed(true)}
         />
+      )}
+      <div className="profile-bento__media-shade" aria-hidden="true" />
+      <span className="profile-bento__media-label">
+        <BookOpen size={16} aria-hidden="true" />
+        HỒ SƠ GIA SƯ
+      </span>
+      <button className="profile-bento__play" type="button" onClick={onPlay} aria-label="Phát video giới thiệu">
+        <Play size={24} fill="currentColor" aria-hidden="true" />
+      </button>
+      <div className="profile-bento__media-caption">
+        <span>GIỚI THIỆU</span>
+        <strong>{tutor.name}</strong>
+        <small>{tutor.subjects?.slice(0, 2).join(' · ')}</small>
+      </div>
+      {notice && (
+        <p className="profile-bento__media-notice" role="status">
+          Video giới thiệu chưa có trong hồ sơ này.
+        </p>
+      )}
+    </section>
+  );
+}
 
-        <section className="profile-reviews">
-          <h2>
-            Đánh giá gần đây
-          </h2>
+function TutorReviews({ reviews, allReviews, ratingSummary }) {
+  const distribution = [5, 4, 3, 2, 1].map((rating) => ({
+    rating,
+    count: allReviews.filter((review) => review.rating === rating).length,
+  }));
 
-          <p className="profile-reviews__note">
-            Nhận xét minh họa cho giao diện.
-          </p>
+  return (
+    <section className="profile-bento__box profile-bento__reviews bg-white rounded-3xl shadow-sm p-8" aria-labelledby="profile-reviews-title">
+      <div className="profile-bento__section-heading">
+        <span className="profile-bento__eyebrow">PHẢN HỒI HỌC VIÊN</span>
+        <h2 id="profile-reviews-title">Đánh giá gần đây</h2>
+      </div>
 
-          {visibleReviews.length === 0 ? (
-            <p className="profile-reviews__note" style={{ fontStyle: 'italic', marginTop: 'var(--space-2)' }}>
-              Chưa có đánh giá nào cho gia sư này.
-            </p>
-          ) : (
-            visibleReviews.map((review) => {
-              const reviewerName = review.name || review.author || review.learnerName || 'Học viên';
-              const reviewerInitials =
-                review.initials ||
-                reviewerName
-                  .trim()
-                  .split(/\s+/)
-                  .slice(-2)
-                  .map((s) => s[0])
-                  .join('')
-                  .toUpperCase() ||
-                'HV';
-              const reviewText = review.text || review.comment || review.excerpt || '';
-              const reviewDate = review.date || (review.createdAt ? new Date(review.createdAt).toLocaleDateString('vi-VN') : '');
+      {ratingSummary.hasReviews ? (
+        <div className="profile-bento__rating-summary">
+          <div className="profile-bento__rating-total">
+            <strong>{ratingSummary.averageRating.toFixed(1)}</strong>
+            <div aria-label={`${ratingSummary.averageRating} trên 5 sao`}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star key={star} size={15} fill="currentColor" aria-hidden="true" />
+              ))}
+            </div>
+            <span>{ratingSummary.reviewCount} đánh giá công khai</span>
+          </div>
+
+          <div className="profile-bento__rating-bars" aria-label="Phân bố đánh giá">
+            {distribution.map(({ rating, count }) => {
+              const percentage = ratingSummary.reviewCount
+                ? (count / ratingSummary.reviewCount) * 100
+                : 0;
 
               return (
-                <article key={review.id}>
-                  <Avatar
-                    initials={reviewerInitials}
-                    name={reviewerName}
-                    size="sm"
-                  />
-
-                  <div>
-                    <div className="profile-review__meta">
-                      <strong>{reviewerName}</strong>
-                      {reviewDate && <time>{reviewDate}</time>}
-                    </div>
-
-                    <span className="profile-rating">
-                      <Star size={14} fill="currentColor" />
-                      {review.rating}/5
-                    </span>
-
-                    <p>{reviewText}</p>
+                <div className="profile-bento__rating-row" key={rating}>
+                  <span>{rating} sao</span>
+                  <div
+                    className="profile-bento__progress"
+                    role="progressbar"
+                    aria-label={`${rating} sao`}
+                    aria-valuemin={0}
+                    aria-valuemax={ratingSummary.reviewCount}
+                    aria-valuenow={count}
+                  >
+                    <span style={{ width: `${percentage}%` }} />
                   </div>
-                </article>
+                  <strong>{count}</strong>
+                </div>
               );
-            })
+            })}
+          </div>
+        </div>
+      ) : (
+        <p className="profile-bento__empty">Gia sư chưa có đánh giá công khai.</p>
+      )}
+
+      <div className="profile-bento__review-list">
+        {reviews.length ? reviews.map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        )) : (
+          <p className="profile-bento__empty">Nhận xét sẽ xuất hiện tại đây sau buổi học.</p>
+        )}
+      </div>
+      <small className="profile-bento__demo-note">Đánh giá trong bản demo dùng dữ liệu minh họa.</small>
+    </section>
+  );
+}
+
+function ReviewCard({ review }) {
+  const name = review.name || review.author || review.learnerName || 'Học viên';
+  const initials = review.initials || name.trim().split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase();
+  const text = review.text || review.comment || review.excerpt || '';
+  const date = review.date || (review.createdAt
+    ? new Date(review.createdAt).toLocaleDateString('vi-VN')
+    : '');
+
+  return (
+    <article className="profile-bento__review">
+      <Avatar initials={initials} name={name} size="sm" />
+      <div className="profile-bento__review-content">
+        <div className="profile-bento__review-meta">
+          <strong>{name}</strong>
+          {date && <time>{date}</time>}
+        </div>
+        <span className="profile-bento__review-rating">
+          <Star size={14} fill="currentColor" aria-hidden="true" />
+          {review.rating}/5
+        </span>
+        {text && <p>{text}</p>}
+      </div>
+    </article>
+  );
+}
+
+function TutorIdentityBox({ tutor, isSaved, onToggleSaved, ratingSummary }) {
+  const subjects = tutor.subjects || [];
+  const areas = tutor.areas || [];
+
+  return (
+    <section className="profile-bento__box profile-landing__identity bg-white rounded-3xl shadow-sm p-6" aria-label="Thông tin gia sư">
+      <div className="profile-landing__identity-main">
+        <Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone} size="lg" />
+        <div className="profile-landing__identity-name">
+          <span className="profile-bento__eyebrow">GIA SƯ TUTORNEARME</span>
+          <h1>{tutor.name}</h1>
+          {ratingSummary.hasReviews ? (
+            <div className="profile-bento__rating">
+              <Star size={17} fill="currentColor" aria-hidden="true" />
+              <strong>{ratingSummary.averageRating.toFixed(1)}</strong>
+              <span>({ratingSummary.reviewCount} đánh giá)</span>
+            </div>
+          ) : (
+            <p className="profile-bento__rating-empty">Chưa có đánh giá</p>
           )}
-        </section>
-      </aside>
-    </div>
+        </div>
+      </div>
+
+      <div className="profile-landing__identity-details">
+        <p className="profile-bento__identity-meta">
+          <BookOpen size={16} aria-hidden="true" />
+          <span>{subjects.length ? subjects.join(' · ') : 'Chưa cập nhật môn dạy'}</span>
+        </p>
+        <p className="profile-bento__identity-meta">
+          <MapPin size={16} aria-hidden="true" />
+          <span>{areas.length ? areas.join(' · ') : (tutor.location || 'Chưa cập nhật khu vực')}</span>
+        </p>
+        {tutor.university && (
+          <p className="profile-bento__identity-meta">
+            <GraduationCap size={16} aria-hidden="true" />
+            <span>{tutor.university}</span>
+          </p>
+        )}
+        {tutor.experience && (
+          <p className="profile-bento__identity-meta">
+            <BadgeCheck size={16} aria-hidden="true" />
+            <span>{tutor.experience}</span>
+          </p>
+        )}
+      </div>
+
+      <div className="profile-landing__identity-actions">
+        {tutor.verified && (
+          <span className="profile-bento__verified">
+            <BadgeCheck size={16} aria-hidden="true" />
+            Đã xác minh
+          </span>
+        )}
+        <button
+          className={`profile-landing__save w-32 justify-center${isSaved ? ' is-saved' : ''}`}
+          type="button"
+          aria-label={isSaved ? 'Bỏ lưu gia sư' : 'Lưu hồ sơ'}
+          aria-pressed={isSaved}
+          onClick={onToggleSaved}
+        >
+          <Heart size={20} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
+          {isSaved ? 'Đã lưu' : 'Lưu hồ sơ'}
+        </button>
+      </div>
+    </section>
   );
 }

@@ -9,7 +9,14 @@ const navigation = [['Tìm gia sư', '/learner/search'], ['Yêu cầu học', '/
 export default function LearnerHeader({ compact = false }) {
   const { user, logout } = useDemoAuth();
   const { pathname } = useLocation();
-  const links = navigation.map(([label, href]) => [label, href, pathname === href || pathname.startsWith(`${href}/`)]);
+  const isTutorProfile = pathname.startsWith('/tutors/');
+  const links = navigation.map(([label, href]) => [
+    label,
+    href,
+    pathname === href ||
+      pathname.startsWith(`${href}/`) ||
+      (href === '/learner/search' && isTutorProfile),
+  ]);
   const actions = <LearnerAccountMenu user={user} onLogout={logout} />;
   return <PublicHeader kind="learner" navigation={links} actions={actions} persistentActions className={`learner-app-header${compact ? ' learner-app-header--compact' : ''}`} />;
 }

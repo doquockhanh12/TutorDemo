@@ -30,7 +30,7 @@ export function normalizeRequest(request, learnerId = request.learnerId ?? null)
 export function addLearnerRequest(state, user, values, now = new Date()) {
   const tutor = state.profiles.find((p) => p.id === values.tutorId);
   if (user?.role !== 'learner' || !tutor) return { error: 'Đăng nhập người học và chọn hồ sơ gia sư hợp lệ.' };
-  if (!values.subjects?.length || !values.levels?.length || !values.formats?.length || !values.goal?.trim() || (values.formats.includes('Tại nhà') && !values.areas?.length)) return { error: 'Vui lòng hoàn thành các lựa chọn trước khi gửi.' };
+  if (!values.subjects?.length || !values.levels?.length || !values.formats?.length || (values.formats.includes('Tại nhà') && !values.areas?.length)) return { error: 'Vui lòng hoàn thành các lựa chọn trước khi gửi.' };
   const proposals = values.proposals || [];
   if (!proposals.length || proposals.some((p, index) => {
     const schedule = selectPublicTutorSchedule(state, tutor, weekDates(0, new Date(p.date + 'T12:00:00')), tutor.sessionMinutes);

@@ -41,7 +41,7 @@ apps/web/src/
   features/public/        homepage, Learner landing, Tutor acquisition, public chrome
   features/auth/          shared mock auth, registration pages, protected-route helpers, OTP modal
   features/domain/        canonical runtime provider, actions/selectors, status metadata
-  features/learner/       search, tutor detail, dashboard/account editing, map, request pages
+  features/learner/       search with illustrative split-view map, tutor detail, dashboard/account editing, request pages
   features/tutor/         dashboard, sidebar, profile, timetable, requests, shared mock schedule state
   features/scheduling/    shared weekly timeline, geometry, time confirmation và CSS
   features/admin/         operational dashboard, lists, moderation, reports, appeals
@@ -60,7 +60,7 @@ Mock data ở `src/data`; local state/localStorage chỉ phục vụ tương tá
 | Public | `/` | Trang chủ theo `reference/final/homepage/`. |
 | Public Learner | `/learner` | Landing Người học/Phụ huynh theo `reference/final/learner/`. |
 | Public Tutor | `/tutor` | Landing tuyển gia sư theo `reference/final/tutor/`; **không phải** dashboard. |
-| Learner product | `/learner/search`, `/learner/dashboard`, `/learner/map`, `/tutors/:id`, `/requests/new`, `/requests`, `/requests/:id` | Tìm/lọc, dashboard với hồ sơ/địa chỉ chỉnh sửa, lịch/yêu cầu và gia sư đã lưu; bản đồ minh họa, hồ sơ gia sư, tạo và theo dõi yêu cầu. `LearnerAccountPanel` dùng `DemoAuthContext.updateProfile` để cập nhật mock account theo ID, giữ phiên lưu hiện tại và bỏ verified khi email/phone đổi; `dashboard.css` được scope riêng. `/requests/:id` chứa trạng thái buổi học và form review demo khi hoàn tất. |
+| Learner product | `/learner/search`, `/map`, `/learner/dashboard`, `/tutors/:id`, `/requests/new`, `/requests`, `/requests/:id` | Tìm/lọc với lưới gia sư full-width và link tới bản đồ minh họa `/map`, dashboard với hồ sơ/địa chỉ chỉnh sửa, lịch/yêu cầu và gia sư đã lưu; hồ sơ gia sư, tạo và theo dõi yêu cầu. `LearnerAccountPanel` dùng `DemoAuthContext.updateProfile` để cập nhật mock account theo ID, giữ phiên lưu hiện tại và bỏ verified khi email/phone đổi; `dashboard.css` được scope riêng. `/requests/:id` chứa trạng thái buổi học và form review demo khi hoàn tất. |
 | Tutor workspace | `/tutor/dashboard`, `/tutor/profile`, `/tutor/timetable`, `/tutor/income`, `/tutor/map`, `/tutor/find-students`, `/tutor/requests`, `/tutor/requests/:id` | Profile, yêu cầu và bảng lịch dạy/lịch rảnh chung; Income từ completed Lessons; map minh họa và tìm học viên theo lịch rảnh đã lưu. Hai URL lịch cũ redirect tới timetable. Môn, phí, khu vực hiện gộp trong `/tutor/profile`. |
 | Admin workspace | `/admin/dashboard`, `/admin/users`, `/admin/tutors`, `/admin/reviews`, `/admin/issues`, `/admin/appeals` | Dashboard, tài khoản, duyệt hồ sơ, review, báo cáo và kháng cáo; chi tiết mở drawer. |
 | Account appeals | `/appeals` | Learner/Tutor gửi và theo dõi hồ sơ; chưa đăng nhập phải xác thực trước khi xem dữ liệu riêng. |
@@ -77,7 +77,7 @@ Xem [`SCREEN_INVENTORY.md`](../screens/SCREEN_INVENTORY.md) để biết ID/MVP 
 
 ## Ranh giới dữ liệu và UI hiện tại
 
-- `LearnerHeader` được reuse tại Search, profile, Dashboard, map và request list/detail/error. Header dựa vào mock auth hiện tại, không dùng các action Login/Register của public marketing. `LearnerPages.jsx` giữ footer public nhưng không thay đổi phiên đăng nhập.
+- `LearnerHeader` được reuse tại Search, map, profile, Dashboard và request list/detail/error. Search dùng lưới full-width và mở route bản đồ riêng `/map`. Header dựa vào mock auth hiện tại, không dùng các action Login/Register của public marketing. `LearnerPages.jsx` giữ footer public nhưng không thay đổi phiên đăng nhập.
 - Nút tạo request nằm ở detail, truyền `tutor` vào `/requests/new`; không có nút này ở list. Khi thiếu query tutor, route legacy vẫn fallback về hồ sơ demo đầu tiên; đây là behavior hiện tại, không phải cơ chế chọn tutor mới.
 - Runtime domain persist duy nhất tại `tnm.demo.domain.v1`: profiles, requests, lessons, availability, settings, savedByAccount và nextRequestNumber; Admin users/reviews/issues cùng appeals cũng thuộc shared domain. Learner private requests filter learnerId; saves keyed account ID. Legacy `tnm.savedTutors`, `tnm.learnerRequests`, `tnm.tutor.workspace.v2/v3`, `tnm.tutorRequests`, `tnm.tutor.referenceRequests.v1`, `tnm.tutor.scheduleChecks.v1`, `tnm.tutorProfile` chỉ migration/compatibility và không bị xóa.
 - Tutor profile, timetable và Learner dùng một session setting 45 hoặc 90 phút trong workspace; registration dùng cùng tập giá trị và account duration cũ ngoài tập này được chuẩn hóa về 45. Tutor đăng ký mới tạo runtime profile từ đúng dữ liệu user nhập và settings/availability riêng theo ID; các field không được cung cấp (rating/experience/formats/levels) không được bịa. Cấp độ sửa tại profile; registration hiện chưa có field hình thức dạy nên profile mới không tự có Online/Tại nhà. Session setting điều khiển proposal mới; migration của lesson giữ ngày/giờ cụ thể hiện có. Timeline dùng khoảng 06:00–24:00 với thời điểm bắt đầu tối đa 22:00; độ dài availability/lesson không bị làm tròn về slot 45 phút.

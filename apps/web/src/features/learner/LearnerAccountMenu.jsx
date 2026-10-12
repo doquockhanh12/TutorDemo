@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bookmark, ChevronDown, ClipboardList, LogOut, UserRound } from 'lucide-react';
+import { ChevronDown, ClipboardList, Heart, LockKeyhole, LogOut, UserRound } from 'lucide-react';
 import Avatar from '../../components/Avatar.jsx';
 import './account-menu.css';
 
 const accountLinks = [
-  { label: 'Tài khoản của tôi', to: '/learner/dashboard', icon: UserRound },
+  { label: 'Hồ sơ cá nhân', to: '/learner/dashboard?tab=profile', icon: UserRound },
   { label: 'Yêu cầu học', to: '/requests', icon: ClipboardList },
-  { label: 'Gia sư đã lưu', to: '/learner/dashboard#saved-tutors', icon: Bookmark },
+  { label: 'Gia sư yêu thích', to: '/learner/dashboard?tab=saved', icon: Heart },
+  { label: 'Đổi mật khẩu', to: '/learner/dashboard?tab=password', icon: LockKeyhole },
 ];
 
 export default function LearnerAccountMenu({ user, onLogout }) {

@@ -70,7 +70,7 @@ PublicHeader's opt-in `persistentActions` renders this account control once, inc
 
 ### Scope and behavior
 
-`/learner/search` has a dedicated compact cream hero, keyword search inside the hero, one multi-select filter set, removable filter chips, and a 3/2/1-column tutor list. Mobile reuses the same filter controls in a scrollable dialog. Map access remains a link to `/learner/map`. Search CSS uses the exclusive `.learner-search-view` scope because other Learner pages also use `.learner-search-page`.
+`/learner/search` has a dedicated compact cream hero, keyword search inside the hero, one multi-select filter set, removable filter chips, and a full-width tutor grid at 3/2/1 columns. The “Xem bản đồ” link opens the illustrative Learner map at `/map`; tutor coordinates and distances there are examples only. Mobile reuses the same filter controls in a scrollable dialog. Search CSS uses the exclusive `.learner-search-view` scope because other Learner pages also use `.learner-search-page`.
 
 Learner app navigation replaces the Tutor acquisition link with `/requests` and exposes route-based `aria-current`, including request detail. Only Search opts into the compact header. PublicHeader adds optional class/current-link rendering; public landing structure, Tutor/Admin workspaces, auth guards and shared domain data are unchanged.
 

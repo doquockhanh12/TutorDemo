@@ -1,93 +1,54 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export function CheckboxFilter({ title, options, selected, onChange }) {
-  const baseId = useId().replace(/:/g, '');
-
-  const toggleOption = (option) => {
-    const next = selected.includes(option)
-      ? selected.filter((value) => value !== option)
-      : [...selected, option];
-    onChange(next);
-  };
-
-  return (
-    <fieldset className="search-checkbox-group">
-      <legend>{title}</legend>
-      {options.slice(1).map((option, index) => {
-        const optionId = `filter-${baseId}-${index}`;
-        return (
-          <label
-            key={option}
-            htmlFor={optionId}
-            style={{ cursor: 'pointer', userSelect: 'none' }}
-            onClick={(e) => {
-              if (e.target.tagName === 'INPUT') return;
-              e.preventDefault();
-              toggleOption(option);
-            }}
-          >
-            <input
-              id={optionId}
-              type="checkbox"
-              checked={selected.includes(option)}
-              onChange={() => toggleOption(option)}
-              style={{ cursor: 'pointer' }}
-            />
-            <span
-              style={{ cursor: 'pointer' }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleOption(option);
-              }}
-            >
-              {option}
-            </span>
-          </label>
-        );
-      })}
-    </fieldset>
-  );
-}
-
-export function QuickFilter({ title, options, selected, onChange }) {
+export function QuickFilter({ title, options, selected, onChange, defaultValue = '', className = '' }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const rootRef = useRef(null);
   const triggerRef = useRef(null);
-  const [placement, setPlacement] = useState({ above: false, height: 360 });
-  const summary = selected.length > 1 ? `${selected.length} đã chọn` : selected[0] || options[0];
+  const [availableHeight, setAvailableHeight] = useState(360);
+  const items = options.map((option, index) => {
+    if (typeof option === 'string') {
+      return { label: option, value: index === 0 ? defaultValue : option };
+    }
+
+    return option;
+  });
+  const summary = items.find((option) => option.value === selected)?.label ?? items[0]?.label ?? '';
 
   useLayoutEffect(() => {
     if (!open) return undefined;
-    const updatePlacement = () => {
-      const root = rootRef.current.getBoundingClientRect();
-      const headerBottom = document.querySelector('.learner-app-header')?.getBoundingClientRect().bottom || 0;
-      const below = Math.max(0, window.innerHeight - root.bottom - 16);
-      const above = Math.max(0, root.top - headerBottom - 16);
-      const opensAbove = below < 200 && above > below;
-      setPlacement({ above: opensAbove, height: Math.min(360, opensAbove ? above : below) });
+
+    const updateAvailableHeight = () => {
+      const root = rootRef.current?.getBoundingClientRect();
+      if (!root) return;
+
+      const below = Math.max(160, window.innerHeight - root.bottom - 16);
+      setAvailableHeight(Math.min(360, below));
     };
-    updatePlacement();
-    window.addEventListener('resize', updatePlacement);
-    window.addEventListener('scroll', updatePlacement);
+
+    updateAvailableHeight();
+    window.addEventListener('resize', updateAvailableHeight);
+    window.addEventListener('scroll', updateAvailableHeight);
     return () => {
-      window.removeEventListener('resize', updatePlacement);
-      window.removeEventListener('scroll', updatePlacement);
+      window.removeEventListener('resize', updateAvailableHeight);
+      window.removeEventListener('scroll', updateAvailableHeight);
     };
   }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
+
     const closeOutside = (event) => {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
     const media = window.matchMedia('(max-width: 767px)');
     const close = () => setOpen(false);
+
     document.addEventListener('pointerdown', closeOutside);
     document.addEventListener('focusin', closeOutside);
     media.addEventListener('change', close);
+
     return () => {
       document.removeEventListener('pointerdown', closeOutside);
       document.removeEventListener('focusin', closeOutside);
@@ -95,11 +56,17 @@ export function QuickFilter({ title, options, selected, onChange }) {
     };
   }, [open]);
 
+  const selectOption = (value) => {
+    onChange(value);
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
   return (
     <div
       ref={rootRef}
-      className={`search-filter ${open ? 'is-open' : ''} ${placement.above ? 'opens-above' : ''}`}
-      style={{ '--filter-available-height': `${placement.height}px` }}
+      className={`search-filter ${className} ${open ? 'is-open' : ''}`.trim()}
+      style={{ '--filter-available-height': `${availableHeight}px` }}
       onKeyDown={(event) => {
         if (event.key === 'Escape' && open) {
           event.stopPropagation();
@@ -121,8 +88,28 @@ export function QuickFilter({ title, options, selected, onChange }) {
         <span id={`${id}-value`}>{summary}</span>
         <ChevronDown size={17} aria-hidden="true" />
       </button>
-      <div className="search-filter__options" id={`${id}-options`}>
-        <CheckboxFilter title={title} options={options} selected={selected} onChange={onChange} />
+      <div
+        className="search-filter__options"
+        id={`${id}-options`}
+        role="group"
+        aria-label={title}
+      >
+        {items.map(({ label, value, icon: Icon }) => {
+          const isSelected = selected === value;
+
+          return (
+            <button
+              key={value || label}
+              className={`search-filter__option ${isSelected ? 'is-selected' : ''}`}
+              type="button"
+              aria-pressed={isSelected}
+              onClick={() => selectOption(value)}
+            >
+              {Icon && <Icon size={17} strokeWidth={1.8} aria-hidden="true" />}
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
