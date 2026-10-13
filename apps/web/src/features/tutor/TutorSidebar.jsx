@@ -9,8 +9,8 @@ const navigation = [
   { label: 'Thu nhập', icon: Wallet, to: '/tutor/income' },
   { label: 'Hồ sơ gia sư', icon: UserRound, to: '/tutor/profile' },
   { label: 'Kháng cáo', icon: Scale, to: '/appeals' },
-  { label: 'Đánh giá', icon: Star },
-  { label: 'Tin nhắn', icon: MessageSquare },
+  { label: 'Đánh giá', icon: Star, to: '/tutor/reviews' },
+  { label: 'Tin nhắn', icon: MessageSquare, to: '/tutor/messages' },
   { label: 'Cài đặt', icon: Settings },
 ];
 
