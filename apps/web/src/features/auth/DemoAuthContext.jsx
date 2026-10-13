@@ -10,6 +10,16 @@ export const INVALID_CREDENTIALS_ERROR = 'Thông tin đăng nhập chưa chính 
 const DEMO_USERS = demoReferenceData.accounts;
 export const MOCK_PROVIDER_PAYLOADS = demoReferenceData.providerPayloads;
 
+function isValidAvatarUrl(value) {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && Boolean(url.hostname) && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
+
 function restore() {
   const normalize = (account) => account?.role === 'tutor' ? { ...account, duration: String(normalizeSessionMinutes(account.duration)) } : account;
   try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY)) || { user: null, accounts: [] }; return { ...saved, user: normalize(saved.user), accounts: (saved.accounts || []).map(normalize) }; }
@@ -49,7 +59,7 @@ export function DemoAuthProvider({ children }) {
   };
   const updateProfile = (changes) => {
     if (!state.user) return { error: 'Bạn cần đăng nhập để cập nhật hồ sơ.' };
-    const allowed = ['fullName', 'email', 'phone', 'accountType', 'address'];
+    const allowed = ['fullName', 'email', 'phone', 'avatarUrl', 'accountType', 'address'];
     const fields = Object.fromEntries(allowed.filter((key) => key in changes).map((key) => [key, String(changes[key]).trim()]));
     if ('phone' in fields) {
       const rawPhone = fields.phone;
@@ -61,6 +71,7 @@ export function DemoAuthProvider({ children }) {
     if ('fullName' in fields && !fields.fullName) return { error: 'Vui lòng nhập họ và tên.' };
     if ('email' in fields && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) return { error: 'Email chưa đúng định dạng.' };
     if ('phone' in fields && !/^0\d{9,10}$/.test(fields.phone)) return { error: 'Số điện thoại cần bắt đầu bằng 0 và có 10–11 chữ số.' };
+    if ('avatarUrl' in fields && !isValidAvatarUrl(fields.avatarUrl)) return { error: 'Ảnh đại diện cần là một địa chỉ HTTPS hợp lệ.' };
     if ('accountType' in fields && !['learner', 'parent'].includes(fields.accountType)) return { error: 'Vui lòng chọn người học hoặc phụ huynh.' };
     if ('address' in fields && !fields.address) return { error: 'Vui lòng nhập địa chỉ đang sinh sống.' };
     const duplicate = allAccounts().some((account) => account.id !== state.user.id && ((fields.email && identityKey(account.email) === identityKey(fields.email)) || (fields.phone && normalizePhone(account.phone) === fields.phone)));

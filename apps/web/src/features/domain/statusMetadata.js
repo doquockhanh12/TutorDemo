@@ -1,6 +1,7 @@
 export const requestStatusMetadata = {
   pending: { learnerLabel: 'Chờ phản hồi', tutorLabel: 'Chờ phản hồi', tone: 'warning' },
-  accepted: { learnerLabel: 'Đã xác nhận', tutorLabel: 'Đã nhận', tone: 'success' },
+  accepted: { learnerLabel: 'Gia sư đã nhận', tutorLabel: 'Đã nhận', tone: 'info' },
+  confirmed: { learnerLabel: 'Đã xác nhận lịch', tutorLabel: 'Đã chốt lịch', tone: 'success' },
   rejected: { learnerLabel: 'Đã từ chối', tutorLabel: 'Đã từ chối', tone: 'danger' },
   cancelled: { learnerLabel: 'Đã hủy', tutorLabel: 'Đã hủy', tone: 'danger' },
 };

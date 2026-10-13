@@ -6,6 +6,8 @@ import {
   requestIsCompleted,
   decideRequest,
   updateLearnerRequest,
+  submitLearnerReview as submitLearnerReviewResult,
+  confirmLearnerRequest as confirmLearnerRequestResult,
   completeDomainLesson,
   addLearnerRequest,
   approveTutor,
@@ -51,6 +53,16 @@ export function DemoDomainProvider({ children }) {
   };
   const decide = (id, status) => { const result = decideRequest(state, id, status, tutorId); if (result.error) return result.error; setState(result.state); return ''; };
   const updateLearnerRequests = (items) => setState((current) => items.reduce((next, item) => updateLearnerRequest(next, user?.id, item.id, item), current));
+  const submitLearnerReview = (requestId, values) => {
+    const result = submitLearnerReviewResult(state, user, requestId, values);
+    if (result.state) setState(result.state);
+    return result;
+  };
+  const confirmLearnerRequest = (requestId, proposal) => {
+    const result = confirmLearnerRequestResult(state, user, requestId, proposal);
+    if (result.state) setState(result.state);
+    return result;
+  };
   const setSaved = (update) => {
     if (user?.role !== 'learner') { setAnonymousSaved(update); return; }
     setState((current) => ({ ...current, savedByAccount: { ...current.savedByAccount,
@@ -121,6 +133,8 @@ export function DemoDomainProvider({ children }) {
         createRequest,
         decide,
         updateLearnerRequests,
+        submitLearnerReview,
+        confirmLearnerRequest,
         setSaved,
         saveAvailability,
         setSessionMinutes,
@@ -155,7 +169,7 @@ export function useTutorIncome(referenceDate = new Date()) {
 }
 export function useLearnerRequests() {
   const state = useDemoDomain(); const { user } = useDemoAuth();
-  return [state.requests.filter((r) => r.learnerId === user?.id).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests];
+  return [state.requests.filter((r) => r.learnerId === user?.id).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests, state.submitLearnerReview, state.confirmLearnerRequest];
 }
 export function useSavedTutors() { const state = useDemoDomain(); const { user } = useDemoAuth(); return [user?.role === 'learner' ? state.savedByAccount[user.id] || [] : state.anonymousSaved, state.setSaved]; }
 export function useTutorProfile() {

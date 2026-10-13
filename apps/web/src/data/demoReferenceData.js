@@ -1088,7 +1088,12 @@ const baseReferenceData = {
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 220000,
-      "status": "accepted"
+      "status": "accepted",
+      "proposalTemplate": {
+        "days": [5],
+        "start": 540,
+        "end": 585
+      }
     },
     {
       "id": "demo-03",
@@ -1100,7 +1105,12 @@ const baseReferenceData = {
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 160000,
       "status": "accepted",
-      "legacyLessonStatus": "completed"
+      "legacyLessonStatus": "completed",
+      "confirmedDate": "2026-10-08",
+      "confirmedStartTime": "19:00",
+      "confirmedStart": 1140,
+      "confirmedEnd": 1185,
+      "confirmedSchedule": "Thứ 5, 08/10 · 19:00–19:45"
     },
 
     {
@@ -1574,6 +1584,24 @@ const baseReferenceData = {
       "place": "Online",
       "sessionFee": 220000,
       "completedAt": "2026-10-03T09:45:00+07:00"
+    },
+    {
+      "id": "history-lesson-demo-03",
+      "tutorId": "ha-linh",
+      "requestId": "demo-03",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Ngữ văn",
+      "level": "THCS",
+      "date": "2026-10-08",
+      "start": 1140,
+      "end": 1185,
+      "status": "completed",
+      "format": "Tại nhà",
+      "area": "Quận 3",
+      "place": "Quận 3",
+      "sessionFee": 160000,
+      "completedAt": "2026-10-08T19:45:00+07:00"
     }
   ],
 

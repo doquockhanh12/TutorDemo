@@ -120,8 +120,7 @@ export default function TutorRequestForm({
       )
   );
 
-  const areaRequired =
-    selection.formats.includes('Tại nhà');
+  const areaRequired = true;
 
   const errors = {
     subjects:
@@ -481,8 +480,8 @@ export default function TutorRequestForm({
           <small>
             Chọn ít nhất một môn, cấp độ, khung
             giờ, hình thức và nhập mục
-            tiêu. Học tại nhà cần chọn
-            khu vực.
+            tiêu; mọi yêu cầu đều cần chọn
+            khu vực học.
           </small>
         )}
 

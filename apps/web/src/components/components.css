@@ -4,7 +4,8 @@
 .brand--compact .brand__mark { width: 32px; height: 32px; }
 .brand--compact .brand__word { font-size: 1.15rem; }
 
-.avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; font-weight: 700; letter-spacing: .02em; user-select: none; }
+.avatar { position: relative; display: inline-grid; place-items: center; flex: none; overflow: hidden; border-radius: 50%; font-weight: 700; letter-spacing: .02em; user-select: none; }
+.avatar__image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .avatar--xs { width: 30px; height: 30px; font-size: .7rem; }
 .avatar--sm { width: 36px; height: 36px; font-size: .75rem; }
 .avatar--md { width: 44px; height: 44px; font-size: .9rem; }

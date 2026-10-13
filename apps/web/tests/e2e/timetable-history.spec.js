@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { login, resetDemo } from './demoHelpers.js';
-import { createDemoState, decideRequest } from '../../src/features/domain/demoDomain.js';
+import { createDemoState } from '../../src/features/domain/demoDomain.js';
+import { acceptanceResult } from '../../src/data/tutorSchedule.js';
 
 function legacyWeek() {
   const referenceTime = new Date('2026-10-04T10:00:00+07:00');
   const state = createDemoState(referenceTime);
   state.lessons = state.lessons.filter((lesson) => !lesson.id.startsWith('history-'));
-  const accepted = decideRequest(state, 'req-1', 'accepted', 'quoc-bao').state;
+  const accepted = acceptanceResult(state, 'req-1').state;
   accepted.lessons[0].status = 'completed';
   delete accepted.lessons[0].sessionFee;
   accepted.availability = accepted.availability.filter((range) => range.date !== '2026-10-02');

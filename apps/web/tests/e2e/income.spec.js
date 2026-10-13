@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login, resetDemo } from './demoHelpers.js';
+import { login, logout, resetDemo } from './demoHelpers.js';
 import { demoReferenceData } from '../../src/data/demoReferenceData.js';
 
 test('Tutor sidebar Income shows derived October summary, six-month values and exact eligible details', async ({ page }) => {
@@ -117,16 +117,32 @@ test('Income tied extrema receive their semantic state', async ({ page }) => {
 
 test('INCOME-001 accepting and completing a Request uses its snapshot fee in both Income and Dashboard', async ({ page }) => {
   await resetDemo(page);
-  await login(page, 'giabao', '/tutor/requests/req-2');
+  await login(page, 'minhanh', '/tutors/quoc-bao');
+  await page.locator('#profile-subjects').getByRole('button', { name: 'Tiếng Anh', exact: true }).click();
+  await page.locator('#profile-subjects').getByRole('button', { name: 'THCS', exact: true }).click();
+  await page.getByRole('region', { name: 'Lịch rảnh của Trần Gia Bảo' }).getByRole('button').first().click();
+  await page.locator('#profile-location').getByRole('button', { name: 'Online', exact: true }).click();
+  await page.locator('#profile-location').getByRole('button', { name: 'Thủ Đức', exact: true }).click();
+  await page.getByLabel('Mong muốn học tập *').fill('Luyện giao tiếp');
+  await page.getByRole('button', { name: 'Gửi yêu cầu học', exact: true }).click();
+  await expect(page).toHaveURL(/\/requests\/[^/]+$/);
+  const requestId = new URL(page.url()).pathname.split('/').at(-1);
+  await logout(page);
+  await login(page, 'giabao', `/tutor/requests/${requestId}`);
   await page.getByRole('button', { name: 'Nhận yêu cầu', exact: true }).click();
-  await page.goto('/tutor/timetable');
-  await page.getByRole('button', { name: /Vật lý lớp 10.*Nguyễn Khánh Linh/ }).click();
+  await logout(page);
+  await login(page, 'minhanh', `/requests/${requestId}`);
+  await page.getByRole('button', { name: 'Xác nhận lịch học', exact: true }).click();
+  await expect(page.locator('main')).toContainText('Lịch đã xác nhận');
+  await logout(page);
+  await login(page, 'giabao', '/tutor/timetable');
+  await page.getByRole('button', { name: /Tiếng Anh.*Nguyễn Minh Anh/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Đánh dấu hoàn tất' }).click();
   await page.goto('/tutor/income');
-  await expect(page.getByLabel('Tổng quan thu nhập tháng hiện tại')).toContainText('860.000đ');
-  await expect(page.getByRole('table')).toContainText('Nguyễn Khánh Linh');
+  await expect(page.getByLabel('Tổng quan thu nhập tháng hiện tại')).toContainText('880.000đ');
+  await expect(page.getByRole('table')).toContainText('Nguyễn Minh Anh');
   await page.reload();
-  await expect(page.getByLabel('Tổng quan thu nhập tháng hiện tại')).toContainText('860.000đ');
+  await expect(page.getByLabel('Tổng quan thu nhập tháng hiện tại')).toContainText('880.000đ');
   await page.goto('/tutor/dashboard');
-  await expect(page.locator('#tutor-income')).toContainText('860.000đ');
+  await expect(page.locator('#tutor-income')).toContainText('880.000đ');
 });

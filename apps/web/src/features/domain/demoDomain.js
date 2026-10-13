@@ -1,5 +1,5 @@
 import { demoReferenceData as fixture } from '../../data/demoReferenceData.js';
-import { acceptanceResult, CANONICAL_TUTOR_ID, localDateKey, migrateWorkspaceV2, normalizeRanges, normalizeSessionMinutes, subtractLessons, subtractRange, weekDates, weeklyScheduleRanges, selectPublicTutorSchedule, isValidProposal, isFutureSession } from '../../data/tutorSchedule.js';
+import { CANONICAL_TUTOR_ID, localDateKey, mergeAdjacentRanges, migrateWorkspaceV2, normalizeRanges, normalizeSessionMinutes, overlaps, proposalLabel, proposedLessons, subtractLessons, subtractRange, timeLabel, weekDates, weeklyScheduleRanges, selectPublicTutorSchedule, isValidProposal, isFutureSession } from '../../data/tutorSchedule.js';
 
 export const DOMAIN_STORAGE_KEY = 'tnm.demo.domain.v1';
 const APPROVED_TIMETABLE_CLEANUP = '2026-10-04-thursday-math-friday-availability';
@@ -27,10 +27,22 @@ export function normalizeRequest(request, learnerId = request.learnerId ?? null)
     note: request.note ?? request.goal ?? '', goal: request.goal ?? request.note ?? '',
     subjects: request.subjects || [request.subject].filter(Boolean) };
 }
+function seededProposals(template, now = new Date()) {
+  const currentWeek = weekDates(0, now);
+  const createFor = (dates) => template.days.map((day) => ({
+    date: localDateKey(dates[day]), start: template.start, end: template.end,
+  }));
+  const proposals = createFor(currentWeek);
+  return proposals.every((proposal) => !isFutureSession(proposal, now))
+    ? createFor(weekDates(1, now)) : proposals;
+}
 export function addLearnerRequest(state, user, values, now = new Date()) {
   const tutor = state.profiles.find((p) => p.id === values.tutorId);
-  if (user?.role !== 'learner' || !tutor) return { error: 'Đăng nhập người học và chọn hồ sơ gia sư hợp lệ.' };
-  if (!values.subjects?.length || !values.levels?.length || !values.formats?.length || !values.goal?.trim() || (values.formats.includes('Tại nhà') && !values.areas?.length)) return { error: 'Vui lòng hoàn thành các lựa chọn trước khi gửi.' };
+  if (user?.role !== 'learner' || !tutor || (tutor.moderationStatus || 'approved') !== 'approved') return { error: 'Đăng nhập người học và chọn hồ sơ gia sư đang hoạt động.' };
+  if (!values.subjects?.length || !values.levels?.length || !values.formats?.length || !values.areas?.length || !values.goal?.trim()) return { error: 'Vui lòng chọn môn, cấp độ, hình thức, khu vực học và nhập mong muốn học tập.' };
+  if (values.subjects.some((subject) => !(tutor.subjects || []).includes(subject)) || values.levels.some((level) => !(tutor.levels || []).includes(level))) return { error: 'Môn học hoặc cấp độ đã thay đổi. Vui lòng cập nhật lựa chọn từ hồ sơ gia sư.' };
+  const tutorAreas = tutor.areas?.length ? tutor.areas : [tutor.location].filter(Boolean);
+  if (values.formats.includes('Tại nhà') && values.areas.some((area) => !tutorAreas.includes(area))) return { error: 'Khu vực học đã thay đổi. Vui lòng chọn lại khu vực trong hồ sơ gia sư.' };
   const proposals = values.proposals || [];
   if (!proposals.length || proposals.some((p, index) => {
     const schedule = selectPublicTutorSchedule(state, tutor, weekDates(0, new Date(p.date + 'T12:00:00')), tutor.sessionMinutes);
@@ -39,7 +51,10 @@ export function addLearnerRequest(state, user, values, now = new Date()) {
   let number = state.nextRequestNumber;
   while (state.requests.some((r) => r.id === 'request-' + number)) number++;
   const id = 'request-' + number;
+  const preferredProposal = proposals[0];
   const request = normalizeRequest({ ...structuredClone(values), id, learnerId: user.id, learner: user.fullName,
+    preferredDate: preferredProposal.date, preferredStartTime: timeLabel(preferredProposal.start),
+    durationMinutes: preferredProposal.end - preferredProposal.start,
     status: 'pending', received: 'Vừa gửi', area: values.areas?.join(', ') || values.format,
     sessionFee: tutor.price });
   return { id, state: { ...state, nextRequestNumber: number + 1, requests: [...state.requests, request] } };
@@ -49,13 +64,22 @@ export function createDemoState(now = new Date()) {
   const dates = weekDates(0, now);
   const lessons = [...seed.lessonTemplates.map(({ day, ...lesson }) => ({ ...lesson, date: localDateKey(dates[day]) })), ...(seed.historicalLessons || [])];
   const requests = seed.requests.map(({ proposalTemplate, ...request }) => normalizeRequest({ ...request,
-    ...(proposalTemplate ? { proposals: proposalTemplate.days.map((day) => ({ date: localDateKey(dates[day]), start: proposalTemplate.start, end: proposalTemplate.end })) } : {}) }));
+    ...(proposalTemplate ? { proposals: request.id === 'demo-02'
+      ? seededProposals(proposalTemplate, now)
+      : proposalTemplate.days.map((day) => ({ date: localDateKey(dates[day]), start: proposalTemplate.start, end: proposalTemplate.end })) } : {}) }));
+  const confirmableSeed = requests.find((request) => request.id === 'demo-02');
+  const confirmableProposal = confirmableSeed?.proposals?.[0];
+  const baseAvailability = weeklyScheduleRanges(seed.tutorProfiles.find((t) => t.id === CANONICAL_TUTOR_ID), dates);
+  const proposalAvailability = confirmableProposal ? [{
+    id: `demo-confirm-${confirmableSeed.id}`, tutorId: confirmableSeed.tutorId,
+    date: confirmableProposal.date, start: confirmableProposal.start, end: confirmableProposal.end,
+  }] : [];
   return applyApprovedDemoCleanup({
     version: 1,
     profiles: seed.tutorProfiles,
     requests,
     lessons,
-    availability: subtractLessons(weeklyScheduleRanges(seed.tutorProfiles.find((t) => t.id === CANONICAL_TUTOR_ID), dates), lessons),
+    availability: subtractLessons([...baseAvailability, ...proposalAvailability], lessons),
     settings: Object.fromEntries(seed.tutorProfiles.filter((p) => p.accountId).map((p) => [p.id, { sessionMinutes: p.sessionMinutes }])),
     savedByAccount: Object.fromEntries(seed.learnerProfiles.map((p) => [p.accountId, p.savedTutorIds])),
     nextRequestNumber: 1,
@@ -67,7 +91,23 @@ export function createDemoState(now = new Date()) {
   });
 }
 function read(storage, key) { try { return JSON.parse(storage.getItem(key)); } catch { return null; } }
-function reconcileLessonSeed(state) {
+function reconcileLessonSeed(state, now = new Date()) {
+  const requestSeeds = new Map(fixture.requests.map((request) => [request.id, request]));
+  const requests = (state.requests || []).map((request) => {
+    const seed = requestSeeds.get(request.id);
+    let reconciled = request;
+    if (seed?.proposalTemplate && (!request.proposals?.length || (request.id === 'demo-02' && request.status === 'accepted'))) {
+      const dates = weekDates(0, now);
+      reconciled = { ...reconciled, proposals: request.id === 'demo-02'
+        ? seededProposals(seed.proposalTemplate, now)
+        : seed.proposalTemplate.days.map((day) => ({ date: localDateKey(dates[day]), start: seed.proposalTemplate.start, end: seed.proposalTemplate.end })) };
+    }
+    if (seed?.confirmedDate && !request.confirmedDate) {
+      reconciled = { ...reconciled, confirmedDate: seed.confirmedDate, confirmedStartTime: seed.confirmedStartTime,
+        confirmedStart: seed.confirmedStart, confirmedEnd: seed.confirmedEnd, confirmedSchedule: seed.confirmedSchedule };
+    }
+    return reconciled;
+  });
   const templates = new Map(fixture.lessonTemplates.map((lesson) => [lesson.id, lesson]));
   const lessons = (state.lessons || []).map((lesson) => {
     const seed = templates.get(lesson.id);
@@ -124,21 +164,29 @@ function reconcileLessonSeed(state) {
 
   // Saved availability predates newly reconciled history in older demo state.
   // Keep the free portions; occupied time must never remain bookable/rendered as free.
+  const refreshedDemoProposal = requests.find((request) => request.id === 'demo-02' && request.status === 'accepted')?.proposals?.[0];
+  const refreshedDemoAvailability = refreshedDemoProposal ? [{
+    id: 'demo-confirm-demo-02', tutorId: 'quoc-bao', date: refreshedDemoProposal.date,
+    start: refreshedDemoProposal.start, end: refreshedDemoProposal.end,
+  }] : [];
   return applyApprovedDemoCleanup({
     ...state,
     profiles: [...profileMap.values()],
     appeals: state.appeals || [],
     nextAppealNumber: state.nextAppealNumber || 1,
     users: [...userMap.values()],
+    requests,
     reviews: [...reviewMap.values()],
     issues: [...issueMap.values()],
     lessons,
-    availability: subtractLessons(state.availability || [], lessons),
+    availability: subtractLessons(refreshedDemoProposal
+      ? [...(state.availability || []).filter((range) => range.id !== 'demo-confirm-demo-02'), ...refreshedDemoAvailability]
+      : (state.availability || []), lessons),
   });
 }
 export function restoreDemoState(storage, now = new Date()) {
   const current = read(storage, DOMAIN_STORAGE_KEY);
-  if (current?.version === 1 && Array.isArray(current.profiles) && Array.isArray(current.requests)) return reconcileLessonSeed(current);
+  if (current?.version === 1 && Array.isArray(current.profiles) && Array.isArray(current.requests)) return reconcileLessonSeed(current, now);
   const state = createDemoState(now);
   // Compatibility inputs below replace fresh arrays; apply their correction after migration.
   delete state.appliedDemoCleanups;
@@ -178,21 +226,95 @@ export function restoreDemoState(storage, now = new Date()) {
 }
 export function requestIsCompleted(state, request) {
   const lessons = state.lessons.filter((l) => l.requestId === request.id && l.status !== 'cancelled');
-  return request.status === 'accepted' && (lessons.length ? lessons.every((l) => l.status === 'completed') : request.legacyLessonStatus === 'completed');
+  return ['accepted', 'confirmed'].includes(request.status) && (lessons.length ? lessons.every((l) => l.status === 'completed') : request.legacyLessonStatus === 'completed');
 }
 export function updateLearnerRequest(state, accountId, id, patch) {
-  return { ...state, requests: state.requests.map((request) => {
-    if (request.id !== id || request.learnerId !== accountId) return request;
-    const next = { ...request };
-    if (request.status === 'pending' && patch.status === 'cancelled') next.status = 'cancelled';
-    if (requestIsCompleted(state, request) && patch.review) { next.review = patch.review; next.rating = patch.rating; }
-    return next;
-  }) };
+  const request = state.requests.find((item) => item.id === id && item.learnerId === accountId);
+  if (!request || patch.status !== 'cancelled' || !['pending', 'accepted', 'confirmed'].includes(request.status) || requestIsCompleted(state, request)) return state;
+  const linkedLessons = state.lessons.filter((lesson) => lesson.requestId === id && lesson.status !== 'cancelled');
+  const restoredAvailability = linkedLessons.map((lesson) => ({
+    id: `cancelled-${lesson.id}`, tutorId: lesson.tutorId, date: lesson.date, start: lesson.start, end: lesson.end,
+  }));
+  return {
+    ...state,
+    requests: state.requests.map((item) => item.id === id ? { ...item, status: 'cancelled' } : item),
+    lessons: state.lessons.map((lesson) => lesson.requestId === id && lesson.status !== 'cancelled' ? { ...lesson, status: 'cancelled' } : lesson),
+    availability: mergeAdjacentRanges([...state.availability, ...restoredAvailability]),
+  };
+}
+export function submitLearnerReview(state, actor, requestId, values, now = new Date()) {
+  const request = state.requests.find((item) => item.id === requestId && item.learnerId === actor?.id);
+  if (actor?.role !== 'learner' || !request) return { error: 'Không tìm thấy yêu cầu học của tài khoản này.' };
+  if (!requestIsCompleted(state, request)) return { error: 'Chỉ có thể đánh giá sau khi buổi học hoàn tất.' };
+  if (!Number.isInteger(values?.rating) || values.rating < 1 || values.rating > 5) return { error: 'Vui lòng chọn mức đánh giá từ 1 đến 5 sao.' };
+  if (request.review || state.reviews.some((review) => review.requestId === requestId)) return { error: 'Yêu cầu này đã được đánh giá.' };
+
+  const profile = state.profiles.find((item) => item.id === request.tutorId);
+  const learnerName = actor.fullName || request.learner || 'Người học';
+  const comment = String(values.comment ?? '').trim();
+  const date = now.toLocaleDateString('vi-VN');
+  const review = {
+    id: `review-${requestId}`,
+    requestId,
+    tutorId: request.tutorId,
+    tutorName: profile?.name || 'Gia sư',
+    learnerId: actor.id,
+    learnerName,
+    reviewerType: actor.accountType || 'learner',
+    name: learnerName,
+    initials: learnerName.trim().split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase(),
+    rating: values.rating,
+    comment,
+    text: comment,
+    excerpt: comment,
+    date,
+    createdAt: now.toISOString(),
+    visibility: 'public',
+    moderationStatus: 'approved',
+    status: 'approved',
+    lessonId: (state.lessons.find((lesson) => lesson.requestId === requestId && lesson.status === 'completed') || {}).id || null,
+  };
+  return {
+    state: {
+      ...state,
+      requests: state.requests.map((item) => item.id === requestId ? { ...item, rating: values.rating, review: comment, reviewId: review.id } : item),
+      reviews: [...state.reviews, review],
+    },
+    reviewId: review.id,
+  };
+}
+export function confirmLearnerRequest(state, actor, requestId, selectedProposal, now = new Date()) {
+  const request = state.requests.find((item) => item.id === requestId && item.learnerId === actor?.id);
+  if (actor?.role !== 'learner' || !request) return { error: 'Không tìm thấy yêu cầu học của tài khoản này.' };
+  if (request.status !== 'accepted') return { error: 'Chỉ có thể xác nhận lịch sau khi gia sư đã nhận yêu cầu.' };
+  const tutor = state.profiles.find((profile) => profile.id === request.tutorId);
+  if (!tutor || (tutor.moderationStatus || 'approved') !== 'approved') return { error: 'Hồ sơ gia sư hiện không còn hoạt động.' };
+  const proposal = request.proposals?.find((item) => item.date === selectedProposal?.date && item.start === selectedProposal?.start && item.end === selectedProposal?.end);
+  if (!proposal) return { error: 'Chọn một khung giờ đã đề xuất trong yêu cầu.' };
+  const dates = weekDates(0, new Date(proposal.date + 'T12:00:00'));
+  const schedule = selectPublicTutorSchedule(state, tutor, dates, tutor.sessionMinutes);
+  if (!isFutureSession(proposal, now) || !isValidProposal(proposal, schedule.ranges, schedule.sessionMinutes)) return { error: 'Khung giờ này đã qua hoặc không còn khả dụng. Vui lòng chọn khung khác.' };
+  const lesson = proposedLessons({ ...request, proposals: [proposal] })[0];
+  if (!lesson || state.lessons.some((existing) => existing.status !== 'cancelled' && overlaps(existing, lesson))) return { error: 'Khung giờ này vừa bị trùng lịch. Vui lòng chọn khung khác.' };
+  const confirmedSchedule = proposalLabel(proposal);
+  return { state: {
+    ...state,
+    requests: state.requests.map((item) => item.id === requestId ? {
+      ...item, status: 'confirmed', confirmedDate: proposal.date,
+      confirmedStartTime: timeLabel(proposal.start), confirmedStart: proposal.start,
+      confirmedEnd: proposal.end, confirmedSchedule,
+    } : item),
+    lessons: [...state.lessons, { ...lesson, status: 'confirmed' }],
+    availability: subtractLessons(state.availability, [lesson]),
+  } };
 }
 export function decideRequest(state, id, status, tutorId) {
   const request = state.requests.find((r) => r.id === id && r.tutorId === tutorId);
   if (!request || request.status !== 'pending') return { error: 'Yêu cầu này không còn chờ phản hồi hoặc không thuộc gia sư.' };
-  if (status === 'accepted') return acceptanceResult(state, id);
+  if (status === 'accepted') {
+    if (!request.proposals?.length) return { error: 'Yêu cầu chưa có khung giờ để xác nhận.' };
+    return { state: { ...state, requests: state.requests.map((item) => item.id === id ? { ...item, status } : item) } };
+  }
   if (status !== 'rejected') return { error: 'Trạng thái không hợp lệ.' };
   return { state: { ...state, requests: state.requests.map((r) => r.id === id ? { ...r, status } : r) } };
 }

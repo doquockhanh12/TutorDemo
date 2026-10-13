@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import LearnerSearch from './features/learner/LearnerSearch.jsx';
 import LearnerMapPage from './features/learner/LearnerMapPage.jsx';
 import LearnerDashboard from './features/learner/LearnerDashboard.jsx';
+import LearnerSchedulePage from './features/learner/LearnerSchedulePage.jsx';
 import TutorDashboard from './features/tutor/TutorDashboard.jsx';
 import TutorClassMap from './features/tutor/TutorClassMap.jsx';
 import TutorClassSearch from './features/tutor/TutorClassSearch.jsx';
@@ -34,6 +35,7 @@ export default function App() {
     <Route path="/learner/search" element={<Protected role="learner"><LearnerSearch /></Protected>} />
     <Route path="/learner/map" element={<Protected role="learner"><LearnerMapPage /></Protected>} />
     <Route path="/learner/dashboard" element={<Protected role="learner"><LearnerDashboard /></Protected>} />
+    <Route path="/learner/schedule" element={<Protected role="learner"><LearnerSchedulePage /></Protected>} />
     <Route path="/tutor/timetable" element={<Protected role="tutor"><TutorTimetable /></Protected>} />
     <Route path="/tutor/income" element={<Protected role="tutor"><TutorIncome /></Protected>} />
     <Route path="/tutor/map" element={<Protected role="tutor"><TutorClassMap /></Protected>} />

@@ -11,16 +11,17 @@ Learner/Tutor ưu tiên current implementation/behavior; Figma chỉ historical/
 | L01 | Login | Yes | Implemented, shared `/login` |
 | L02 | Register | Yes | Implemented `/register` |
 | L03 | Tutor Search / Discovery | Yes | Implemented `/learner/search` |
-| L04 | Search Filters | Yes | Tích hợp L03; nhiều môn/khu vực/thời gian |
+| L04 | Search Filters | Yes | Tích hợp L03; nhiều môn/cấp độ/khu vực/thời gian, ngày-giờ cụ thể và khoảng phí |
 | L05 | Tutor Profile Detail | Yes | Implemented `/tutors/:id`; bảng 7 ngày gọn, chỉ chọn buổi có sẵn, đồng bộ form L06 |
 | L06 | Create Tutoring Request | Yes | Form trong L05; `/requests/new` redirect tới profile |
 | L07 | Request Confirmation | Yes | Tích hợp L09 sau submit; chưa có page riêng |
 | L08 | My Requests | Yes | Implemented `/requests` |
-| L09 | Request Detail / Status | Yes | Implemented `/requests/:id` |
-| L10 | Confirmed Schedule / Lesson Detail | Yes | Thông tin lịch trong L09; chưa có lesson page riêng |
+| L09 | Request Detail / Status | Yes | Implemented `/requests/:id`; Learner confirms an available proposal after Tutor acceptance and can cancel before completion |
+| L10 | Confirmed Schedule / Lesson Detail | Yes | Confirmed date/time and Lesson appear in L09; no separate lesson route |
 | L11 | Submit Tutor Review | Yes | Form trong L09 khi Hoàn tất; chưa có route riêng |
 | L12 | Learner Account/Profile | Recommended | Implemented `/learner/dashboard`; sửa hồ sơ/địa chỉ |
 | L13 | Bản đồ gia sư gần bạn | Approved demo extension | Implemented `/learner/map`; vị trí/khoảng cách minh họa |
+| L14 | Lịch học Learner | Yes | Implemented `/learner/schedule`; lịch sắp tới và lịch sử từ ngày/giờ đã xác nhận |
 
 L03/L04 giữ hero Learner; cột lọc và cột hỗ trợ cùng khung trắng/viền/bo góc. Các trang app dùng LearnerHeader có avatar/username và Đăng xuất. L08 không có nút tạo yêu cầu; nút chỉ ở L09 và dẫn tới gia sư trong request.
 

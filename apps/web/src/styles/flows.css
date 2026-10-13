@@ -854,4 +854,10 @@
 .tutor-level-options > div { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .flow-form .tutor-level-options label { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: var(--space-2) var(--space-3); border: var(--border-default); border-radius: var(--radius-sm); cursor: pointer; }
 .flow-form .tutor-level-options input { width: 18px; min-height: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--brand-primary); }
+.learner-flow .request-confirm-schedule { display: grid; gap: 12px; margin: 0 0 12px; }
+.learner-flow .request-confirm-schedule fieldset { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 12px; border: var(--border-default); border-radius: var(--radius-sm); }
+.learner-flow .request-confirm-schedule legend { padding: 0 4px; font-weight: 700; }
+.learner-flow .request-confirm-schedule label { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.learner-flow .request-confirm-schedule input { width: 18px; min-width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--brand-primary); }
+.learner-flow .request-confirm-schedule [role="alert"] { margin: 0; color: var(--color-danger); }
 .tutor-level-options label:has(input:checked) { background: var(--surface-light-blue); border-color: var(--brand-primary); color: var(--brand-primary); }
