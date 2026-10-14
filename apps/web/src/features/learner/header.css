@@ -1,0 +1,71 @@
+/* Learner app only: the shared PublicHeader and public landings keep their UI. */
+.learner-app-header {
+  --learner-header-text: #33415c;
+  --learner-header-active-text: #153f91;
+  --learner-header-active-bg: #eaf1ff;
+  --learner-header-hover-bg: #f3f7ff;
+  --learner-header-border: #cbdcf6;
+  --learner-header-icon: #64748b;
+  --learner-header-focus: #184aae;
+  --learner-header-radius: 11px;
+  --learner-header-control-height: 40px;
+}
+
+.learner-app-header .public-nav { gap: 6px; }
+.learner-app-header .public-nav > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--learner-header-control-height);
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--learner-header-radius);
+  background: transparent;
+  color: var(--learner-header-text);
+  font-size: var(--text-compact);
+  font-weight: 600;
+  line-height: 1.4;
+  transition: color var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast);
+}
+.learner-app-header .public-nav > a::after { content: none; }
+.learner-app-header .public-nav > a:hover {
+  background: var(--learner-header-hover-bg);
+  color: var(--learner-header-active-text);
+}
+.learner-app-header .public-nav > a[aria-current="page"] {
+  border-color: var(--learner-header-border);
+  background: var(--learner-header-active-bg);
+  color: var(--learner-header-active-text);
+  font-weight: 700;
+}
+.learner-app-header .public-nav > a:focus-visible,
+.learner-app-header .public-header__menu:focus-visible {
+  outline: 2px solid var(--learner-header-focus);
+  outline-offset: 3px;
+}
+
+.learner-app-header--compact.public-header { height: 72px; border-radius: 0; }
+.learner-app-header--compact .public-header__inner { width: min(1200px, calc(100% - 2 * var(--page-padding))); padding: 0; }
+.learner-app-header--compact .public-header__actions > * { box-shadow: none; }
+
+@media (max-width: 900px) {
+  .learner-app-header { --learner-header-control-height: 44px; }
+  .learner-app-header .public-nav {
+    padding: 12px 20px 16px;
+    border-color: var(--learner-header-border);
+    box-shadow: 0 12px 24px rgb(18 60 141 / 8%);
+  }
+  .learner-app-header .public-nav > a { justify-content: flex-start; font-size: 15px; }
+  .learner-app-header .public-header__menu {
+    border: 1px solid transparent;
+    border-radius: var(--learner-header-radius);
+    background: var(--learner-header-hover-bg);
+    color: var(--learner-header-active-text);
+  }
+  .learner-app-header .public-header__menu:hover { border-color: var(--learner-header-border); background: var(--learner-header-active-bg); }
+  .learner-app-header--compact .public-nav { top: 72px; }
+}
+@media (max-width: 767px) {
+  .learner-app-header--compact.public-header { height: 64px; }
+  .learner-app-header--compact .public-nav { top: 64px; }
+}

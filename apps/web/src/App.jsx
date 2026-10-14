@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import LearnerSearch from './features/learner/LearnerSearch.jsx';
-import LearnerMapPage from './features/learner/LearnerMapPage.jsx';
 import LearnerDashboard from './features/learner/LearnerDashboard.jsx';
 import TutorDashboard from './features/tutor/TutorDashboard.jsx';
 import TutorClassMap from './features/tutor/TutorClassMap.jsx';
@@ -16,6 +15,7 @@ import HomePage from './features/public/HomePage.jsx';
 import LearnerLanding from './features/public/LearnerLanding.jsx';
 import TutorLanding from './features/public/TutorLanding.jsx';
 import { MyRequests, NewRequest, RequestDetail } from './features/learner/LearnerPages.jsx';
+import LearnerMapPage from './features/learner/LearnerMapPage.jsx';
 import TutorProfilePage from './features/learner/TutorProfilePage.jsx';
 import { TutorProfile, TutorRequestDetail, TutorRequests } from './features/tutor/TutorPages.jsx';
 import TutorTimetable from './features/tutor/TutorTimetable.jsx';
@@ -33,7 +33,7 @@ export default function App() {
     <Route path="/" element={<HomePage />} /><Route path="/learner" element={<LearnerLanding />} /><Route path="/tutor" element={<TutorLanding />} />
     <Route path="/login" element={<LoginPage />} /><Route path="/register" element={<RegistrationPage role="learner" />} /><Route path="/tutor/register" element={<RegistrationPage role="tutor" />} />
     <Route path="/learner/search" element={<Protected role="learner"><LearnerSearch /></Protected>} />
-    <Route path="/learner/map" element={<Protected role="learner"><LearnerMapPage /></Protected>} />
+    <Route path="/map" element={<Protected role="learner"><LearnerMapPage /></Protected>} />
     <Route path="/learner/dashboard" element={<Protected role="learner"><LearnerDashboard /></Protected>} />
     <Route path="/tutor/timetable" element={<Protected role="tutor"><TutorTimetable /></Protected>} />
     <Route path="/tutor/income" element={<Protected role="tutor"><TutorIncome /></Protected>} />

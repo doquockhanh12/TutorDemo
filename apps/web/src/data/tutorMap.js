@@ -6,6 +6,10 @@ export const mapTutors = tutors.map((tutor, index) => {
   const pt = points[index % points.length] || [200, 200];
   return { ...tutor, x: pt[0], y: pt[1] };
 });
+
 export function demoDistance(first, second) {
-  return (Math.hypot(first.x - second.x, first.y - second.y) * .015).toLocaleString('vi-VN', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  return (Math.hypot(first.x - second.x, first.y - second.y) * .015).toLocaleString('vi-VN', {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
 }

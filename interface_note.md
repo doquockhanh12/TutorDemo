@@ -24,7 +24,7 @@ Các luồng đơn vai trò đã đi qua được với dữ liệu demo. Vì ch
 | Confirmed lesson detail (L10 trong L09) | Có nội dung | Chi tiết lịch được biểu diễn trong request; trạng thái dùng dữ liệu demo của Learner. |
 | Submit review (L11 trong L09) | Đạt ở trạng thái seeded | Request hoàn tất mở form sao/nhận xét. Chưa kiểm thử submit để tránh ghi review demo lâu dài. |
 | Learner Dashboard `/learner/dashboard` (L12) | Đạt một phần | Có hồ sơ, địa chỉ, saved tutors, request và lịch. Với account vừa thử, địa chỉ trống được giải thích và có nút cập nhật. |
-| Nearby Tutor Map `/learner/map` (L13) | Đạt | Hai lựa chọn gia sư làm cập nhật khoảng cách minh họa; trang nói rõ vị trí không phải địa chỉ/quãng đường thật. |
+| Nearby Tutor Map (L13) | Implemented `/map` | Search có link “Xem bản đồ”; trang riêng dùng vị trí và khoảng cách minh họa. |
 | Learner landing `/learner` | Có trong navigation | Góc phụ huynh liên kết tới landing; không thuộc thao tác cốt lõi sau đăng nhập. |
 
 ## Luồng Tutor

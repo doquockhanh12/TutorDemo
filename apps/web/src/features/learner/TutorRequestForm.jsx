@@ -1,7 +1,6 @@
-import { ArrowRight, X } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import {
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -19,77 +18,11 @@ import {
   useTutorProposalValidation,
 } from '../tutor/TutorWorkspaceState.jsx';
 
-function SelectedGroup({
-  title,
-  items,
-  target,
-  onRemove,
-  optional = false,
-  invalid = false,
-  validationKey,
-}) {
-  return (
-    <fieldset
-      className={
-        'profile-selection-summary' +
-        (invalid ? ' is-validation-error' : '')
-      }
-      data-validation-key={validationKey}
-      aria-invalid={invalid || undefined}
-    >
-      <legend>
-        {title}
-        {optional ? ' (tùy chọn)' : ' *'}
-      </legend>
-
-      {items.length ? (
-        <div>
-          {items.map((item) => (
-            <button
-              type="button"
-              key={item.key}
-              onClick={() => onRemove(item.key)}
-              aria-label={`Bỏ ${item.label}`}
-            >
-              {item.label}
-
-              <X
-                size={14}
-                aria-hidden="true"
-              />
-            </button>
-          ))}
-        </div>
-      ) : (
-        <a href={`#${target}`}>
-          Chọn {title.toLocaleLowerCase('vi-VN')} trong hồ sơ
-        </a>
-      )}
-
-      {invalid && (
-        <small
-          className="profile-field-error"
-          role="alert"
-        >
-          Vui lòng hoàn thành mục này.
-        </small>
-      )}
-    </fieldset>
-  );
-}
-
-const choices = (items) =>
-  items.map((item) => ({
-    key: item,
-    label: item,
-  }));
-
 export default function TutorRequestForm({
   tutor,
   selection,
-  onToggle,
-  onRemoveRange,
   onValidationErrors,
+  hideSubmitButton = false,
 }) {
   const navigate = useNavigate();
 
@@ -105,9 +38,9 @@ export default function TutorRequestForm({
   const [validationAttempted, setValidationAttempted] =
     useState(false);
 
-  const goalRef = useRef(null);
-
   const ranges = selection.proposals;
+  const selectedSubjects = selection.subjects ? [selection.subjects] : [];
+  const selectedLevels = selection.levels ? [selection.levels] : [];
 
   const { validProposal } =
     useTutorProposalValidation(tutor);
@@ -124,10 +57,9 @@ export default function TutorRequestForm({
     selection.formats.includes('Tại nhà');
 
   const errors = {
-    subjects:
-      selection.subjects.length === 0,
+    subjects: !selection.subjects,
 
-    levels: selection.levels.length === 0,
+    levels: !selection.levels,
 
     proposals:
       ranges.length === 0 ||
@@ -139,9 +71,6 @@ export default function TutorRequestForm({
     areas:
       areaRequired &&
       selection.areas.length === 0,
-
-    goal:
-      !goal.trim(),
   };
 
   const ready =
@@ -160,14 +89,13 @@ export default function TutorRequestForm({
     onValidationErrors?.(errors);
   }, [
     validationAttempted,
-    selection.subjects.length,
-    selection.levels.length,
+    selection.subjects,
+    selection.levels,
     ranges.length,
     proposalsValid,
     selection.formats.length,
     selection.areas.length,
     areaRequired,
-    goal,
     onValidationErrors,
   ]);
 
@@ -180,7 +108,6 @@ export default function TutorRequestForm({
       'proposals',
       'formats',
       'areas',
-      'goal',
     ];
 
     const firstKey = order.find(
@@ -201,21 +128,6 @@ export default function TutorRequestForm({
       formats: 'profile-location',
       areas: 'profile-location',
     };
-
-    if (firstKey === 'goal') {
-      goalRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-
-      window.setTimeout(() => {
-        goalRef.current?.focus({
-          preventScroll: true,
-        });
-      }, 350);
-
-      return;
-    }
 
     const target = document.getElementById(
       sourceTargets[firstKey]
@@ -274,13 +186,13 @@ export default function TutorRequestForm({
         tutorId: tutor.id,
 
         subjects:
-          selection.subjects,
+          selectedSubjects,
 
         subject:
-          selection.subjects.join(', '),
+          selectedSubjects.join(', '),
 
         levels:
-          selection.levels,
+          selectedLevels,
 
         proposals,
 
@@ -308,227 +220,59 @@ export default function TutorRequestForm({
     navigate(`/requests/${result.id}`);
   };
 
-  const showError = (key) =>
-    validationAttempted &&
-    errors[key];
-
   return (
     <form
-      className="profile-request"
+      className="profile-request booking-modal__goal"
       id="profile-request"
       onSubmit={submit}
       noValidate
     >
-      <span className="eyebrow">
-        BẮT ĐẦU KẾT NỐI
-      </span>
+      <div className="booking-modal__goal-heading">
+        <h2>Mục tiêu học tập</h2>
+        <p>Cho gia sư biết bạn muốn cải thiện điều gì trong buổi học.</p>
+      </div>
 
-      <h2>
-        Gửi yêu cầu học
-      </h2>
-
-      <p>
-        Các lựa chọn trong hồ sơ tự cập
-        nhật ở đây. Bạn không cần nhập lại.
-      </p>
-
-      <SelectedGroup
-        title="Môn học"
-        items={choices(
-          selection.subjects
-        )}
-        target="profile-subjects"
-        validationKey="subjects"
-        invalid={showError(
-          'subjects'
-        )}
-        onRemove={(key) =>
-          onToggle(
-            'subjects',
-            key
-          )
-        }
-      />
-
-      <SelectedGroup
-        title="Cấp độ"
-        items={choices(
-          selection.levels
-        )}
-        target="profile-subjects"
-        validationKey="levels"
-        invalid={showError('levels')}
-        onRemove={(key) =>
-          onToggle(
-            'levels',
-            key
-          )
-        }
-      />
-
-      <SelectedGroup
-        title="Khung giờ mong muốn"
-        items={ranges.map(
-          (range) => ({
-            key:
-              range.date +
-              ':' +
-              range.start +
-              ':' +
-              range.end,
-
-            label:
-              concreteScheduleLabel(
-                range
-              ),
-          })
-        )}
-        target="profile-calendar"
-        validationKey="proposals"
-        invalid={showError(
-          'proposals'
-        )}
-        onRemove={(key) =>
-          onRemoveRange(
-            ranges.find(
-              (range) =>
-                range.date +
-                  ':' +
-                  range.start +
-                  ':' +
-                  range.end ===
-                key
-            )
-          )
-        }
-      />
-
-      <SelectedGroup
-        title="Hình thức học"
-        items={choices(
-          selection.formats
-        )}
-        target="profile-location"
-        validationKey="formats"
-        invalid={showError(
-          'formats'
-        )}
-        onRemove={(key) =>
-          onToggle(
-            'formats',
-            key
-          )
-        }
-      />
-
-      <SelectedGroup
-        title="Khu vực học"
-        optional={!areaRequired}
-        items={choices(
-          selection.areas
-        )}
-        target="profile-location"
-        validationKey="areas"
-        invalid={showError(
-          'areas'
-        )}
-        onRemove={(key) =>
-          onToggle(
-            'areas',
-            key
-          )
-        }
-      />
-
-      <label
-        className={
-          showError('goal')
-            ? 'is-validation-error'
-            : ''
-        }
-      >
-        Mong muốn học tập *
-
+      <label>
+        <span>
+          Mong muốn học tập{' '}
+          <span className="profile-field-optional">(Không bắt buộc)</span>
+        </span>
         <textarea
-          ref={goalRef}
+          className="profile-request__goal-input border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           rows="4"
           value={goal}
-          aria-required="true"
-          aria-invalid={
-            showError('goal') ||
-            undefined
-          }
-          onChange={(event) =>
-            setGoal(
-              event.target.value
-            )
-          }
+          onChange={(event) => setGoal(event.target.value)}
           placeholder="Mục tiêu học, phần cần hỗ trợ và lưu ý cho gia sư..."
         />
-
-        {showError('goal') && (
-          <small
-            className="profile-field-error"
-            role="alert"
-          >
-            Vui lòng nhập mong muốn học tập.
-          </small>
-        )}
       </label>
 
-      {!ready &&
-        !validationAttempted && (
-          <small>
-            Chọn ít nhất một môn, cấp độ, khung
-            giờ, hình thức và nhập mục
-            tiêu. Học tại nhà cần chọn
-            khu vực.
-          </small>
-        )}
-
       {!proposalsValid && (
-        <small
-          role="alert"
-          className="schedule-error"
-        >
-          Lịch rảnh hoặc thời lượng đã
-          thay đổi. Bỏ khung giờ không
-          còn phù hợp và chọn lại.
+        <small role="alert" className="schedule-error">
+          Lịch rảnh hoặc thời lượng đã thay đổi. Bỏ khung giờ không còn phù hợp
+          và chọn lại.
         </small>
       )}
-      {submitError && <small role="alert" className="schedule-error">{submitError}</small>}
+      {submitError && (
+        <small role="alert" className="schedule-error">
+          {submitError}
+        </small>
+      )}
 
-      {validationAttempted &&
-        !ready && (
-          <small
-            className="profile-validation-summary"
-            role="alert"
-          >
-            Vui lòng hoàn thành các mục
-            được đánh dấu đỏ trước khi
-            gửi yêu cầu.
-          </small>
-        )}
+      {validationAttempted && !ready && (
+        <small className="profile-validation-summary" role="alert">
+          Vui lòng hoàn thành các mục được đánh dấu trước khi gửi yêu cầu.
+        </small>
+      )}
 
-      {/*
-        Không disabled nữa.
-
-        User luôn bấm được và validation
-        sẽ chạy trong submit().
-      */}
-      <button
-        className="button button--primary button--md"
-        type="submit"
-      >
-        Gửi yêu cầu học
-        <ArrowRight size={17} />
-      </button>
+      {!hideSubmitButton && (
+        <button className="button button--primary button--md" type="submit">
+          Gửi yêu cầu học
+          <ArrowRight size={17} />
+        </button>
+      )}
 
       <small>
-        Yêu cầu demo được lưu trong trình
-        duyệt. Các khung giờ là thời gian
-        bạn đề xuất, chưa phải lịch học
-        được xác nhận.
+        Các khung giờ bạn chọn là đề xuất, chưa phải lịch học được xác nhận.
       </small>
     </form>
   );

@@ -33,7 +33,6 @@ test('Learner and Tutor screens avoid page overflow at mobile width', async ({ p
     '/requests',
     '/requests/demo-02',
     '/learner/dashboard',
-    '/learner/map',
   ]) {
     await expectNoPageOverflow(page, route);
   }

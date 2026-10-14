@@ -33,10 +33,14 @@ const sameSession = (a, b) =>
 
 export default function ProfileCalendar({
   tutor,
-  selected,
-  onAdd,
-  onRemove,
+  selected = [],
+  onAdd = () => {},
+  onRemove = () => {},
   invalid = false,
+  readOnly = false,
+  stackOnMobile = false,
+  id = 'profile-calendar',
+  className = '',
 }) {
   const [offset, setOffset] =
     useState(0);
@@ -86,13 +90,14 @@ export default function ProfileCalendar({
 
   return (
     <section
-      className={
-        'profile-section' +
-        (invalid
-          ? ' is-validation-error'
-          : '')
-      }
-      id="profile-calendar"
+      className={[
+        'profile-section profile-calendar',
+        readOnly && 'profile-calendar--readonly',
+        stackOnMobile && 'profile-calendar--stacked',
+        invalid && 'is-validation-error',
+        className,
+      ].filter(Boolean).join(' ')}
+      id={id}
       aria-invalid={
         invalid || undefined
       }
@@ -109,9 +114,9 @@ export default function ProfileCalendar({
       </div>
 
       <p>
-        Chọn buổi học có sẵn để thêm vào
-        “Gửi yêu cầu học”. Có thể chọn
-        nhiều buổi; nhấn lại để bỏ chọn.
+        {readOnly
+          ? 'Lịch này chỉ để tham khảo. Chọn “Đặt lịch học” để đề xuất các khung giờ.'
+          : 'Chọn buổi học có sẵn để thêm vào yêu cầu. Có thể chọn nhiều buổi; nhấn lại để bỏ chọn.'}
       </p>
 
       <div className="schedule-week-nav">
@@ -222,7 +227,7 @@ export default function ProfileCalendar({
           <tbody>
             <tr>
               {dates.map(
-                (date) => {
+                (date, index) => {
                   const key =
                     localDateKey(
                       date
@@ -238,13 +243,34 @@ export default function ProfileCalendar({
                     );
 
                   return (
-                    <td key={key}>
+                    <td
+                      key={key}
+                      data-day={`${timetableDays[index]} ${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`}
+                    >
                       <div className="profile-session-list">
                         {daily.length ? (
                           daily.map(
                             (
                               session
                             ) => {
+                              if (readOnly) {
+                                return (
+                                  <div
+                                    key={session.start}
+                                    className="profile-session-view"
+                                    role="group"
+                                    aria-label={proposalLabel(session)}
+                                  >
+                                    <span>
+                                      {timeLabel(session.start)}
+                                      {' – '}
+                                      {timeLabel(session.end)}
+                                    </span>
+                                    <small>Còn trống</small>
+                                  </div>
+                                );
+                              }
+
                               const active =
                                 selected.some(
                                   (
@@ -331,19 +357,25 @@ export default function ProfileCalendar({
         </table>
       </div>
 
-      <p
-        className="profile-schedule-feedback"
-        role="status"
-      >
-        {selected.length
-          ? 'Đã chọn: ' +
-            selected
-              .map(
-                proposalLabel
-              )
-              .join('; ')
-          : 'Chưa chọn buổi học.'}
-      </p>
+      {invalid && (
+        <small className="profile-field-error" role="alert">
+          Chọn ít nhất một khung giờ phù hợp.
+        </small>
+      )}
+
+      {!readOnly && (
+        <p
+          className="profile-schedule-feedback"
+          role="status"
+        >
+          {selected.length
+            ? 'Đã chọn: ' +
+              selected
+                .map(proposalLabel)
+                .join('; ')
+            : 'Chưa chọn buổi học.'}
+        </p>
+      )}
     </section>
   );
 }

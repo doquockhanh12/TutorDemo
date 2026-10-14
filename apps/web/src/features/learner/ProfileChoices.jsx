@@ -1,5 +1,39 @@
-import { Check } from 'lucide-react';
+export default function ProfileChoices({
+  title,
+  options,
+  selected,
+  onToggle,
+  invalid = false,
+  errorMessage = 'Vui lòng chọn ít nhất một mục.',
+}) {
+  return (
+    <fieldset
+      className="profile-choices"
+      aria-invalid={invalid || undefined}
+    >
+      <legend>{title}</legend>
+      <div>
+        {options.map((option) => {
+          const active = selected.includes(option);
 
-export default function ProfileChoices({ title, options, selected, onToggle }) {
-  return <fieldset className="profile-choices"><legend>{title}</legend><div>{options.map((option) => <button key={option} type="button" aria-pressed={selected.includes(option)} onClick={() => onToggle(option)}>{selected.includes(option) && <Check size={16} aria-hidden="true" />}{option}</button>)}</div></fieldset>;
+          return (
+            <button
+              key={option}
+              className="rounded-full"
+              type="button"
+              aria-pressed={active}
+              onClick={() => onToggle(option)}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+      {invalid && (
+        <small className="profile-field-error" role="alert">
+          {errorMessage}
+        </small>
+      )}
+    </fieldset>
+  );
 }

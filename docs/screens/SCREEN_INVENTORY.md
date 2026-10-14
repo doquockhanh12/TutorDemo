@@ -12,17 +12,17 @@ Learner/Tutor ưu tiên current implementation/behavior; Figma chỉ historical/
 | L02 | Register | Yes | Implemented `/register` |
 | L03 | Tutor Search / Discovery | Yes | Implemented `/learner/search` |
 | L04 | Search Filters | Yes | Tích hợp L03; nhiều môn/khu vực/thời gian |
-| L05 | Tutor Profile Detail | Yes | Implemented `/tutors/:id`; bảng 7 ngày gọn, chỉ chọn buổi có sẵn, đồng bộ form L06 |
-| L06 | Create Tutoring Request | Yes | Form trong L05; `/requests/new` redirect tới profile |
+| L05 | Tutor Profile Detail | Yes | Implemented `/tutors/:id`; thông tin, review, lịch tuần chỉ xem; CTA sticky mở booking dialog |
+| L06 | Create Tutoring Request | Yes | Booking dialog mở từ L05; `/requests/new` mở dialog cho đúng gia sư |
 | L07 | Request Confirmation | Yes | Tích hợp L09 sau submit; chưa có page riêng |
 | L08 | My Requests | Yes | Implemented `/requests` |
 | L09 | Request Detail / Status | Yes | Implemented `/requests/:id` |
 | L10 | Confirmed Schedule / Lesson Detail | Yes | Thông tin lịch trong L09; chưa có lesson page riêng |
 | L11 | Submit Tutor Review | Yes | Form trong L09 khi Hoàn tất; chưa có route riêng |
 | L12 | Learner Account/Profile | Recommended | Implemented `/learner/dashboard`; sửa hồ sơ/địa chỉ |
-| L13 | Bản đồ gia sư gần bạn | Approved demo extension | Implemented `/learner/map`; vị trí/khoảng cách minh họa |
+| L13 | Bản đồ gia sư gần bạn | Approved demo extension | Implemented `/map`, bản đồ minh họa và so sánh khoảng cách demo |
 
-L03/L04 giữ hero Learner; cột lọc và cột hỗ trợ cùng khung trắng/viền/bo góc. Các trang app dùng LearnerHeader có avatar/username và Đăng xuất. L08 không có nút tạo yêu cầu; nút chỉ ở L09 và dẫn tới gia sư trong request.
+L03/L04 dùng hero Search riêng nhỏ gọn, tìm kiếm trong viewport đầu tiên và một bộ lọc nhiều lựa chọn; desktop dùng dropdown, mobile dùng dialog. Kết quả dùng lưới full-width 3/2/1 cột và có link tới L13 `/map`. Landing `/learner` giữ hero public hiện có. Các trang app dùng LearnerHeader có Tìm gia sư, Yêu cầu học (`/requests`), Góc phụ huynh (`/learner#stories`) và dropdown avatar/username; active state theo route. Dropdown dẫn tới L11, `/requests`, phần `#saved-tutors` của L11 và Đăng xuất hiện có; không tạo màn gia sư đã lưu riêng. L08 không có nút tạo yêu cầu; nút chỉ ở L09 và dẫn tới gia sư trong request.
 
 ## Tutor
 

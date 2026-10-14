@@ -1,4 +1,4 @@
-import { ArrowUpRight, BadgeCheck, Bookmark, Clock3, MapPin, Star } from 'lucide-react';
+import { ArrowUpRight, BadgeCheck, Clock3, Heart, MapPin, Star } from 'lucide-react';
 import Avatar from '../../components/Avatar.jsx';
 import Badge from '../../components/Badge.jsx';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ const money = (value) => new Intl.NumberFormat('vi-VN').format(value);
 
 export default function TutorCard({ tutor, saved, onSave }) {
   const { ranges } = usePublicTutorSchedule(tutor);
+  const scheduleSummary = rangesSummary(ranges).replace(/\s*\u00b7\s*/g, ', ');
   return (
     <article className={`tutor-card ${tutor.featured ? 'tutor-card--featured' : ''}`}>
       <div className="tutor-card__top">
@@ -19,7 +20,7 @@ export default function TutorCard({ tutor, saved, onSave }) {
           <p>{tutor.university}</p>
         </div>
         <button className={`icon-button tutor-card__save ${saved ? 'is-saved' : ''}`} type="button" onClick={() => onSave(tutor.id)} aria-label={saved ? `Bỏ lưu ${tutor.name}` : `Lưu ${tutor.name}`} aria-pressed={saved}>
-          <Bookmark size={19} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
+          <Heart size={19} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
       </div>
 
@@ -34,7 +35,7 @@ export default function TutorCard({ tutor, saved, onSave }) {
 
       <div className="tutor-card__facts">
         <span><MapPin size={16} aria-hidden="true" />{tutor.location}</span>
-        <span><Clock3 size={16} aria-hidden="true" />{rangesSummary(ranges)}</span>
+        <span><Clock3 size={16} aria-hidden="true" />{scheduleSummary}</span>
       </div>
 
       <div className="tutor-card__bottom">

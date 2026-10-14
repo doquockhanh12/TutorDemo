@@ -1,17 +1,22 @@
-import { Link } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
-import Avatar from '../../components/Avatar.jsx';
+import { useLocation } from 'react-router-dom';
 import useDemoAuth from '../auth/DemoAuthContext.jsx';
 import { PublicHeader } from '../public/PublicChrome.jsx';
+import LearnerAccountMenu from './LearnerAccountMenu.jsx';
+import './header.css';
 
-const navigation = [['Tìm gia sư', '/learner/search'], ['Góc phụ huynh', '/learner#stories'], ['Trở thành Gia Sư', '/tutor']];
+const navigation = [['Tìm gia sư', '/learner/search'], ['Yêu cầu học', '/requests'], ['Góc phụ huynh', '/learner#stories']];
 
-export default function LearnerHeader() {
+export default function LearnerHeader({ compact = false }) {
   const { user, logout } = useDemoAuth();
-  const initials = (user.fullName || user.username).split(' ').slice(-2).map((word) => word[0]).join('');
-  const actions = <>
-    <Link className="learner-account" to="/learner/dashboard"><Avatar initials={initials} name={user.fullName || user.username} size="sm" /><span>{user.username}</span></Link>
-    <button className="learner-logout" type="button" onClick={logout}><LogOut size={17} aria-hidden="true" /> Đăng xuất</button>
-  </>;
-  return <PublicHeader kind="learner" navigation={navigation} actions={actions} />;
+  const { pathname } = useLocation();
+  const isTutorProfile = pathname.startsWith('/tutors/');
+  const links = navigation.map(([label, href]) => [
+    label,
+    href,
+    pathname === href ||
+      pathname.startsWith(`${href}/`) ||
+      (href === '/learner/search' && isTutorProfile),
+  ]);
+  const actions = <LearnerAccountMenu user={user} onLogout={logout} />;
+  return <PublicHeader kind="learner" navigation={links} actions={actions} persistentActions className={`learner-app-header${compact ? ' learner-app-header--compact' : ''}`} />;
 }
