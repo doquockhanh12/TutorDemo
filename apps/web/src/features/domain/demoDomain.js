@@ -1,5 +1,5 @@
 import { demoReferenceData as fixture } from '../../data/demoReferenceData.js';
-import { acceptanceResult, CANONICAL_TUTOR_ID, localDateKey, migrateWorkspaceV2, normalizeRanges, normalizeSessionMinutes, subtractLessons, subtractRange, weekDates, weeklyScheduleRanges, selectPublicTutorSchedule, isValidProposal, isFutureSession } from '../../data/tutorSchedule.js';
+import { acceptanceResult, classFromRequest, proposedLessons, CANONICAL_TUTOR_ID, localDateKey, migrateWorkspaceV2, normalizeRanges, normalizeSessionMinutes, subtractLessons, subtractRange, weekDates, weeklyScheduleRanges, selectPublicTutorSchedule, isValidFlexibleProposal, isFutureSession } from '../../data/tutorSchedule.js';
 
 export const DOMAIN_STORAGE_KEY = 'tnm.demo.domain.v1';
 const APPROVED_TIMETABLE_CLEANUP = '2026-10-04-thursday-math-friday-availability';
@@ -34,7 +34,7 @@ export function addLearnerRequest(state, user, values, now = new Date()) {
   const proposals = values.proposals || [];
   if (!proposals.length || proposals.some((p, index) => {
     const schedule = selectPublicTutorSchedule(state, tutor, weekDates(0, new Date(p.date + 'T12:00:00')), tutor.sessionMinutes);
-    return !isFutureSession(p, now) || !isValidProposal(p, schedule.ranges, schedule.sessionMinutes, proposals.slice(0, index));
+    return !isFutureSession(p, now) || !isValidFlexibleProposal(p, schedule.ranges, proposals.slice(0, index));
   })) return { error: 'Buổi học đã qua hoặc lịch rảnh đã thay đổi. Vui lòng chọn lại.' };
   let number = state.nextRequestNumber;
   while (state.requests.some((r) => r.id === 'request-' + number)) number++;
@@ -50,10 +50,11 @@ export function createDemoState(now = new Date()) {
   const lessons = [...seed.lessonTemplates.map(({ day, ...lesson }) => ({ ...lesson, date: localDateKey(dates[day]) })), ...(seed.historicalLessons || [])];
   const requests = seed.requests.map(({ proposalTemplate, ...request }) => normalizeRequest({ ...request,
     ...(proposalTemplate ? { proposals: proposalTemplate.days.map((day) => ({ date: localDateKey(dates[day]), start: proposalTemplate.start, end: proposalTemplate.end })) } : {}) }));
-  return applyApprovedDemoCleanup({
+  return reconcileAcceptedClasses(applyApprovedDemoCleanup({
     version: 1,
     profiles: seed.tutorProfiles,
     requests,
+    classes: [],
     lessons,
     availability: subtractLessons(weeklyScheduleRanges(seed.tutorProfiles.find((t) => t.id === CANONICAL_TUTOR_ID), dates), lessons),
     settings: Object.fromEntries(seed.tutorProfiles.filter((p) => p.accountId).map((p) => [p.id, { sessionMinutes: p.sessionMinutes }])),
@@ -63,10 +64,78 @@ export function createDemoState(now = new Date()) {
     reviews: seed.reviews || [],
     issues: seed.issues || [],
     appeals: [],
+    subjectRequests: [],
     nextAppealNumber: 1,
-  });
+  }));
 }
 function read(storage, key) { try { return JSON.parse(storage.getItem(key)); } catch { return null; } }
+function reconcileAcceptedClasses(state) {
+  const seenRequests = new Set();
+  const seenClassIds = new Set();
+  const classes = (state.classes || []).filter((item) => {
+    if (!item?.requestId || !item.id || seenRequests.has(item.requestId) || seenClassIds.has(item.id)) return false;
+    seenRequests.add(item.requestId);
+    seenClassIds.add(item.id);
+    return true;
+  });
+  let next = { ...state, classes };
+  for (const request of state.requests) {
+    if (!['accepted', 'pending_learner_confirmation'].includes(request.status) && !(request.status === 'needs_revision' && request.legacyAcceptedStatus)) continue;
+    const existingClass = next.classes.find((item) => item.requestId === request.id);
+    if (existingClass) {
+      const mismatch = existingClass.tutorId !== request.tutorId || (existingClass.learnerId && request.learnerId && existingClass.learnerId !== request.learnerId);
+      next = { ...next, requests: next.requests.map((item) => item.id === request.id ? mismatch
+        ? { ...item, status: 'needs_revision', legacyAcceptedStatus: request.legacyAcceptedStatus || request.status,
+          reconciliationError: 'Lớp có cùng mã yêu cầu nhưng không khớp gia sư hoặc học viên; cần kiểm tra liên kết.' }
+        : { ...item, status: 'accepted', classId: existingClass.id, reconciliationError: null } : item) };
+      continue;
+    }
+    const linked = next.lessons.filter((lesson) => lesson.requestId === request.id);
+    if (linked.length) {
+      const classId = request.classId || request.id;
+      const invalidLesson = linked.some((lesson) => lesson.tutorId !== request.tutorId
+        || (lesson.learnerId && request.learnerId && lesson.learnerId !== request.learnerId)
+        || (lesson.classId && lesson.classId !== classId)
+        || !/^\d{4}-\d{2}-\d{2}$/.test(lesson.date || '')
+        || !Number.isFinite(lesson.start) || !Number.isFinite(lesson.end) || lesson.end <= lesson.start);
+      if (invalidLesson) {
+        next = { ...next, requests: next.requests.map((item) => item.id === request.id ? {
+          ...item, status: 'needs_revision', legacyAcceptedStatus: request.legacyAcceptedStatus || request.status,
+          reconciliationError: 'Buổi học liên kết không khớp người tham gia hoặc thiếu ngày, giờ hợp lệ; cần kiểm tra dữ liệu cũ.',
+        } : item) };
+        continue;
+      }
+      if (next.classes.some((item) => item.id === classId)) {
+        next = { ...next, requests: next.requests.map((item) => item.id === request.id ? {
+          ...item, status: 'needs_revision', legacyAcceptedStatus: request.legacyAcceptedStatus || request.status,
+          reconciliationError: 'Mã lớp cũ đã thuộc yêu cầu khác; cần kiểm tra liên kết.', classId: null,
+        } : item) };
+        continue;
+      }
+      next = { ...next,
+        classes: [...next.classes, classFromRequest(request, linked)],
+        requests: next.requests.map((item) => item.id === request.id ? { ...item, status: 'accepted', classId, reconciliationError: null } : item),
+        lessons: next.lessons.map((lesson) => lesson.requestId === request.id && !lesson.classId ? { ...lesson, classId } : lesson),
+      };
+      continue;
+    }
+    // A previous acceptance can only become a class if the stored terms are complete.
+    const prepared = { ...next, requests: next.requests.map((item) => item.id === request.id ? { ...item, status: 'pending' } : item) };
+    const result = acceptanceResult(prepared, request.id);
+    if (result.state) next = result.state;
+    else {
+      const missing = [
+        !(request.format?.trim() || request.formats?.length) && 'hình thức học',
+        !proposedLessons(request).length && 'ngày, giờ học cụ thể',
+      ].filter(Boolean);
+      next = { ...next, requests: next.requests.map((item) => item.id === request.id ? {
+      ...item, status: 'needs_revision', legacyAcceptedStatus: request.legacyAcceptedStatus || request.status,
+      reconciliationError: missing.length ? `Thiếu ${missing.join(' và ')} trong yêu cầu cũ.` : result.error || 'Không thể khôi phục lớp từ dữ liệu cũ.', classId: null,
+    } : item) };
+    }
+  }
+  return next;
+}
 function reconcileLessonSeed(state) {
   const templates = new Map(fixture.lessonTemplates.map((lesson) => [lesson.id, lesson]));
   const lessons = (state.lessons || []).map((lesson) => {
@@ -124,17 +193,18 @@ function reconcileLessonSeed(state) {
 
   // Saved availability predates newly reconciled history in older demo state.
   // Keep the free portions; occupied time must never remain bookable/rendered as free.
-  return applyApprovedDemoCleanup({
+  return reconcileAcceptedClasses(applyApprovedDemoCleanup({
     ...state,
     profiles: [...profileMap.values()],
     appeals: state.appeals || [],
+    subjectRequests: state.subjectRequests || [],
     nextAppealNumber: state.nextAppealNumber || 1,
     users: [...userMap.values()],
     reviews: [...reviewMap.values()],
     issues: [...issueMap.values()],
     lessons,
     availability: subtractLessons(state.availability || [], lessons),
-  });
+  }));
 }
 export function restoreDemoState(storage, now = new Date()) {
   const current = read(storage, DOMAIN_STORAGE_KEY);
@@ -191,10 +261,15 @@ export function updateLearnerRequest(state, accountId, id, patch) {
 }
 export function decideRequest(state, id, status, tutorId) {
   const request = state.requests.find((r) => r.id === id && r.tutorId === tutorId);
-  if (!request || request.status !== 'pending') return { error: 'Yêu cầu này không còn chờ phản hồi hoặc không thuộc gia sư.' };
+  if (!request) return { error: 'Yêu cầu này không thuộc gia sư.' };
   if (status === 'accepted') return acceptanceResult(state, id);
+  if (request.status !== 'pending') return { error: 'Yêu cầu này không còn chờ phản hồi.' };
   if (status !== 'rejected') return { error: 'Trạng thái không hợp lệ.' };
   return { state: { ...state, requests: state.requests.map((r) => r.id === id ? { ...r, status } : r) } };
+}
+export function confirmLearnerRequest(state, accountId, id) {
+  void state; void accountId; void id;
+  return { error: 'Người học không cần xác nhận lần hai. Gia sư nhận lớp từ yêu cầu hợp lệ.' };
 }
 export const canCompleteLesson = (lesson) => ['confirmed', 'upcoming'].includes(lesson?.status);
 export function completeDomainLesson(state, tutorId, id) {

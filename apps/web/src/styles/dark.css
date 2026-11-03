@@ -1,21 +1,21 @@
 :root[data-theme='dark'] {
-  --surface-page: #101827;
-  --surface-white: #1b2739;
-  --surface-warm: #263044;
-  --surface-light-blue: #253b58;
-  --text-primary: #edf3ff;
-  --text-muted: #b9c8dd;
-  --border-default-color: #384b63;
-  --color-canvas: #101827;
-  --color-surface: #1b2739;
-  --color-surface-muted: #253b58;
-  --color-ink: #edf3ff;
-  --color-text-secondary: #b9c8dd;
+  --surface-page: #0b1120;
+  --surface-white: #1c293b;
+  --surface-warm: #25364c;
+  --surface-light-blue: #2b405d;
+  --text-primary: #f8fafc;
+  --text-muted: #b7c9e0;
+  --border-default-color: #40546e;
+  --color-canvas: #0b1120;
+  --color-surface: #1c293b;
+  --color-surface-muted: #2b405d;
+  --color-ink: #f8fafc;
+  --color-text-secondary: #b7c9e0;
   --color-text-muted: #a7b7cd;
   --color-brand: #8bb7ff;
   --color-brand-dark: #b7d3ff;
   --color-brand-light: #253b58;
-  --color-border: #384b63;
+  --color-border: #40546e;
   --color-border-strong: #617590;
   --color-success: #75d4a4;
   --color-success-bg: #193c35;
@@ -100,6 +100,27 @@
 :root[data-theme='dark'] .teaching-timetable .weekly-timeline-block.lesson, :root[data-theme='dark'] .teaching-timetable .weekly-timeline-block.selected { border-color: var(--color-info); background: var(--color-info-bg); color: var(--color-ink); }
 :root[data-theme='dark'] .teaching-timetable .weekly-timeline-block.lesson.is-completed { border-color: var(--color-border-strong); background: var(--color-surface-muted); color: var(--color-text-secondary); opacity: 1; }
 :root[data-theme='dark'] .profile-subjects__tags > span { border-color: var(--color-brand); background: var(--color-brand-light); color: var(--color-ink); }
+:root[data-theme='dark'] .profile-subjects__options, :root[data-theme='dark'] .profile-subjects__options button, :root[data-theme='dark'] .profile-subject-level, :root[data-theme='dark'] .tutor-evidence fieldset { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .profile-subjects__options button.is-selected { background: var(--color-surface-muted); color: var(--color-ink); }
+:root[data-theme='dark'] .profile-subjects__search { background: var(--color-surface); border-color: var(--color-border-strong); color: var(--color-text-secondary); }
+:root[data-theme='dark'] .profile-subjects__search:focus-within { border-color: var(--color-brand); box-shadow: 0 0 0 3px rgb(139 183 255 / 18%); }
+:root[data-theme='dark'] .flow-form .profile-subjects__search input { background: transparent; border: 0; color: var(--color-ink); box-shadow: none; }
+:root[data-theme='dark'] .profile-subjects__options { box-shadow: 0 16px 38px rgb(0 0 0 / 28%); }
+:root[data-theme='dark'] .flow-form .profile-subjects__options button[role='option'].is-active { background: var(--color-surface-muted); }
+:root[data-theme='dark'] .weekly-timeline-scroll, :root[data-theme='dark'] .weekly-timeline-axis-main, :root[data-theme='dark'] .weekly-timeline-axis-main button, :root[data-theme='dark'] .weekly-timeline-remove { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .weekly-timeline-axis, :root[data-theme='dark'] .weekly-timeline-column { background: var(--color-canvas); color: var(--color-ink); }
+:root[data-theme='dark'] .tutor-messages, :root[data-theme='dark'] .messages-conversation, :root[data-theme='dark'] .messages-composer, :root[data-theme='dark'] .messages-bubble, :root[data-theme='dark'] .reviews-score, :root[data-theme='dark'] .reviews-distribution, :root[data-theme='dark'] .reviews-highlight, :root[data-theme='dark'] .reviews-list-panel { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .schedule-confirm { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .schedule-confirm-time-input { background: var(--color-canvas); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .tutor-class-card { box-shadow: none; }
+:root[data-theme='dark'] .messages-chat__body, :root[data-theme='dark'] .messages-conversation:hover, :root[data-theme='dark'] .messages-conversation.is-active, :root[data-theme='dark'] .review-reply, :root[data-theme='dark'] .messages-day-divider span, :root[data-theme='dark'] .reviews-bar { background: var(--color-surface-muted); color: var(--color-ink); }
+:root[data-theme='dark'] .messages-search, :root[data-theme='dark'] .messages-icon-button, :root[data-theme='dark'] .messages-back, :root[data-theme='dark'] .messages-notice, :root[data-theme='dark'] .messages-inbox__count { background: var(--color-surface-muted); color: var(--color-brand); border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-conversation__top strong, :root[data-theme='dark'] .messages-empty h3, :root[data-theme='dark'] .messages-search input, :root[data-theme='dark'] .messages-composer input, :root[data-theme='dark'] .review-card__comment { color: var(--color-ink); }
+:root[data-theme='dark'] .messages-inbox__heading > div > span, :root[data-theme='dark'] .messages-conversation__top time, :root[data-theme='dark'] .messages-conversation__subject, :root[data-theme='dark'] .messages-conversation__preview, :root[data-theme='dark'] .messages-chat__person p, :root[data-theme='dark'] .messages-empty, :root[data-theme='dark'] .reviews-muted, :root[data-theme='dark'] .reviews-score p, :root[data-theme='dark'] .reviews-list-heading p, :root[data-theme='dark'] .reviews-bar-row, :root[data-theme='dark'] .review-card__top p, :root[data-theme='dark'] .review-reply p { color: var(--color-text-secondary); }
+:root[data-theme='dark'] .messages-message--me .messages-bubble { background: #285dba; color: #fff; }
+:root[data-theme='dark'] .messages-message--me .messages-bubble > span { color: #dbe6ff; }
+:root[data-theme='dark'] .reviews-search, :root[data-theme='dark'] .reviews-filter select, :root[data-theme='dark'] .reviews-search input, :root[data-theme='dark'] .review-reply-form textarea { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-conversation-list, :root[data-theme='dark'] .messages-chat__body { scrollbar-color: var(--color-border-strong) var(--color-surface); }
 :root[data-theme='dark'] .tutor-level-options label:has(input:checked) { background: var(--color-brand-light); border-color: var(--color-brand); color: var(--color-ink); }
 :root[data-theme='dark'] .tutor-find__blocked { background: var(--color-danger-bg); border-color: var(--color-danger); }
 :root[data-theme='dark'] .learner-search-page .public-header__actions .learner-account, :root[data-theme='dark'] .learner-search-page .public-nav__mobile .learner-account { background: var(--color-surface); color: var(--color-ink); }
@@ -117,3 +138,25 @@
 :root[data-theme='dark'] .public-benefit-step b { color: #1c2842; }
 :root[data-theme='dark'] .public-consult__photo { min-height: 380px; background: var(--color-surface-muted); border-radius: var(--radius-lg); }
 :root[data-theme='dark'] .public-page--home .public-section-head h2, :root[data-theme='dark'] .public-page--home .public-section-head p { color: var(--color-ink); }
+:root[data-theme='dark'] .tutor-sidebar { background: #151e2e; border-color: var(--color-border); }
+:root[data-theme='dark'] .tutor-topbar { background: #151e2e; border-color: var(--color-border); }
+:root[data-theme='dark'] .tutor-header__title { color: var(--color-ink); }
+:root[data-theme='dark'] .tutor-messages { background: var(--color-surface); }
+:root[data-theme='dark'] .messages-inbox { background: #162235; border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-chat { background: var(--color-surface); }
+:root[data-theme='dark'] .messages-chat__header { border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-conversation { background: #162235; border-bottom: 1px solid #34455e; }
+:root[data-theme='dark'] .messages-conversation:hover { background: #233650; }
+:root[data-theme='dark'] .messages-conversation.is-active { background: #2b405d; box-shadow: inset 3px 0 #8bb7ff; }
+:root[data-theme='dark'] .messages-chat__body { background: #111b2c; }
+:root[data-theme='dark'] .messages-message--them .messages-bubble { background: #293b52; border-color: #40546e; color: var(--color-ink); }
+:root[data-theme='dark'] .messages-message--me .messages-bubble { background: #2563eb; border-color: #4681ff; color: #fff; }
+:root[data-theme='dark'] .messages-composer { background: var(--color-surface); border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-composer input { background: #111b2c; border-color: var(--color-border-strong); color: var(--color-ink); }
+:root[data-theme='dark'] .messages-search { background: #111b2c; border-color: var(--color-border-strong); }
+:root[data-theme='dark'] .messages-filters button { color: var(--color-text-secondary); border-color: var(--color-border); }
+:root[data-theme='dark'] .messages-filters button.is-active { background: #2b405d; color: var(--color-ink); border-color: var(--color-brand); }
+:root[data-theme='dark'] .messages-inbox__count { background: #2b405d; color: var(--color-ink); }
+:root[data-theme='dark'] .messages-unread { background: #2563eb; color: #fff; }
+:root[data-theme='dark'] .messages-icon-button:hover, :root[data-theme='dark'] .messages-back:hover { background: #2b405d; color: var(--color-ink); }
+:root[data-theme='dark'] .messages-composer input:focus { border-color: var(--color-brand); box-shadow: 0 0 0 3px rgb(139 183 255 / 18%); }

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { login, resetDemo } from './demoHelpers.js';
+import { login, logout, resetDemo, fixedTime } from './demoHelpers.js';
 import { demoReferenceData } from '../../src/data/demoReferenceData.js';
+import { createDemoState } from '../../src/features/domain/demoDomain.js';
 
 test('Tutor sidebar Income shows derived October summary, six-month values and exact eligible details', async ({ page }) => {
   await resetDemo(page);
@@ -115,10 +116,13 @@ test('Income tied extrema receive their semantic state', async ({ page }) => {
   for (const index of [2, 3, 4, 5]) await expect(values.nth(index)).toHaveAttribute('data-tone', 'minimum');
 });
 
-test('INCOME-001 accepting and completing a Request uses its snapshot fee in both Income and Dashboard', async ({ page }) => {
-  await resetDemo(page);
+test('INCOME-001 tutor accepted Request uses its snapshot fee in both Income and Dashboard', async ({ page }) => {
+  const state = createDemoState(fixedTime);
+  state.requests.find((request) => request.id === 'req-2').learnerId = 'demo-learner';
+  await resetDemo(page, { state });
   await login(page, 'giabao', '/tutor/requests/req-2');
-  await page.getByRole('button', { name: 'Nhận yêu cầu', exact: true }).click();
+  await page.getByRole('button', { name: 'Chấp nhận và tạo lớp' }).click();
+  await login(page, 'giabao', '/tutor/timetable');
   await page.goto('/tutor/timetable');
   await page.getByRole('button', { name: /Vật lý lớp 10.*Nguyễn Khánh Linh/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Đánh dấu hoàn tất' }).click();

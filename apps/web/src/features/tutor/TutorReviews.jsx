@@ -129,7 +129,7 @@ export default function TutorReviews() {
 
     setReplyingId(null);
     setReplyText('');
-    setNotice('Đã lưu phản hồi demo.');
+    setNotice('Đã lưu phản hồi trong trình duyệt.');
   }
 
   return (
@@ -307,7 +307,7 @@ export default function TutorReviews() {
         </section>
 
         <p className="reviews-demo-note">
-          Dữ liệu đánh giá và phản hồi hiện chỉ phục vụ bản demo frontend.
+          Đánh giá và phản hồi hiện được lưu trong trình duyệt; chưa đồng bộ với hệ thống.
         </p>
       </div>
     </TutorShell>

@@ -20,6 +20,8 @@ import TutorProfilePage from './features/learner/TutorProfilePage.jsx';
 import { TutorProfile, TutorRequestDetail, TutorRequests } from './features/tutor/TutorPages.jsx';
 import TutorTimetable from './features/tutor/TutorTimetable.jsx';
 import TutorIncome from './features/tutor/TutorIncome.jsx';
+import TutorClasses, { TutorClassDetail } from './features/tutor/TutorClasses.jsx';
+import TutorWallet from './features/tutor/TutorWallet.jsx';
 import TutorSettingsPage from './features/tutor/TutorSettingsPage.jsx';
 import TutorReviews from './features/tutor/TutorReviews.jsx';
 import TutorMessages from './features/tutor/TutorMessages.jsx';
@@ -39,6 +41,9 @@ export default function App() {
     <Route path="/learner/dashboard" element={<Protected role="learner"><LearnerDashboard /></Protected>} />
     <Route path="/tutor/timetable" element={<Protected role="tutor"><TutorTimetable /></Protected>} />
     <Route path="/tutor/income" element={<Protected role="tutor"><TutorIncome /></Protected>} />
+    <Route path="/tutor/classes" element={<Protected role="tutor"><TutorClasses /></Protected>} />
+    <Route path="/tutor/classes/:id" element={<Protected role="tutor"><TutorClassDetail /></Protected>} />
+    <Route path="/tutor/wallet" element={<Protected role="tutor"><TutorWallet /></Protected>} />
     <Route path="/tutor/settings" element={<Protected role="tutor"><TutorSettingsPage /></Protected>} />
     <Route path="/tutor/reviews" element={<Protected role="tutor"><TutorReviews /></Protected>} />
     <Route path="/tutor/messages" element={<Protected role="tutor"><TutorMessages /></Protected>} />

@@ -14,6 +14,7 @@ import {
 
 import {
   isValidProposal,
+  isValidFlexibleProposal,
   isFutureSession,
   localDateKey,
   proposalLabel,
@@ -44,6 +45,10 @@ export default function ProfileCalendar({
 }) {
   const [offset, setOffset] =
     useState(0);
+  const [customDate, setCustomDate] = useState('');
+  const [customStart, setCustomStart] = useState('08:00');
+  const [customEnd, setCustomEnd] = useState('09:15');
+  const [customError, setCustomError] = useState('');
 
   const dates = weekDates(offset);
 
@@ -60,6 +65,17 @@ export default function ProfileCalendar({
       ranges,
       sessionMinutes
     );
+  const addCustom = (event) => {
+    event.preventDefault();
+    const parse = (value) => value === '24:00' ? 1440 : /^([01]\d|2[0-3]):[0-5]\d$/.test(value) ? Number(value.slice(0, 2)) * 60 + Number(value.slice(3)) : null;
+    const proposal = { tutorId: tutor.id, date: customDate || localDateKey(dates[0]), start: parse(customStart), end: parse(customEnd) };
+    if (!isFutureSession(proposal) || !isValidFlexibleProposal(proposal, ranges, selected)) {
+      setCustomError('Khoảng giờ phải nằm trong lịch rảnh, chưa qua và không trùng buổi đã chọn.');
+      return;
+    }
+    onAdd(proposal);
+    setCustomError('');
+  };
 
   const choose = (session) => {
     const existing =
@@ -109,9 +125,19 @@ export default function ProfileCalendar({
         </h2>
 
         <span className="profile-calendar-legend">
-          {sessionMinutes} phút / buổi
+          {sessionMinutes} phút gợi ý
         </span>
       </div>
+
+      {!readOnly && <form className="profile-custom-time" onSubmit={addCustom}>
+        <strong>Đề xuất giờ riêng</strong>
+        <label>Ngày<select value={customDate || localDateKey(dates[0])} onChange={(event) => { setCustomDate(event.target.value); setCustomError(''); }}>{dates.map((date) => <option key={localDateKey(date)} value={localDateKey(date)}>{date.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}</option>)}</select></label>
+        <label>Bắt đầu<input type="text" inputMode="numeric" maxLength={5} placeholder="HH:mm" value={customStart} onChange={(event) => { setCustomStart(event.target.value); setCustomError(''); }}/></label>
+        <label>Kết thúc<input type="text" inputMode="numeric" maxLength={5} placeholder="HH:mm" value={customEnd} onChange={(event) => { setCustomEnd(event.target.value); setCustomError(''); }}/></label>
+        <button type="submit" className="button button--secondary button--sm">Thêm giờ đề xuất</button>
+        <small>Có thể nhập đến từng phút, kể cả giờ kết thúc 24:00.</small>
+        {customError && <small role="alert" className="profile-field-error">{customError}</small>}
+      </form>}
 
       <p>
         {readOnly

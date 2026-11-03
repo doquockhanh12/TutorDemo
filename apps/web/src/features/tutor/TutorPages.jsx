@@ -15,9 +15,10 @@ import {
 import Badge from '../../components/Badge.jsx';
 import { requestLabel, requestTone } from '../domain/statusMetadata.js';
 import TutorWorkspaceLayout from './TutorWorkspaceLayout.jsx';
-import { useTutorProfile } from '../domain/DemoDomainContext.jsx';
+import useDemoDomain, { useTutorProfile } from '../domain/DemoDomainContext.jsx';
 import { subjectById } from '../../data/subjectCatalog.js';
 import { ImageUpload, StudentLevelSelector, SubjectSelector } from './TutorProfileFields.jsx';
+import TutorEvidence from './TutorEvidence.jsx';
 
 
 
@@ -62,25 +63,12 @@ function proposalDateLabel(
 
 export function TutorShell({
   title,
-  subtitle,
   children,
-  eyebrow = 'KHÔNG GIAN GIA SƯ · DEMO',
 }) {
   return (
     <TutorWorkspaceLayout>
         <main className="tutor-main tutor-flow">
-          <div className="tutor-page-head">
-            <div>
-              <span className="eyebrow">
-                {eyebrow}
-              </span>
-
-              <h1>{title}</h1>
-
-              <p>{subtitle}</p>
-            </div>
-          </div>
-
+          <h1 className="sr-only">{title}</h1>
           {children}
         </main>
     </TutorWorkspaceLayout>
@@ -88,6 +76,7 @@ export function TutorShell({
 }
 
 export function TutorProfile() {
+  const { proposeSubject } = useDemoDomain();
   const {
     sessionMinutes,
     setSessionMinutes,
@@ -172,10 +161,11 @@ export function TutorProfile() {
             />
           </label>
 
-          <SubjectSelector selectedIds={draft.subjectIds} onChange={(ids) => change('subjectIds', ids)}/>
-          <StudentLevelSelector selected={draft.levels} onChange={(levels) => change('levels', levels)}/>
+          <SubjectSelector selectedIds={draft.subjectIds} onChange={(ids) => change('subjectIds', ids)} onRequest={proposeSubject}/>
+          {draft.subjectIds.map((id) => <div key={id} className="profile-subject-level"><h3>{subjectById(id)?.name}</h3><StudentLevelSelector selected={draft.subjectLevels?.[id] || []} onChange={(levels) => change('subjectLevels', { ...draft.subjectLevels, [id]: levels })}/></div>)}
           <div className="profile-upload-grid"><ImageUpload label="Ảnh đại diện" description="Ảnh hiển thị khi xem trước hồ sơ." value={images.avatar} onChange={(file) => changeImage('avatar', file)}/><ImageUpload label="CCCD mặt trước" description="Chỉ phục vụ xác minh thông tin, không hiển thị công khai." value={images.front} onChange={(file) => changeImage('front', file)}/><ImageUpload label="CCCD mặt sau" description="Chỉ phục vụ xác minh thông tin, không hiển thị công khai." value={images.back} onChange={(file) => changeImage('back', file)}/></div>
           {imageNotice && <p role="status" className="profile-image-notice">{imageNotice}</p>}
+          <TutorEvidence/>
 
           <label>
             Khu vực dạy
@@ -304,7 +294,7 @@ export function TutorProfile() {
           <p>
             {draft.bio}
           </p>
-          <p>Đối tượng học viên: {draft.levels.join(', ') || 'Chưa chọn'}</p>
+          {draft.subjectIds.map((id) => <p key={id}>Đối tượng {subjectById(id)?.name}: {draft.subjectLevels?.[id]?.join(', ') || 'Chưa chọn'}</p>)}
 
           <Link
             className="text-link"
@@ -339,9 +329,10 @@ export function TutorRequests() {
     requests.filter(
       (item) =>
         (status === 'all' ||
-          item.status ===
-            status) &&
-        `${item.learner} ${item.subject} ${item.area}`
+          item.status === status ||
+          (status === 'pending' && ['needs_revision', 'pending_learner_confirmation'].includes(item.status)) ||
+          (status === 'rejected' && ['cancelled', 'expired'].includes(item.status))) &&
+        `${item.learner} ${item.subject} ${item.area} ${item.note || ''} ${item.goal || ''}`
           .toLocaleLowerCase(
             'vi-VN'
           )
@@ -355,7 +346,7 @@ export function TutorRequests() {
   return (
     <TutorShell
       title="Yêu cầu học"
-      subtitle="Lọc và phản hồi những yêu cầu đang chờ trong bản demo."
+      subtitle="Lọc và phản hồi những yêu cầu đang chờ."
     >
       <div className="tutor-flow__panel">
         <div className="flow-toolbar">
@@ -375,7 +366,7 @@ export function TutorRequests() {
               ],
               [
                 'rejected',
-                'Đã từ chối',
+                'Từ chối / Đã hủy',
               ],
             ].map(
               ([
@@ -496,7 +487,7 @@ export function TutorRequestDetail() {
     return (
       <TutorShell
         title="Không tìm thấy yêu cầu"
-        subtitle="Yêu cầu này không có trong dữ liệu demo."
+        subtitle="Không tìm thấy yêu cầu này."
       >
         <Link to="/tutor/requests">
           Về danh sách
@@ -658,11 +649,7 @@ export function TutorRequestDetail() {
             Phản hồi yêu cầu
           </h3>
 
-          <p>
-            Nhận yêu cầu sẽ tự thêm các
-            buổi dạy vào thời khoá biểu
-            demo trong trình duyệt.
-          </p>
+          <p>Khi chấp nhận yêu cầu đủ điều kiện, lớp và lịch học được tạo ngay trong dữ liệu trình duyệt.</p>
 
           {request.status ===
           'pending' ? (
@@ -678,7 +665,7 @@ export function TutorRequestDetail() {
                   )
                 }
               >
-                Nhận yêu cầu
+                Chấp nhận và tạo lớp
               </button>
 
               <button
@@ -697,14 +684,19 @@ export function TutorRequestDetail() {
             </div>
           ) : (
             <p
-              className={request.status === 'accepted' ? 'flow-success' : 'flow-error'}
+              className={request.status === 'accepted' && request.classId ? 'flow-success' : 'flow-error'}
               role="status"
             >
-              Đã cập nhật trạng thái:{' '}
-              {requestLabel(request, 'tutor')}
-              .
+              {request.reconciliationError
+                ? `Chưa thể khôi phục lớp từ yêu cầu cũ: ${request.reconciliationError}`
+                : request.status === 'accepted' && request.classId
+                ? 'Đã nhận lớp trong dữ liệu trình duyệt.'
+                : ['accepted', 'pending_learner_confirmation'].includes(request.status)
+                  ? 'Yêu cầu cũ chưa đủ dữ liệu đã thống nhất để khôi phục lớp; cần kiểm tra lại điều kiện học.'
+                  : `Đã cập nhật trạng thái: ${requestLabel(request, 'tutor')}.`}
             </p>
           )}
+          {request.status === 'accepted' && request.classId && <Link className="button button--secondary" to={`/tutor/classes/${encodeURIComponent(request.classId)}`}>Xem lớp</Link>}
         </aside>
       </div>
     </TutorShell>

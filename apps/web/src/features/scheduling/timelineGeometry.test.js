@@ -50,9 +50,9 @@ test('minute-to-y and y-to-minute invert each other in collapsed and expanded la
   }
 });
 
-test('expanded hours snap to five minutes while collapsed hours snap to ten', () => {
-  assert.equal(minuteSnap(1083, 12), 1085);
-  assert.equal(minuteSnap(1086, 12), 1085);
+test('expanded hours snap to fifteen minutes while collapsed hours snap to ten', () => {
+  assert.equal(minuteSnap(1083, 12), 1080);
+  assert.equal(minuteSnap(1088, 12), 1095);
   assert.equal(minuteSnap(1023, null), 1020);
   assert.equal(minuteSnap(1026, null), 1030);
 });

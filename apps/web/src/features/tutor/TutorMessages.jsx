@@ -9,120 +9,19 @@ import {
   CheckCheck,
 } from 'lucide-react';
 import { TutorShell } from './TutorPages.jsx';
+import useTutorMessagesState from './TutorMessagesState.jsx';
 import './tutor-messages.css';
 
-const initialConversations = [
-  {
-    id: 1,
-    name: 'Nguyễn Minh Anh',
-    subject: 'Tiếng Anh',
-    avatar: 'MA',
-    color: 'blue',
-    unread: 2,
-    messages: [
-      {
-        id: 1,
-        from: 'them',
-        text: 'Em chào thầy ạ!',
-        time: '09:20',
-      },
-      {
-        id: 2,
-        from: 'them',
-        text: 'Thầy cho em hỏi buổi học tiếp theo mình ôn phần nào ạ?',
-        time: '09:22',
-      },
-      {
-        id: 3,
-        from: 'me',
-        text: 'Chào em! Buổi tới chúng ta sẽ ôn ngữ pháp và luyện đọc nhé.',
-        time: '09:25',
-      },
-      {
-        id: 4,
-        from: 'them',
-        text: 'Dạ vâng ạ, em sẽ chuẩn bị bài trước.',
-        time: '09:28',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Trần Khánh Linh',
-    subject: 'IELTS',
-    avatar: 'KL',
-    color: 'purple',
-    unread: 1,
-    messages: [
-      {
-        id: 1,
-        from: 'them',
-        text: 'Thầy ơi, em đã làm xong bài Writing rồi ạ.',
-        time: '10:10',
-      },
-      {
-        id: 2,
-        from: 'me',
-        text: 'Tốt lắm! Em gửi bài ở đây để thầy xem nhé.',
-        time: '10:15',
-      },
-      {
-        id: 3,
-        from: 'them',
-        text: 'Dạ, em gửi thầy ngay ạ.',
-        time: '10:18',
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Phạm Gia Huy',
-    subject: 'Tiếng Anh',
-    avatar: 'GH',
-    color: 'orange',
-    unread: 0,
-    messages: [
-      {
-        id: 1,
-        from: 'me',
-        text: 'Em nhớ hoàn thành bài tập buổi trước nhé.',
-        time: 'Hôm qua',
-      },
-      {
-        id: 2,
-        from: 'them',
-        text: 'Dạ em làm gần xong rồi thầy.',
-        time: 'Hôm qua',
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: 'Lê Ngọc Mai',
-    subject: 'IELTS',
-    avatar: 'NM',
-    color: 'green',
-    unread: 0,
-    messages: [
-      {
-        id: 1,
-        from: 'them',
-        text: 'Cảm ơn thầy về buổi học hôm qua ạ.',
-        time: 'Thứ 2',
-      },
-    ],
-  },
-];
+
 
 function getLastMessage(conversation) {
   return conversation.messages[conversation.messages.length - 1];
 }
 
 export default function TutorMessages() {
-  const [conversations, setConversations] = useState(
-    initialConversations
-  );
-  const [activeId, setActiveId] = useState(initialConversations[0].id);
+  const { conversations, unreadMessages, unreadConversations, markOpened, appendMessage } = useTutorMessagesState();
+  const [activeId, setActiveId] = useState(conversations[0]?.id ?? null);
+  const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [draft, setDraft] = useState('');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -136,28 +35,26 @@ export default function TutorMessages() {
     const keyword = search.trim().toLowerCase();
 
     return conversations.filter(
-      (item) =>
+      (item) => (filter === 'all' || item.unread > 0) && (
         item.name.toLowerCase().includes(keyword) ||
         item.subject.toLowerCase().includes(keyword) ||
-        getLastMessage(item).text.toLowerCase().includes(keyword)
+        getLastMessage(item).text.toLowerCase().includes(keyword))
     );
-  }, [conversations, search]);
+  }, [conversations, search, filter]);
 
-  const unreadCount = conversations.reduce(
-    (sum, item) => sum + item.unread,
-    0
-  );
+  function showUnread() {
+    setFilter('unread');
+    const keyword = search.trim().toLowerCase();
+    setActiveId(conversations.find((item) => item.unread > 0 && (item.name.toLowerCase().includes(keyword) || item.subject.toLowerCase().includes(keyword) || getLastMessage(item).text.toLowerCase().includes(keyword)))?.id ?? null);
+    setMobileChatOpen(false);
+  }
 
   function openConversation(id) {
     setActiveId(id);
     setMobileChatOpen(true);
     setNotice('');
 
-    setConversations((current) =>
-      current.map((item) =>
-        item.id === id ? { ...item, unread: 0 } : item
-      )
-    );
+    markOpened(id);
   }
 
   function sendMessage(event) {
@@ -173,27 +70,10 @@ export default function TutorMessages() {
       minute: '2-digit',
     });
 
-    setConversations((current) =>
-      current.map((item) =>
-        item.id === activeId
-          ? {
-              ...item,
-              messages: [
-                ...item.messages,
-                {
-                  id: `${Date.now()}-${Math.random()}`,
-                  from: 'me',
-                  text,
-                  time,
-                },
-              ],
-            }
-          : item
-      )
-    );
+    appendMessage(activeId, { id: `${Date.now()}-${Math.random()}`, from: 'me', text, time });
 
     setDraft('');
-    setNotice('Tin nhắn đã được thêm vào cuộc trò chuyện demo.');
+    setNotice('Tin nhắn chỉ được giữ trong phiên này; chưa gửi đến người học.');
   }
 
   return (
@@ -210,11 +90,16 @@ export default function TutorMessages() {
           <div className="messages-inbox__heading">
             <div>
               <h2>Hội thoại</h2>
-              <span>{conversations.length} học viên</span>
+              <span>{conversations.length} hội thoại · {unreadConversations} hội thoại chưa đọc</span>
             </div>
-            <span className="messages-inbox__count">
-              {unreadCount} chưa đọc
-            </span>
+            <button type="button" className="messages-inbox__count" onClick={showUnread} aria-label={`Xem hội thoại chưa đọc, ${unreadMessages} tin nhắn`}>
+              {unreadMessages} tin chưa đọc
+            </button>
+          </div>
+
+          <div className="messages-filters" role="group" aria-label="Lọc hội thoại">
+            <button type="button" className={filter === 'all' ? 'is-active' : ''} aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>Tất cả</button>
+            <button type="button" className={filter === 'unread' ? 'is-active' : ''} aria-pressed={filter === 'unread'} onClick={showUnread}>Chưa đọc</button>
           </div>
 
           <label className="messages-search">
@@ -274,7 +159,7 @@ export default function TutorMessages() {
             {filteredConversations.length === 0 && (
               <div className="messages-empty">
                 <Search size={25} />
-                <p>Không tìm thấy cuộc hội thoại.</p>
+                <p>{filter === 'unread' ? 'Không có hội thoại chưa đọc phù hợp.' : 'Không tìm thấy cuộc hội thoại.'}</p>
               </div>
             )}
           </div>
@@ -308,10 +193,10 @@ export default function TutorMessages() {
                   type="button"
                   className="messages-icon-button"
                   aria-label="Tùy chọn hội thoại"
-                  title="Tùy chọn hội thoại demo"
+                  title="Tùy chọn hội thoại"
                   onClick={() =>
                     setNotice(
-                      'Đây là hội thoại demo. Các tùy chọn nâng cao chưa được kết nối.'
+                      'Các tùy chọn nâng cao chưa được kết nối.'
                     )
                   }
                 >
@@ -340,7 +225,7 @@ export default function TutorMessages() {
                       <span>
                         {message.time}
                         {message.from === 'me' && (
-                          <CheckCheck size={14} aria-label="Đã gửi demo" />
+                          <CheckCheck size={14} aria-label="Tin nhắn trong phiên" />
                         )}
                       </span>
                     </div>
@@ -380,8 +265,7 @@ export default function TutorMessages() {
       </div>
 
       <p className="messages-demo-note">
-        Tin nhắn hiện được lưu trong state của trang demo; chưa gửi đến người
-        dùng thật.
+        Cuộc trò chuyện chỉ tồn tại trong phiên này; tin nhắn mới chưa được gửi đến người học.
       </p>
     </TutorShell>
   );

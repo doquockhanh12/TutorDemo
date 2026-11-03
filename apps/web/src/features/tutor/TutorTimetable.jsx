@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Check, Save } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { TutorShell } from './TutorPages.jsx';
 import useTutorWorkspace from './TutorWorkspaceState.jsx';
-import { firstFreeStart, isValidAvailability, localDateKey, shortDate, timeLabel, overlaps, weekDates } from '../../data/tutorSchedule.js';
+import { START_MINUTES, END_MINUTES, isValidTimeRange, mergeAdjacentRanges, localDateKey, shortDate, timeLabel, overlaps, weekDates } from '../../data/tutorSchedule.js';
 import WeeklyTimeline from '../scheduling/WeeklyTimeline.jsx';
 import TimeConfirmation from '../scheduling/TimeConfirmation.jsx';
 import LessonDetailModal from './LessonDetailModal.jsx';
@@ -49,25 +49,21 @@ export function TimetableBoard() {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
 
-  const validate = (range, excludeId) => isValidAvailability({ ...range, tutorId: tutorId }, draftTutorRanges, tutorLessons, excludeId);
+  const validate = (range) => isValidTimeRange(range) && !tutorLessons.some((lesson) => overlaps(lesson, range));
   const openDayAdd = (date, preferred) => {
-    const start = firstFreeStart(date, draftDuration, draftTutorRanges, tutorLessons, preferred, tutorId);
-    if (start === null) {
-      setFeedback({ kind: 'error', text: `Không còn khoảng trống ${draftDuration} phút vào ${shortDate(date)}.` });
-      return;
-    }
-    setCandidate({ tutorId, date, start, end: start + draftDuration });
+    const start = Math.max(START_MINUTES, Math.min(preferred ?? 480, END_MINUTES - 1));
+    setCandidate({ tutorId, date, start, end: Math.min(END_MINUTES, start + draftDuration) });
     setFeedback({ kind: '', text: '' });
   };
   const openTimeAdd = ({ date, start }) => {
-    setCandidate({ tutorId, date, start, end: start + draftDuration });
+    setCandidate({ tutorId, date, start, end: Math.min(END_MINUTES, start + draftDuration) });
     setFeedback({ kind: '', text: '' });
   };
   const confirmAdd = (range) => {
-    const next = { ...range, tutorId, id: `availability-${Date.now()}-${Math.random().toString(16).slice(2)}` };
-    if (!validate(next)) return 'Khung giờ này trùng lịch hoặc nằm ngoài giới hạn cho phép.';
-    setDraftRanges((current) => [...current, next]);
-    setFeedback({ kind: 'draft', text: 'Đã thêm vào lịch nháp. Bấm Lưu lịch để áp dụng.' });
+    const next = { ...range, tutorId, id: range.id || `availability-${Date.now()}-${Math.random().toString(16).slice(2)}` };
+    if (!validate(next)) return 'Khung giờ không hợp lệ hoặc trùng một buổi học đã xác nhận.';
+    setDraftRanges((current) => mergeAdjacentRanges([...current.filter((item) => item.id !== next.id), next]));
+    setFeedback({ kind: 'draft', text: 'Đã cập nhật lịch nháp. Bấm Lưu lịch để áp dụng.' });
     return '';
   };
   const moveRange = (id, candidateRange) => {
@@ -76,13 +72,14 @@ export function TimetableBoard() {
       setFeedback({ kind: 'error', text: 'Không thể di chuyển vì khung giờ mới trùng lịch hoặc không hợp lệ.' });
       return;
     }
-    setDraftRanges((current) => current.map((range) => range.id === id ? next : range));
+    setDraftRanges((current) => mergeAdjacentRanges(current.map((range) => range.id === id ? next : range)));
     setFeedback({ kind: 'draft', text: 'Đã di chuyển khung giờ trong lịch nháp. Bấm Lưu lịch để áp dụng.' });
   };
   const save = () => {
     const error = saveAvailability(draftRanges, draftDuration);
     if (error) { setFeedback({ kind: 'error', text: error }); return; }
-    setFeedback({ kind: 'saved', text: 'Đã lưu lịch rảnh và thời lượng buổi học trong trình duyệt.' });
+    setDraftRanges(mergeAdjacentRanges(draftRanges));
+    setFeedback({ kind: 'saved', text: 'Đã lưu lịch rảnh trong trình duyệt.' });
   };
   const cancelChanges = () => {
     setDraftRanges(availability);
@@ -99,7 +96,7 @@ export function TimetableBoard() {
         <Button variant="secondary" size="sm" aria-label="Tuần sau" onClick={() => setOffset((value) => value + 1)}><ChevronRight size={18}/></Button>
         {offset !== 0 && <Button variant="quiet" size="sm" onClick={() => setOffset(0)}>Trở về hiện tại</Button>}
       </div>
-      <label className="teaching-timetable__duration">Thời lượng mỗi buổi
+      <label className="teaching-timetable__duration">Thời lượng gợi ý khi chọn nhanh
         <select value={draftDuration} onChange={(event) => { setDraftDuration(Number(event.target.value)); setCandidate(null); setFeedback({ kind: 'draft', text: 'Thời lượng mới sẽ được lưu cùng lịch.' }); }}>
           <option value={45}>45 phút</option><option value={90}>90 phút</option>
         </select>
@@ -124,12 +121,12 @@ export function TimetableBoard() {
       onTimeClick={openTimeAdd}
       onMove={moveRange}
       onDelete={(id) => { setDraftRanges((current) => current.filter((range) => range.id !== id)); setFeedback({ kind: 'draft', text: 'Đã xóa khỏi lịch nháp. Bấm Lưu lịch để áp dụng.' }); }}
-      onBlockClick={(block) => { if (block.kind === 'lesson') setSelectedId(block.id); }}
+      onBlockClick={(block) => { if (block.kind === 'lesson') setSelectedId(block.id); else setCandidate({ id: block.id, tutorId, date: block.date, start: block.start, end: block.end }); }}
       isRangeAllowed={validate}
     />
     {selected && <LessonDetailModal key={selected.id} lesson={selected} onClose={() => setSelectedId(null)} onSaveNotes={saveLessonNotes} onComplete={completeLesson}/>}
-    <p className="teaching-timetable__note">Timeline hiển thị 06:00–24:00; lịch rảnh và buổi học dùng ngày cùng giờ bắt đầu và kết thúc. Dữ liệu được mô phỏng trong prototype.</p>
-    {candidate && <TimeConfirmation candidate={candidate} duration={draftDuration} title="Thêm lịch rảnh" action="Thêm vào lịch nháp" onClose={() => setCandidate(null)} onConfirm={confirmAdd}/>}
+    <p className="teaching-timetable__note">Timeline hiển thị 06:00–24:00. Khi thêm lịch rảnh, bạn có thể nhập giờ bắt đầu và kết thúc đến từng phút. Lịch được lưu trong trình duyệt này.</p>
+    {candidate && <TimeConfirmation key={candidate.id || `${candidate.date}-${candidate.start}`} candidate={candidate} duration={draftDuration} title={candidate.id ? 'Sửa lịch rảnh' : 'Thêm lịch rảnh'} action={candidate.id ? 'Cập nhật lịch nháp' : 'Thêm'} onClose={() => setCandidate(null)} onConfirm={confirmAdd}/>}
   </section>;
 }
 

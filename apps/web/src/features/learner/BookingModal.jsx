@@ -57,8 +57,12 @@ export default function BookingModal({ tutor, open, onClose }) {
     setSelection((current) => ({
       ...current,
       [key]: value,
+      ...(key === 'subjects' ? { levels: '' } : {}),
     }));
   };
+
+  const selectedSubjectId = tutor.subjectIds?.find((id, index) => tutor.subjects?.[index] === selection.subjects);
+  const availableLevels = tutor.subjectLevels ? (tutor.subjectLevels[selectedSubjectId] || []) : (tutor.levels || []);
 
   const toggleChoice = (key, value) => {
     setSelection((current) => ({
@@ -127,7 +131,7 @@ export default function BookingModal({ tutor, open, onClose }) {
             />
             <ProfileChoices
               title="Cấp độ"
-              options={tutor.levels || []}
+              options={availableLevels}
               selected={selection.levels ? [selection.levels] : []}
               invalid={validationErrors.levels}
               errorMessage="Chọn một cấp độ."

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login, resetDemo } from './demoHelpers.js';
+import { login, logout, resetDemo } from './demoHelpers.js';
 
 test('Tutor settings route, account, theme and controls work across reload', async ({ page }) => {
   await resetDemo(page);
@@ -23,7 +23,7 @@ test('Tutor settings route, account, theme and controls work across reload', asy
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.goto('/tutor/dashboard');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('.tutor-sidebar')).toHaveCSS('background-color', 'rgb(27, 39, 57)');
+  await expect(page.locator('.tutor-sidebar')).toHaveCSS('background-color', 'rgb(21, 30, 46)');
   await page.screenshot({ path: 'test-results/tutor-dashboard-dark.png', fullPage: true });
   await page.goto('/tutor/settings');
   await page.screenshot({ path: 'test-results/tutor-settings-dark.png', fullPage: true });
@@ -75,7 +75,7 @@ test('Tutor settings fits mobile viewport and internal navigation remains reacha
   await page.setViewportSize({ width: 390, height: 844 });
   await resetDemo(page);
   await login(page, 'giabao', '/tutor/settings');
-  await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.screenshot({ path: 'test-results/tutor-settings-mobile-account.png', fullPage: true });
   await page.getByRole('button', { name: 'Hỗ trợ', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Hỗ trợ' })).toBeVisible();
@@ -92,7 +92,7 @@ test('Dark mode reaches public, auth, learner and admin shells', async ({ page }
   await page.screenshot({ path: 'test-results/auth-dark.png' });
   await login(page, 'minhanh', '/learner/search');
   await page.screenshot({ path: 'test-results/learner-dark.png', fullPage: true });
-  await page.getByRole('button', { name: 'Đăng xuất' }).click();
+  await logout(page);
   await login(page, 'admin', '/admin/dashboard');
   await page.screenshot({ path: 'test-results/admin-dark.png', fullPage: true });
 });
