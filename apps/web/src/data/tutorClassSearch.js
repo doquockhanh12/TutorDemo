@@ -1,5 +1,5 @@
 import { demoReferenceData } from './demoReferenceData.js';
-import { containsRange, getBookableRanges, proposedLessons, isValidAvailability } from './tutorSchedule.js';
+import { containsRange, getBookableRanges, proposedLessons, isValidTimeRange } from './tutorSchedule.js';
 
 // Explicit metadata for existing mock requests; fees are VND per session.
 // Compatibility for old callers lacking request metadata. No separate values.
@@ -11,7 +11,7 @@ export const formatFee = (value) => new Intl.NumberFormat('vi-VN').format(value)
 export const savedFreeRanges = (availability, lessons) => getBookableRanges(availability, lessons);
 export function fitsSavedAvailability(proposals, availability, lessons) {
   const free = savedFreeRanges(availability, lessons);
-  return proposals.length > 0 && proposals.every((proposal) => isValidAvailability(proposal) && free.some((range) => containsRange(range, proposal)));
+  return proposals.length > 0 && proposals.every((proposal) => isValidTimeRange(proposal) && free.some((range) => containsRange(range, proposal)));
 }
 export function filterTutorClasses(requests, { subjects = [], areas = [], minFee = feeBounds.min, maxFee = feeBounds.max }, availability, lessons, dates) {
   if (!savedFreeRanges(availability, lessons).length) return [];

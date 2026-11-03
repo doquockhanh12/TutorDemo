@@ -46,6 +46,9 @@ L03/L04 dùng hero Search riêng nhỏ gọn, tìm kiếm trong viewport đầu 
 | T16 | Tìm lớp gần tôi | Approved demo extension | Implemented `/tutor/map`, bản đồ minh họa |
 | T17 | Thu nhập | Approved demo extension | Implemented protected `/tutor/income`; monthly summary, SVG 6 tháng và danh sách buổi tạo thu nhập từ shared Lessons |
 | T18 | Cài đặt gia sư | User-approved demo extension | Implemented protected `/tutor/settings`; tài khoản, vị trí/quyền riêng tư, thông báo, bảo mật, giao diện, nhận lớp và hỗ trợ |
+| T19 | Quản lý lớp học | Tutor UI V2 | Implemented protected `/tutor/classes`; đọc Class có `requestId` trong cùng demo domain state, không chờ người học xác nhận lần hai |
+| T20 | Chi tiết lớp học | Tutor UI V2 | Implemented protected `/tutor/classes/:id`; tra Class theo `classId`, đọc lịch và ghi chú từ Lessons chung |
+| T21 | Ví gia sư | Tutor UI V2 | Implemented protected `/tutor/wallet`; dữ liệu thu nhập demo, chưa có thanh toán/số dư thật |
 
 T03 hiện dùng header workspace với map/tổng quan/avatar/logout và grouping đã phát triển từ Figma cũ; đây là mô tả current implementation, không phải chỉ thị restore Figma. Sidebar giữ các mục hiện có; nhãn chưa có route không phải page đã implement. Preview Sáng/Chiều/Tối chỉ đọc và nhóm availability range đã lưu, link tới timetable để chỉnh range; không chỉnh lịch trực tiếp tại dashboard. T08/T12 dùng chung timeline range 7 ngày từ 06:00–24:00, thời điểm bắt đầu muộn nhất 22:00, session 45 hoặc 90 phút. `/tutor/availability` và `/tutor/lessons` chỉ là protected redirects.
 
@@ -76,3 +79,4 @@ Map thật/geocoding/distance matching, chat, gói học, xác minh thẻ sinh v
 ## Kháng cáo — approved extension (2026-10-05)
 
 `/appeals` là trang dùng chung cho Learner/Tutor gửi và theo dõi kháng cáo; form yêu cầu sự cố thuộc bên bị báo cáo, nội dung giải trình, bằng chứng và cam kết trung thực. Tài khoản bị khóa có thể xác thực phiên chỉ dành cho kháng cáo; không mở product routes. Không renumber screen IDs hiện có.
+Tutor follow-up 2026-11-02: T20 `/tutor/classes/:id` có thông tin lớp, thời lượng theo Lessons, tổng/hoàn thành, progress, lịch và ghi chú; ID không tồn tại có đường quay lại. T08/T12 cho Tutor nhập start/end tùy phút và gộp availability cùng ngày; Learner có ô đề xuất giờ riêng trong booking form hiện tại. T13 Tin nhắn có lọc Chưa đọc kết hợp tìm kiếm, badge sidebar đếm tin nhắn chưa đọc theo state phiên. Các dòng cũ ghi giới hạn 45/90 là lịch sử; lựa chọn đó nay chỉ là gợi ý nhanh.

@@ -420,7 +420,7 @@ export default function HomePage() {
 
               {consulted && (
                 <p role="status" className="public-form-success">
-                  Đã ghi nhận yêu cầu tư vấn trong hệ thống demo. Chuyên viên sẽ liên hệ trong thời gian sớm nhất!
+                  Yêu cầu tư vấn chỉ được ghi nhận trên thiết bị này; chưa gửi đến bộ phận hỗ trợ.
                 </p>
               )}
             </form>

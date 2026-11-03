@@ -1116,6 +1116,7 @@ const baseReferenceData = {
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 180000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [1, 3],
         "start": 1095,
@@ -1137,6 +1138,7 @@ const baseReferenceData = {
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 200000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [5],
         "start": 780,
@@ -1158,6 +1160,7 @@ const baseReferenceData = {
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 220000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [0, 2],
         "start": 1140,

@@ -19,7 +19,7 @@ export function yToMinute(y, expanded) {
   }
   return TIMELINE_END;
 }
-export const minuteSnap = (minute, expanded) => Math.round(minute / (Math.floor((minute - TIMELINE_START) / 60) === expanded ? 5 : 10)) * (Math.floor((minute - TIMELINE_START) / 60) === expanded ? 5 : 10);
+export const minuteSnap = (minute, expanded) => Math.round(minute / (Math.floor((minute - TIMELINE_START) / 60) === expanded ? 15 : 10)) * (Math.floor((minute - TIMELINE_START) / 60) === expanded ? 15 : 10);
 
 // Separate rendered collisions, including the minimum height of short ranges.
 // Times and records are preserved; lanes are presentation metadata only.

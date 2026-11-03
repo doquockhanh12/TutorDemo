@@ -1,5 +1,21 @@
 # Frontend Regression Notes
 
+## Tutor acceptance and route presentation — 2026-11-03
+
+- Bản sửa bổ sung: Class hiện là record trong `tnm.demo.domain.v1`, lưu `requestId`; Request `accepted` lưu `classId`; Lesson lưu cả hai ID. `TutorClasses` tra Class theo `classId`, timetable đọc Lessons chung. `decideRequest` dùng `acceptanceResult` tạo đồng thời ba phần rồi provider ghi localStorage trước khi báo thành công. Hai Request khác nhau, nhận lặp và refresh được kiểm tra bằng unit/E2E. Accepted cũ thiếu Class và điều kiện học bị đưa về `needs_revision` với lỗi cụ thể; demo-02 “Tiếng Anh – Nguyễn Minh Anh” thiếu hình thức và ngày/giờ cụ thể, không tạo lớp giả. Batch này: unit 197/197, domain + Tutor UI E2E 21/21, toàn bộ Tutor E2E 25/25, build đạt.
+
+- Luồng Tutor nhận lớp mới thay thế dòng xác nhận hai bước của 2026-11-02 bên dưới. `decideRequest` kiểm tra trạng thái pending, Tutor sở hữu yêu cầu, môn, hình thức, học phí, proposals cụ thể và xung đột lịch; khi hợp lệ tạo Lessons có `classId = requestId` ngay trong cùng frontend state. Nhận lặp không tạo thêm lớp/buổi. `pending_learner_confirmation` chỉ còn để đọc dữ liệu cũ; restore đối chiếu yêu cầu đã nhận, tạo lớp khi đủ dữ liệu, giữ nguyên yêu cầu thiếu điều kiện.
+- Topbar Tutor dùng title theo route; `TutorShell` bỏ intro ba dòng ngoài Dashboard. Bộ lọc Yêu cầu học còn bốn tab. Dark mode tăng tách biệt app/sidebar/card/chat bằng tokens và các bề mặt Messages; giữ layout hai cột, tìm kiếm và unread.
+- Unit: 194/194 đạt. Build đạt, còn cảnh báo bundle >500 kB hiện hữu. Tutor E2E: 24/24 đạt; domain/income E2E chạy riêng. Visual đã xem ảnh desktop dark Messages/Reviews, mobile Classes và cuộn cuối Timetable trong `apps/web/test-results/` (ignored). Full E2E có các bài Learner không còn khớp menu/Search hiện hành, nên không ghi là đạt toàn bộ.
+
+## Tutor UI V2 — 2026-11-02
+
+- `decideRequest` chỉ đặt `pending_learner_confirmation`; `confirmLearnerRequest` kiểm tra owner/trùng lịch và tạo Lessons một lần. Unit `tutorUiV2.test.js` và E2E `tutor-ui-v2.spec.js` kiểm tra không có lớp trước khi Learner xác nhận, sau xác nhận xuất hiện ở Quản lý lớp học, Income dùng snapshot fee.
+- Danh mục chuyên môn có ID cha/con riêng, alias/từ khóa tìm kiếm không dấu; chọn cha không chọn con. Đối tượng chọn theo subject ID; BookingModal đọc nhóm của môn đang chọn, còn profile seed cũ chưa khai báo theo môn dùng legacy `levels` cho đến khi chỉnh.
+- Timeline 06:00–24:00: giờ tổng quan chỉ nhãn chính, giờ mở rộng có 15 phút/ô. Ảnh vùng cuộn cuối đã đối chiếu tới 24:00; không thấy nhãn/hit target chồng. Screenshot desktop/profile, lịch, dark Messages/Reviews, class detail/wallet và mobile class được lưu trong `apps/web/test-results/` (ignored).
+- E2E visual kiểm tra sidebar cùng width và đúng một active item ở 7 route Tutor; mobile 390px không overflow. `tutor-profile-update.spec.js` kiểm tra ảnh riêng phiên, đề xuất PENDING và đối tượng theo chuyên môn.
+- Bộ E2E toàn dự án có các assertion Learner cũ lệch implementation hiện hành (account menu label, Search filter selectors, past-week selection). Lần chạy toàn bộ được dừng sau ca 84 do các timeout cũ; các ca Tutor UI V2 và hồi quy được chạy chọn lọc riêng. Không coi toàn bộ E2E đã qua.
+
 ## LACCOUNT-002 — Learner account identity accent (2026-10-10)
 
 ### Scope and behavior
@@ -628,3 +644,14 @@ Responsive QA: 1440/1024/390px, phone/lesson modal bounds, no accidental page ov
 Red evidence exists for cross-role inbox, Learner Complete button, status tone/reject feedback, identity, fee, pending count, past sessions, account isolation/profile propagation, metadata discovery, completion eligibility, missing-field presentation, phone focus and mobile request text width. BUG-003 code normalization and BUG-007 geography were already changed by prerequisites before their independent tests; those tests provide green regression coverage without an invented red result.
 
 Known boundaries: legacy Requests/Lessons with unknown account ownership retain null rather than invented identities; illustrative review/income/progress data remains explicitly mock. Newly registered Tutor has no inferred teaching format/rating/experience; current registration lacks a teaching-format field, so full booking of that new profile is deferred rather than fabricating Online/Tại nhà. Saved availability stays date-specific and does not recur automatically into future weeks. No new screens/Admin/Maps expansion/backend work in this batch.
+## Tutor follow-up 2026-11-02
+
+Kiểm tra lịch: nhập 08:00–09:15 rồi 09:15–10:30 cùng ngày phải gộp 08:00–10:30; khoảng có gap và ngày khác giữ riêng; 24:00 là mốc kết thúc hợp lệ. Thử sửa/xóa block và xác nhận Lesson cùng learner không bị thay đổi. Kiểm tra proposal riêng trong booking form nằm trọn khoảng bookable và không trùng Lesson. Tin nhắn: 3 tin chưa đọc trong 2 hội thoại, lọc không tự đánh dấu đọc; click một hội thoại cập nhật sidebar, tìm kiếm kết hợp filter. Class detail: route hợp lệ, not found, progress và các buổi đồng bộ với timetable. Giữ kiểm tra visual desktop/mobile/light/dark, kể cả cuối vùng cuộn lịch.
+Verification 2026-11-02: `npm test` 192/192 pass, `npm run build` pass (existing >500 kB chunk warning), `git diff --check` pass. Focused Playwright run: `tutor-followup.spec.js`, `tutor-ui-v2.spec.js`, `tutor-ui-v2-visual.spec.js` 8/8 pass; `income.spec.js` cùng follow-up trước đó 11/11 pass; BUG-001 rerun pass sau khi đổi selector theo copy mới. Visual screenshots reviewed for Tutor timetable bottom, Messages/Reviews dark, class detail desktop and 390px light/dark; class detail overflow also checked at 1024px. Full E2E suite was not completed in this batch. Package has no lint script.
+## Tutor subject selector refresh — 2026-11-03
+
+`SubjectSelector` giữ ID và quan hệ cha-con từ catalog. Trạng thái focus rỗng chỉ hiện bảy gợi ý phổ biến; nhập từ khóa hiện tối đa 18 kết quả trong dropdown nổi cao tối đa 280px. Tên nhóm là thông tin mô tả cho screen reader, không còn nhãn kỹ thuật phân cấp ở mỗi kết quả. Chuyên môn đã chọn vẫn ở gợi ý với check và không được thêm trùng. Từ khóa ngắn như `AI` chỉ khớp một từ trọn vẹn trong tên/alias/keyword rồi mở rộng con của parent; tránh kết quả do chuỗi `ai` trong `Painting`. Kiểm tra keyboard, light desktop, dark mobile, đề xuất mới, chọn/xóa nhiều ID và lưu/tải lại bằng `tutor-subject-selector.spec.js`.
+
+## Tutor Topbar và Class reconciliation — 2026-11-03
+
+Tutor Topbar chỉ hiển thị tên trang, không còn MapPin trên các route Tutor; tiêu đề giữ chiều cao tối thiểu 44px và Topbar giữ chiều cao cũ. Link từ tiêu đề Dashboard đến bản đồ vẫn hoạt động. Trong local domain state, việc nhận Request hợp lệ tạo Class và Lesson ngay, chỉ đổi sang `accepted` sau khi ghi state thành công. Reconciliation liên kết lại Class bằng `requestId`, kiểm tra quyền sở hữu gia sư/học viên, kiểm tra Lesson cũ có ngày/giờ và `classId` nhất quán; sai lệch giữ `needs_revision` kèm lý do. `demo-02` (Tiếng Anh – Nguyễn Minh Anh) có trạng thái accepted cũ nhưng không có hình thức học, proposal ngày/giờ cụ thể hoặc Lesson/Class mang `requestId=demo-02`; các Lesson lịch sử cùng tên không chứng minh được thuộc Request này. Vì vậy không tạo Class suy đoán và không chuyển về pending. Kiểm tra lại khi có dữ liệu điều kiện học xác thực.

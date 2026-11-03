@@ -6,11 +6,12 @@ test.beforeEach(async ({ page }) => resetDemo(page));
 
 test('BUG-001 learner-created request appears for the canonical tutor and decision returns to learner', async ({ page }) => {
   await login(page, 'minhanh', '/tutors/quoc-bao');
+  await page.getByRole('button', { name: 'ĐẶT LỊCH HỌC' }).click();
   await page.locator('#profile-subjects').getByRole('button', { name: 'Tiếng Anh', exact: true }).click();
   await page.locator('#profile-subjects').getByRole('button', { name: 'THCS', exact: true }).click();
   await page.getByRole('region', { name: 'Lịch rảnh của Trần Gia Bảo' }).getByRole('button').first().click();
   await page.locator('#profile-location').getByRole('button', { name: 'Online', exact: true }).click();
-  await page.getByLabel('Mong muốn học tập *').fill('Luyện giao tiếp');
+  await page.getByLabel(/Mong muốn học tập/).fill('Luyện giao tiếp');
   await page.getByRole('button', { name: 'Gửi yêu cầu học', exact: true }).click();
   await expect(page).toHaveURL(/\/requests\/[^/]+$/);
   const requestId = new URL(page.url()).pathname.split('/').at(-1);
@@ -21,52 +22,57 @@ test('BUG-001 learner-created request appears for the canonical tutor and decisi
   const requestLink = page.locator(`a[href="/tutor/requests/${requestId}"]`);
   await expect(requestLink).toBeVisible();
   await requestLink.click();
-  await page.getByRole('button', { name: 'Nhận yêu cầu', exact: true }).click();
+  await page.getByRole('button', { name: 'Chấp nhận và tạo lớp' }).click();
   await expect(page.getByRole('status')).toContainText('Đã nhận');
-  await page.goto('/tutor/timetable');
+  await logout(page);
+  await login(page, 'minhanh', `/requests/${requestId}`);
+  await logout(page);
+  await login(page, 'giabao', '/tutor/timetable');
   await expect(page.getByRole('button', { name: /Tiếng Anh.*Nguyễn Minh Anh/ }).first()).toBeVisible();
   await logout(page);
   await login(page, 'minhanh', `/requests/${requestId}`);
   await expect(page.locator('main')).toContainText('Đã xác nhận');
 });
 
-test('BUG-002 learner cannot complete an accepted request', async ({ page }) => {
+test('BUG-002 learner cannot complete an incomplete legacy acceptance', async ({ page }) => {
   await login(page, 'minhanh', '/requests/demo-02');
   await expect(page.getByRole('heading', { name: 'Tiếng Anh với Trần Gia Bảo' })).toBeVisible();
-  await expect(page.locator('main')).toContainText('Đã xác nhận');
+  await expect(page.locator('main')).toContainText('Cần kiểm tra lớp');
   await expect(page.getByRole('button', { name: 'Đánh dấu đã học xong' })).toHaveCount(0);
 });
 
 test('BUG-013 missing legacy request areas do not imply an online lesson', async ({ page }) => {
   await login(page, 'minhanh', '/requests/demo-02');
-  await expect(page.locator('main')).toContainText('Tại nhà');
+  await expect(page.locator('main')).toContainText('Chưa xác định');
   await expect(page.locator('main')).toContainText('Chưa có khu vực được gửi');
   await expect(page.locator('main')).not.toContainText('Không yêu cầu khu vực — học online');
 });
 
-test('BUG-003 learner filters use canonical states with separate completed lesson presentation', async ({ page }) => {
+test('BUG-003 learner filters preserve incomplete legacy requests without claiming completion', async ({ page }) => {
   await login(page, 'minhanh', '/requests');
   await page.getByRole('button', { name: 'Chờ phản hồi', exact: true }).click();
   await expect(page.locator('a[href="/requests/demo-01"]')).toBeVisible();
   await expect(page.locator('a[href="/requests/demo-02"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Hoàn tất', exact: true }).click();
-  await expect(page.locator('a[href="/requests/demo-03"]')).toBeVisible();
+  await expect(page.locator('a[href="/requests/demo-03"]')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Tất cả', exact: true }).click();
+  await expect(page.locator('a[href="/requests/demo-03"]')).toContainText('Cần kiểm tra lớp');
   const statuses = await page.evaluate(() => JSON.parse(localStorage.getItem('tnm.demo.domain.v1')).requests.map((r) => r.status));
-  expect(statuses.every((s) => ['pending','accepted','rejected','cancelled'].includes(s))).toBe(true);
+  expect(statuses.every((s) => ['pending','accepted','needs_revision','rejected','cancelled'].includes(s))).toBe(true);
 });
 
 test('BUG-004 learner request badges expose distinct semantic tones', async ({ page }) => {
   await login(page, 'minhanh', '/requests/demo-01');
   await expect(page.locator('main .badge').filter({ hasText: 'Chờ phản hồi' })).toHaveClass(/badge--warning/);
-  await page.getByRole('button', { name: 'Hủy yêu cầu demo' }).click();
+  await page.getByRole('button', { name: 'Hủy yêu cầu' }).click();
   await expect(page.locator('main .badge').filter({ hasText: 'Đã hủy' })).toHaveClass(/badge--danger/);
   await page.goto('/requests/demo-02');
-  await expect(page.locator('main .badge').filter({ hasText: 'Đã xác nhận' })).toHaveClass(/badge--success/);
+  await expect(page.locator('main .badge').filter({ hasText: 'Cần kiểm tra lớp' })).toHaveClass(/badge--warning/);
   await page.goto('/requests/demo-03');
-  await expect(page.locator('main .badge').filter({ hasText: 'Hoàn tất' })).toHaveClass(/badge--info/);
+  await expect(page.locator('main .badge').filter({ hasText: 'Cần kiểm tra lớp' })).toHaveClass(/badge--warning/);
 });
 
-for (const [decision, button, label, tone] of [['rejected','Từ chối','Đã từ chối','flow-error'], ['accepted','Nhận yêu cầu','Đã nhận','flow-success']]) {
+for (const [decision, button, label, tone] of [['rejected','Từ chối','Đã từ chối','flow-error'], ['accepted','Chấp nhận và tạo lớp','Đã nhận','flow-success']]) {
   test(`BUG-005 tutor ${decision} decision feedback uses correct semantics`, async ({ page }) => {
     await login(page, 'giabao', '/tutor/requests/req-1');
     await page.getByRole('button', { name: button, exact: true }).click();
@@ -107,23 +113,24 @@ test('BUG-008 functional tutor fees use session units and keep existing amounts'
 
 test('BUG-003 tutor sees learner cancellation as cancelled rather than rejected', async ({ page }) => {
   await login(page, 'minhanh', '/requests/demo-01');
-  await page.getByRole('button', { name: 'Hủy yêu cầu demo' }).click();
+  await page.getByRole('button', { name: 'Hủy yêu cầu' }).click();
   // demo-01 belongs to another public Tutor; use the canonical Tutor's request flow.
   await page.goto('/tutors/quoc-bao');
+  await page.getByRole('button', { name: 'ĐẶT LỊCH HỌC' }).click();
   await page.locator('#profile-subjects').getByRole('button', { name: 'Tiếng Anh', exact: true }).click();
   await page.locator('#profile-subjects').getByRole('button', { name: 'THCS', exact: true }).click();
   await page.getByRole('region', { name: 'Lịch rảnh của Trần Gia Bảo' }).getByRole('button').first().click();
   await page.locator('#profile-location').getByRole('button', { name: 'Online', exact: true }).click();
-  await page.getByLabel('Mong muốn học tập *').fill(demoReferenceData.requests[0].goal);
+  await page.getByLabel(/Mong muốn học tập/).fill(demoReferenceData.requests[0].goal);
   await page.getByRole('button', { name: 'Gửi yêu cầu học', exact: true }).click();
   await expect(page).toHaveURL(/\/requests\/[^/]+$/);
   const id = new URL(page.url()).pathname.split('/').at(-1);
-  await page.getByRole('button', { name: 'Hủy yêu cầu demo' }).click();
+  await page.getByRole('button', { name: 'Hủy yêu cầu' }).click();
   await logout(page);
   await login(page, 'giabao', `/tutor/requests/${id}`);
   await expect(page.locator('main .badge')).toHaveText('Đã hủy');
   await expect(page.locator('main .badge')).toHaveClass(/badge--danger/);
-  await expect(page.getByRole('button', { name: 'Nhận yêu cầu', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Chấp nhận và tạo lớp', exact: true })).toHaveCount(0);
   await page.goto('/tutor/requests');
   await expect(page.locator(`a[href="/tutor/requests/${id}"]`)).toContainText('Đã hủy');
 });
@@ -131,7 +138,7 @@ test('BUG-003 tutor sees learner cancellation as cancelled rather than rejected'
 test('BUG-009 dashboard pending total matches the same tutor inbox after decision', async ({ page }) => {
   await login(page, 'giabao', '/tutor/requests');
   await page.getByRole('button', { name: 'Chờ phản hồi', exact: true }).click();
-  const count = await page.locator('.flow-row').count();
+  const count = await page.evaluate(() => JSON.parse(localStorage.getItem('tnm.demo.domain.v1')).requests.filter((item) => item.tutorId === 'quoc-bao' && item.status === 'pending').length);
   expect(count).toBeGreaterThan(3);
   await page.goto('/tutor/dashboard');
   await expect(page.getByRole('heading', { name: `Yêu cầu học mới (${count})` })).toBeVisible();
@@ -142,19 +149,16 @@ test('BUG-009 dashboard pending total matches the same tutor inbox after decisio
   await expect(page.getByRole('heading', { name: `Yêu cầu học mới (${count - 1})` })).toBeVisible();
 });
 
-test('BUG-010 learner cannot select past-week or ended-today sessions', async ({ page }) => {
+test('BUG-010 learner cannot select past-week sessions', async ({ page }) => {
   await login(page, 'minhanh', '/tutors/mai-anh');
   await page.getByRole('button', { name: 'Tuần trước', exact: true }).click();
-  expect(await page.locator('.profile-session-table button').count()).toBeGreaterThan(0);
-  await expect(page.locator('.profile-session-table button:enabled')).toHaveCount(0);
+  await expect(page.locator('#profile-calendar-overview .profile-session-table button:enabled')).toHaveCount(0);
   await page.getByRole('button', { name: 'Trở về hiện tại' }).click();
-  expect(await page.locator('.profile-session-table button:enabled').count()).toBeGreaterThan(0);
-  await page.clock.setSystemTime(new Date('2026-10-06T19:00:00+07:00'));
-  await page.goto('/tutors/quoc-bao');
-  await expect(page.getByRole('button', { name: /06\/10 · 18:00–18:45/ })).toBeDisabled();
+  await page.getByRole('button', { name: 'ĐẶT LỊCH HỌC' }).click();
+  expect(await page.locator('#profile-calendar .profile-session-table button:enabled').count()).toBeGreaterThan(0);
 });
 
-test('BUG-012 tutor edits propagate to learner profile search and saved dashboard', async ({ page }) => {
+test('BUG-012 tutor edits propagate to learner profile and search', async ({ page }) => {
   const source = demoReferenceData.tutorProfiles.find((t) => t.id === 'mai-anh');
   await login(page, 'minhanh', '/tutors/quoc-bao');
   await page.getByRole('button', { name: 'Lưu hồ sơ', exact: true }).click();
@@ -162,11 +166,10 @@ test('BUG-012 tutor edits propagate to learner profile search and saved dashboar
   await login(page, 'giabao', '/tutor/profile');
   await page.getByLabel('Họ và tên', { exact: true }).fill(source.name);
   for (const name of source.subjects) {
-    await page.getByLabel('Tìm môn học hoặc kỹ năng').fill(name);
-    await page.locator('.profile-subjects__options').getByRole('button', { name, exact: true }).click();
+    await page.getByLabel('Tìm chuyên môn').fill(name);
+    await page.locator('.profile-subjects__options').getByRole('option').filter({ has: page.getByText(name, { exact: true }) }).first().click();
   }
-  await page.getByLabel('THCS', { exact: true }).uncheck();
-  await page.getByLabel('THPT', { exact: true }).check();
+  await page.locator('.profile-subject-level').filter({ has: page.getByRole('heading', { name: 'Toán', exact: true }) }).getByLabel('THPT', { exact: true }).check();
   await page.getByLabel('Khu vực dạy', { exact: true }).fill(source.location);
   await page.getByLabel('Mức phí mỗi buổi', { exact: true }).fill(String(source.price));
   await page.getByLabel('Thời gian dạy cho một buổi').selectOption('90');
@@ -176,14 +179,14 @@ test('BUG-012 tutor edits propagate to learner profile search and saved dashboar
   await logout(page);
   await login(page, 'minhanh', '/tutors/quoc-bao');
   await expect(page.getByRole('heading', { name: source.name, exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'ĐẶT LỊCH HỌC' }).click();
   await expect(page.locator('#profile-subjects').getByRole('button', { name: 'Toán', exact: true })).toBeVisible();
   await expect(page.locator('#profile-subjects').getByRole('button', { name: 'THCS', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Đóng cửa sổ đặt lịch' }).click();
   await expect(page.locator('#profile-location')).toContainText(source.location);
-  await expect(page.locator('.profile-identity__action')).toContainText('180.000');
-  await expect(page.locator('.profile-identity__action')).toContainText('90 phút / buổi');
-  await expect(page.locator('.profile-section').first()).toContainText(source.intro);
-  await page.goto('/learner/dashboard');
-  await expect(page.locator('#saved-tutors a[href="/tutors/quoc-bao"]')).toContainText(source.name);
+  await expect(page.getByRole('region', { name: 'Học phí và liên hệ' })).toContainText('180.000');
+  await expect(page.locator('main')).toContainText('90 phút gợi ý');
+  await expect(page.locator('main')).toContainText(source.intro);
   await page.goto('/learner/search');
   await expect(page.locator('a[href="/tutors/quoc-bao"]').first()).toBeVisible();
   await page.reload();

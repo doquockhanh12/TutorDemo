@@ -185,6 +185,7 @@ test('non-canonical tutors use their public weekly schedule and fallback session
 test('acceptance uses exact request proposals, permits adjacency, and subtracts lesson intervals', () => {
   const request = {
     id: 'request-exact', tutorId: CANONICAL_TUTOR_ID, status: 'pending', subject: 'English', learner: 'Learner', area: 'District 1',
+    format: 'Online', sessionFee: 180000,
     proposals: [{ date: monday, start: 1080, end: 1170 }],
   };
   const state = { requests: [request], lessons: [range(990, 1080, { id: 'adjacent' })], availability: [range(1020, 1200)] };
@@ -195,7 +196,7 @@ test('acceptance uses exact request proposals, permits adjacency, and subtracts 
   assert.equal(result.state.requests[0].status, 'accepted');
   assert.deepEqual(result.state.availability, [range(1020, 1080, { id: 'range-1020-1080' }), range(1170, 1200, { id: 'range-1170-1200' })]);
   assert.equal(state.requests[0].status, 'pending');
-  assert.ok(acceptanceResult(result.state, request.id).error);
+  assert.equal(acceptanceResult(result.state, request.id).state.classes.length, 1);
 });
 
 test('acceptance rejects overlapping lessons and proposals without changing input state', () => {

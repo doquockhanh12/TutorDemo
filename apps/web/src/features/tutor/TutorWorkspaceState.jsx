@@ -1,14 +1,18 @@
-import { normalizeSessionMinutes, selectPublicTutorSchedule, weekDates, isValidProposal, availabilityLabels, rangesSummary } from '../../data/tutorSchedule.js';
+import { normalizeSessionMinutes, selectPublicTutorSchedule, weekDates, isValidFlexibleProposal, availabilityLabels, rangesSummary } from '../../data/tutorSchedule.js';
 import useDemoDomain, { DemoDomainProvider } from '../domain/DemoDomainContext.jsx';
 import { useMemo } from 'react';
 import { isFutureSession } from '../../data/tutorSchedule.js';
-export const TutorWorkspaceProvider = DemoDomainProvider;
+import { TutorMessagesProvider } from './TutorMessagesState.jsx';
+export function TutorWorkspaceProvider({ children }) {
+  return <DemoDomainProvider><TutorMessagesProvider>{children}</TutorMessagesProvider></DemoDomainProvider>;
+}
 export default function useTutorWorkspace() {
   const state = useDemoDomain();
   const requests = useMemo(() => state.requests.filter((r) => r.tutorId === state.tutorId), [state.requests, state.tutorId]);
   const lessons = useMemo(() => state.lessons.filter((l) => l.tutorId === state.tutorId), [state.lessons, state.tutorId]);
+  const classes = useMemo(() => (state.classes || []).filter((item) => item.tutorId === state.tutorId), [state.classes, state.tutorId]);
   const availability = useMemo(() => state.availability.filter((r) => r.tutorId === state.tutorId), [state.availability, state.tutorId]);
-  return { ...state, requests, lessons, availability,
+  return { ...state, requests, lessons, classes, availability,
     sessionMinutes: state.sessionMinutes };
 }
 export function usePublicTutorSchedule(tutor, dates = weekDates()) {
@@ -17,8 +21,8 @@ export function usePublicTutorSchedule(tutor, dates = weekDates()) {
 export function useTutorProposalValidation(tutor) {
   const state = useDemoDomain();
   const sessionMinutes = selectPublicTutorSchedule(state, tutor, weekDates(), tutor.sessionMinutes).sessionMinutes;
-  return { sessionMinutes, validProposal: (proposal, selected = []) => isFutureSession(proposal) && isValidProposal(proposal,
-    selectPublicTutorSchedule(state, tutor, weekDates(0, new Date(proposal.date + 'T12:00:00')), tutor.sessionMinutes).ranges, sessionMinutes, selected) };
+  return { sessionMinutes, validProposal: (proposal, selected = []) => isFutureSession(proposal) && isValidFlexibleProposal(proposal,
+    selectPublicTutorSchedule(state, tutor, weekDates(0, new Date(proposal.date + 'T12:00:00')), tutor.sessionMinutes).ranges, selected) };
 }
 export function useScheduledTutors() {
   const state = useDemoDomain();

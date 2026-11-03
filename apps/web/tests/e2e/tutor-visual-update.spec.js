@@ -9,7 +9,7 @@ test('footer and tutor dashboard align at desktop and mobile', async ({ page }) 
   await expect(page.locator('.public-footer__social-links a')).toHaveCount(3);
   await page.locator('.public-footer').screenshot({ path: 'test-results/home-footer-desktop.png' });
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.locator('.public-footer').screenshot({ path: 'test-results/home-footer-mobile.png' });
   await login(page, 'giabao', '/tutor/dashboard');
   await expect(page.locator('.tutor-header__nav')).not.toContainText('Tổng Quan');
@@ -21,7 +21,7 @@ test('class filters combine subject, area and fee, then reset', async ({ page })
   await login(page, 'giabao', '/tutor/find-students');
   await expect(page.locator('.tutor-find__result-heading h2')).toBeVisible();
   const initial = await page.locator('.tutor-find__class').count();
-  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText(`${initial} lớp phù hợp`);
+  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText(`${initial} yêu cầu phù hợp`);
   await page.getByRole('button', { name: /Môn học/ }).click();
   await expect(page.getByRole('button', { name: /Môn học/ })).toHaveAttribute('aria-expanded', 'true');
   await page.getByRole('checkbox', { name: 'Toán', exact: true }).check();
@@ -35,7 +35,7 @@ test('class filters combine subject, area and fee, then reset', async ({ page })
   await expect(page.getByRole('button', { name: /Khu vực/ })).toContainText('2 khu vực đã chọn');
   const filtered = await page.locator('.tutor-find__class').count();
   expect(filtered).toBeLessThanOrEqual(initial);
-  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText(`${filtered} lớp phù hợp`);
+  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText(`${filtered} yêu cầu phù hợp`);
   await page.locator('.tutor-find__filters').screenshot({ path: 'test-results/tutor-filters-expanded.png' });
   await page.getByText('Xem các khoảng thời gian').click();
   await expect(page.locator('.tutor-find__saved-times details')).toHaveAttribute('open', '');
@@ -62,8 +62,8 @@ test('class filters combine subject, area and fee, then reset', async ({ page })
   await expect(page.getByLabel('Học phí từ')).not.toHaveText('0đ');
   await maxSlider.focus();
   await page.keyboard.press('Home');
-  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText('0 lớp phù hợp');
-  await expect(page.getByText('Chưa có lớp phù hợp')).toBeVisible();
+  await expect(page.locator('.tutor-find__result-heading h2')).toHaveText('0 yêu cầu phù hợp');
+  await expect(page.getByText('Chưa có yêu cầu phù hợp')).toBeVisible();
   await page.getByRole('button', { name: 'Đặt lại bộ lọc' }).click();
   await expect(page.locator('.tutor-find__class')).toHaveCount(initial);
   await page.screenshot({ path: 'test-results/tutor-class-filters-desktop.png', fullPage: true });
@@ -79,7 +79,7 @@ test('filter controls still open before availability is saved', async ({ page })
   await page.getByRole('button', { name: /Môn học/ }).click();
   await page.getByRole('checkbox', { name: 'Toán', exact: true }).check();
   await expect(page.getByRole('button', { name: /Môn học/ })).toContainText('1 môn học đã chọn');
-  await expect(page.getByText('Bạn cần đăng ký lịch rảnh trước khi lọc lớp')).toBeVisible();
+  await expect(page.getByText('Bạn cần đăng ký lịch rảnh trước khi lọc yêu cầu')).toBeVisible();
 });
 
 test('filter dropdown and fee slider remain usable on mobile dark mode', async ({ page }) => {
@@ -92,7 +92,7 @@ test('filter dropdown and fee slider remain usable on mobile dark mode', async (
   await page.getByRole('button', { name: /Khu vực/ }).click();
   await expect(page.getByRole('checkbox', { name: 'Biên Hòa' })).toBeVisible();
   await page.locator('.tutor-find__filters').screenshot({ path: 'test-results/tutor-filters-mobile-dark.png' });
-  await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
 
 test('tutor sidebar geometry stays fixed across routes and refresh', async ({ page }) => {

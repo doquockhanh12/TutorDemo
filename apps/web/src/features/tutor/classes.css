@@ -1,0 +1,36 @@
+.tutor-classes__toolbar { display: grid; gap: 14px; margin: 20px 0; }
+.tutor-classes__toolbar input { width: min(420px, 100%); min-height: 44px; padding: 10px 14px; border: var(--border-default); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-ink); font: inherit; }
+.tutor-classes__toolbar .flow-tabs { flex-wrap: wrap; overflow: visible; }
+:root[data-theme='dark'] .tutor-main .flow-back { color: #8bb7ff; }
+.tutor-class-detail-page { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); align-items: start; gap: 18px; margin-top: 18px; }
+.tutor-class-card { min-width: 0; padding: 22px; border: var(--border-default); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: 0 8px 26px rgb(15 23 42 / 5%); }
+.tutor-class-card h2 { margin: 14px 0 20px; font-size: clamp(1.4rem, 2vw, 1.8rem); line-height: 1.25; }
+.tutor-class-card h3 { margin: 0 0 18px; font-size: 1.05rem; }
+.tutor-class-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; margin: 0; }
+.tutor-class-facts div { min-width: 0; }
+.tutor-class-facts dt { color: var(--color-text-secondary); font-size: .83rem; }
+.tutor-class-facts dd { margin: 4px 0 0; font-weight: 750; overflow-wrap: anywhere; }
+.tutor-class-progress { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.tutor-class-progress > strong { color: var(--color-brand); font-size: 2rem; line-height: 1.2; }
+.tutor-class-progress span { color: var(--color-text-secondary); font-size: .84rem; }
+.tutor-class-card progress { width: 100%; height: 10px; margin: 14px 0; accent-color: var(--color-brand); }
+.tutor-class-totals { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--color-text-secondary); font-size: .85rem; }
+.tutor-class-totals strong { color: var(--color-ink); }
+.tutor-class-card--lessons { grid-row: span 2; }
+.tutor-class-lessons { padding: 0; list-style: none; }
+.tutor-class-lessons li { padding: 14px 0; border-bottom: var(--border-default); }
+.tutor-class-lessons li span { margin-left: 10px; color: var(--color-text-secondary); }
+.tutor-class-lessons li p { margin: 6px 0 0; }
+.tutor-class-lessons li small { display: inline-block; margin-left: 10px; color: var(--color-text-secondary); }
+.tutor-wallet__summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
+.tutor-wallet__summary section, .tutor-wallet__history, .tutor-wallet__withdraw { padding: 20px; border: var(--border-default); border-radius: var(--radius-md); background: var(--color-surface); }
+.tutor-wallet__summary h2, .tutor-wallet__history h2, .tutor-wallet__withdraw h2 { margin: 0 0 10px; font-size: 1.1rem; }
+.tutor-wallet__summary strong { font-size: 1.45rem; }
+.tutor-wallet__history, .tutor-wallet__withdraw { margin-top: 20px; }
+.tutor-wallet__history .flow-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.tutor-wallet__history .flow-row > span { display: grid; gap: 5px; min-width: 0; }
+.tutor-wallet__history .flow-row > strong { flex: none; white-space: nowrap; }
+@media (max-width: 600px) { .tutor-wallet__history .flow-row { align-items: flex-start; flex-direction: column; gap: 8px; } }
+@media (max-width: 767px) { .tutor-wallet__summary { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .tutor-class-detail-page { grid-template-columns: 1fr; } .tutor-class-card--lessons { grid-row: auto; } }
+@media (max-width: 480px) { .tutor-class-facts { grid-template-columns: 1fr; } .tutor-class-card { padding: 18px; } }

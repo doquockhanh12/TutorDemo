@@ -2181,3 +2181,8 @@
     padding: 20px;
   }
 }
+.profile-custom-time { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 16px 0; padding: 16px; border: var(--border-default); border-radius: var(--radius-md); background: var(--color-surface-muted); }
+.profile-custom-time > strong { flex-basis: 100%; font-size: .94rem; }
+.profile-custom-time label { display: grid; gap: 5px; color: var(--color-text-secondary); font-size: .82rem; }
+.profile-custom-time input, .profile-custom-time select { min-height: 40px; padding: 8px 10px; border: var(--border-default); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-ink); font: inherit; }
+.profile-custom-time small { flex-basis: 100%; color: var(--color-text-secondary); }

@@ -164,7 +164,7 @@ export default function WeeklyTimeline({
       block.kind !== 'availability' ||
       event.target.closest(
         '.weekly-timeline-remove'
-      )
+      ) || event.target.closest('.weekly-timeline-block-content')
     ) {
       return;
     }
@@ -322,7 +322,7 @@ export default function WeeklyTimeline({
                 {expanded ===
                   hour &&
                   Array.from(
-                    { length: 11 },
+                    { length: 3 },
                     (_, i) => (
                       <span
                         className="weekly-timeline-minor-label"
@@ -330,14 +330,14 @@ export default function WeeklyTimeline({
                         style={{
                           top:
                             (i + 1) *
-                            20,
+                            60,
                         }}
                       >
                         {timeLabel(
-                          365 +
+                          375 +
                             hour *
                               60 +
-                            i * 5
+                            i * 15
                         )}
                       </span>
                     )
@@ -410,14 +410,14 @@ export default function WeeklyTimeline({
                         Array.from(
                           {
                             length:
-                              12,
+                              4,
                           },
                           (_, i) => {
                             const start =
                               360 +
                               hour *
                                 60 +
-                              i * 5;
+                              i * 15;
 
                             return (
                               <button
@@ -429,7 +429,7 @@ export default function WeeklyTimeline({
                                 style={{
                                   top:
                                     i *
-                                    20,
+                                    60,
                                 }}
                                 aria-label={`${
                                   editable

@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { demoReferenceData } from '../src/data/demoReferenceData.js';
 import { tutors, subjectOptions, locationOptions } from '../src/data/tutors.js';
-import { overlaps } from '../src/data/tutorSchedule.js';
-import { createDemoState, restoreDemoState, DOMAIN_STORAGE_KEY, updateLearnerRequest, completeDomainLesson, addLearnerRequest, decideRequest } from '../src/features/domain/demoDomain.js';
+import { overlaps, acceptanceResult } from '../src/data/tutorSchedule.js';
+import { createDemoState, restoreDemoState, DOMAIN_STORAGE_KEY, updateLearnerRequest, completeDomainLesson, addLearnerRequest, decideRequest, confirmLearnerRequest } from '../src/features/domain/demoDomain.js';
 const now = new Date('2026-10-05T06:00:00+07:00');
 
 test('SCHED-005 approved demo cleanup removes only Thursday Math and Friday evening free ranges once', () => {
   const state = createDemoState(new Date('2026-10-04T10:00:00+07:00'));
   state.lessons = state.lessons.filter((l) => !l.id.startsWith('history-'));
-  const accepted = decideRequest(state, 'req-1', 'accepted', 'quoc-bao').state;
+  const accepted = acceptanceResult(state, 'req-1').state;
   delete accepted.appliedDemoCleanups;
   accepted.availability.push({ id: 'approved-friday-cleanup-example', tutorId: 'quoc-bao', date: '2026-10-02', start: 1095, end: 1320 });
   const restore = (value) => restoreDemoState({ getItem: (key) => key === DOMAIN_STORAGE_KEY ? JSON.stringify(value) : null }, now);
@@ -61,7 +61,7 @@ test('BUG-001 canonical seed clones immutable data and fixes proposals at seed t
 test('BUG-002 learner updates cannot complete requests or edit another owner', () => {
   const state = createDemoState(now);
   const result = updateLearnerRequest(state, 'demo-learner', 'demo-02', { status: 'completed' });
-  assert.equal(result.requests.find((r) => r.id === 'demo-02').status, 'accepted');
+  assert.equal(result.requests.find((r) => r.id === 'demo-02').status, 'needs_revision');
   assert.equal(updateLearnerRequest(state, 'other', 'demo-01', { status: 'cancelled' }).requests[0].status, 'pending');
   assert.equal(updateLearnerRequest(state, 'demo-learner', 'demo-01', { status: 'cancelled' }).requests[0].status, 'cancelled');
 });
@@ -77,10 +77,11 @@ test('BUG-001 legacy stores migrate once without deleting or becoming the active
   assert.ok(restoreDemoState(storage, now).requests.some((r) => r.id === 'legacy-created'));
 });
 
-test('BUG-003 persisted requests use codes and completed lessons do not change accepted code', () => {
+test('BUG-003 incomplete legacy acceptance is flagged without inventing a class', () => {
   const state = createDemoState(now);
-  assert.ok(state.requests.every((r) => ['pending','accepted','rejected','cancelled'].includes(r.status)));
-  assert.equal(state.requests.find((r) => r.id === 'demo-03').status, 'accepted');
+  assert.ok(state.requests.every((r) => ['pending','accepted','needs_revision','rejected','cancelled'].includes(r.status)));
+  assert.equal(state.requests.find((r) => r.id === 'demo-03').status, 'needs_revision');
+  assert.equal(state.classes.some((item) => item.requestId === 'demo-03'), false);
 });
 
 test('BUG-013 directory is a canonical fixture projection rather than another identity seed', () => {
@@ -145,17 +146,25 @@ test('INCOME fresh state contains absolute historical lessons and hydrates only 
   assert.equal(restored.lessons.find((l) => l.id === lessons[2].id).sessionFee, seed.sessionFee);
 });
 
-test('INCOME-001 accepted request snapshots its fee into each Lesson without profile fallback', () => {
+test('INCOME-001 tutor acceptance snapshots the agreed fee without profile fallback', () => {
   for (const fee of [180000, undefined]) {
     const state = createDemoState(now);
     const request = state.requests.find((r) => r.id === 'req-2');
+    request.learnerId = 'demo-learner';
     request.sessionFee = fee;
     state.profiles.find((p) => p.id === 'quoc-bao').price = 999999;
     const result = decideRequest(state, request.id, 'accepted', 'quoc-bao');
+    if (fee === undefined) {
+      assert.match(result.error, /học phí/);
+      assert.equal(state.lessons.filter((l) => l.requestId === request.id).length, 0);
+      continue;
+    }
     assert.equal(result.error, undefined);
     const lessons = result.state.lessons.filter((l) => l.requestId === request.id);
     assert.ok(lessons.length > 0);
     assert.ok(lessons.every((l) => l.sessionFee === fee));
+    const repeated = decideRequest(result.state, request.id, 'accepted', 'quoc-bao');
+    assert.equal(repeated.state.classes.length, result.state.classes.length);
   }
 });
 

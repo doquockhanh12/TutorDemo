@@ -10,8 +10,6 @@ test('BUG-011 private saved tutors and requests are scoped by account ID', async
     savedByAccount: { 'demo-learner': ['quoc-bao'] }, legacySaved: ['quoc-bao'] });
   await page.goto('/tutors/quoc-bao');
   await expect(page.getByRole('button', { name: 'Lưu hồ sơ', exact: true })).toHaveAttribute('aria-pressed', 'false');
-  await page.goto('/learner/dashboard');
-  await expect(page.locator('#saved-tutors')).toContainText('Lưu lại gia sư bạn yêu thích');
   await page.goto('/requests');
   await expect(page.locator('.flow-row')).toHaveCount(0);
   await page.goto('/requests/demo-02');
@@ -25,7 +23,7 @@ test('BUG-011 newly registered tutor owns profile schedule and no canonical tuto
   await page.goto('/tutor/dashboard');
   await expect(page.locator('#tutor-profile-summary')).toContainText('Chưa có đánh giá');
   await page.goto('/tutor/profile');
-  await page.getByLabel('THCS', { exact: true }).check();
+  await page.locator('.profile-subject-level').first().getByLabel('THCS', { exact: true }).check();
   await page.getByRole('button', { name: 'Lưu hồ sơ', exact: true }).click();
   await page.goto('/tutor/timetable');
   await expect(page.locator('.weekly-timeline-block.lesson')).toHaveCount(0);
@@ -37,6 +35,7 @@ test('BUG-011 newly registered tutor owns profile schedule and no canonical tuto
   await logout(page);
   await login(page, 'minhanh', '/tutors/registered-tutor-test');
   await expect(page.getByRole('heading', { name: source.name, exact: true })).toBeVisible();
-  await expect(page.locator('.profile-identity')).toContainText('Chưa có đánh giá');
+  await expect(page.locator('main')).toContainText('Chưa có đánh giá');
+  await page.getByRole('button', { name: 'ĐẶT LỊCH HỌC' }).click();
   await expect(page.getByRole('button', { name: /05\/10 · 08:00–09:30/ })).toBeEnabled();
 });

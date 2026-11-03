@@ -1,10 +1,10 @@
-﻿import Badge from '../../components/Badge.jsx';
+import Badge from '../../components/Badge.jsx';
 import { requestLabel, requestTone } from '../domain/statusMetadata.js';
 import RequestSelectionDetails from './RequestSelectionDetails.jsx';
 import { useState } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, CalendarDays } from 'lucide-react';
-import { useLearnerRequests } from '../domain/DemoDomainContext.jsx';
+import useDemoDomain, { useLearnerRequests } from '../domain/DemoDomainContext.jsx';
 import { PublicFooter } from '../public/PublicChrome.jsx';
 import LearnerHeader from './LearnerHeader.jsx';
 import './search.css';
@@ -40,7 +40,7 @@ export function MyRequests() {
   const [requests] = useLearnerRequests();
   const [filter, setFilter] = useState('all');
   const visible = filter === 'all' ? requests : requests.filter((item) => filter === 'completed' ? item.completed : item.status === filter && !item.completed);
-  return <LearnerShell title="Yêu cầu học của tôi" intro="Theo dõi trạng thái kết nối và lịch học trong bản demo."><div className="flow-toolbar"><div className="flow-tabs">{[['all','Tất cả'],['pending','Chờ phản hồi'],['accepted','Đã xác nhận'],['completed','Hoàn tất'],['rejected','Đã từ chối'],['cancelled','Đã hủy']].map(([item,label]) => <button className={filter === item ? 'is-active' : ''} onClick={() => setFilter(item)} key={item}>{label}</button>)}</div></div><div className="flow-list">{visible.map((request) => { const tutor = publicTutors.find((t) => t.id === request.tutorId); return <Link key={request.id} to={`/requests/${request.id}`} className="flow-row"><span className="flow-row__icon"><CalendarDays size={21}/></span><span><strong>{request.subject} với {tutor?.name || 'Gia sư demo'}</strong><small>{request.goal ? `${request.goal} · ` : ''}{request.schedule}</small></span><Badge tone={requestTone(request)}>{requestLabel(request)}</Badge><ArrowRight size={18}/></Link>; })}{!visible.length && <div className="public-empty"><h3>Chưa có yêu cầu trong nhóm này</h3><p>Chọn trạng thái khác để xem các yêu cầu đã gửi.</p></div>}</div></LearnerShell>;
+  return <LearnerShell title="Yêu cầu học của tôi" intro="Theo dõi trạng thái kết nối và lịch học. Thông tin hiện lưu trong trình duyệt."><div className="flow-toolbar"><div className="flow-tabs">{[['all','Tất cả'],['pending','Chờ phản hồi'],['accepted','Đã xác nhận'],['completed','Hoàn tất'],['rejected','Đã từ chối'],['cancelled','Đã hủy']].map(([item,label]) => <button className={filter === item ? 'is-active' : ''} onClick={() => setFilter(item)} key={item}>{label}</button>)}</div></div><div className="flow-list">{visible.map((request) => { const tutor = publicTutors.find((t) => t.id === request.tutorId); return <Link key={request.id} to={`/requests/${request.id}`} className="flow-row"><span className="flow-row__icon"><CalendarDays size={21}/></span><span><strong>{request.subject} với {tutor?.name || 'Gia sư'}</strong><small>{request.goal ? `${request.goal} · ` : ''}{request.schedule}</small></span><Badge tone={requestTone(request)}>{requestLabel(request)}</Badge><ArrowRight size={18}/></Link>; })}{!visible.length && <div className="public-empty"><h3>Chưa có yêu cầu trong nhóm này</h3><p>Chọn trạng thái khác để xem các yêu cầu đã gửi.</p></div>}</div></LearnerShell>;
 }
 
 export function RequestDetail() {
@@ -51,7 +51,7 @@ export function RequestDetail() {
   const tutor = publicTutors.find((item) => item.id === request?.tutorId);
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState('');
-  if (!request) return <LearnerShell title="Không tìm thấy yêu cầu" intro="Yêu cầu này không có trong dữ liệu demo."><Link to="/requests">Xem các yêu cầu</Link></LearnerShell>;
+  if (!request) return <LearnerShell title="Không tìm thấy yêu cầu" intro="Không tìm thấy yêu cầu này."><Link to="/requests">Xem các yêu cầu</Link></LearnerShell>;
   const update = (patch) => setRequests(requests.map((item) => item.id === id ? { ...item, ...patch } : item));
   return (
     <LearnerShell
@@ -81,7 +81,7 @@ export function RequestDetail() {
             </div>
             <div>
               <dt>Hình thức</dt>
-              <dd>{request.format || 'Tại nhà'}</dd>
+              <dd>{request.format || request.formats?.join(', ') || 'Chưa xác định'}</dd>
             </div>
             <div>
               <dt>Mong muốn học tập</dt>
@@ -93,7 +93,7 @@ export function RequestDetail() {
             </div>
             <div>
               <dt>Học phí tham khảo</dt>
-              <dd>{money(tutor?.fee || 0)}đ / buổi</dd>
+              <dd>{Number.isFinite(request.sessionFee) ? `${money(request.sessionFee)}đ / buổi` : 'Chưa xác định'}</dd>
             </div>
           </dl>
           <RequestSelectionDetails request={request} />
@@ -102,22 +102,26 @@ export function RequestDetail() {
         <aside>
           <h3>Bước tiếp theo</h3>
           <p>
-            {request.status === 'pending'
-              ? 'Gia sư sẽ xem yêu cầu trong luồng demo.'
+            {request.reconciliationError
+              ? `Yêu cầu cũ cần kiểm tra trước khi tạo lớp: ${request.reconciliationError}`
+              : request.status === 'pending'
+              ? 'Yêu cầu đã được ghi nhận trong trình duyệt; chưa gửi đến gia sư thật.'
+              : request.status === 'pending_learner_confirmation'
+                ? 'Yêu cầu cũ còn thiếu điều kiện đã thống nhất để tạo lớp. Gia sư cần kiểm tra lại.'
               : request.status === 'accepted' && !request.completed
-                ? 'Lịch học đã được xác nhận. Bạn có thể xem chi tiết buổi học.'
+                ? request.classId ? 'Gia sư đã nhận yêu cầu. Lịch học được lưu trong dữ liệu trình duyệt.' : 'Yêu cầu demo cũ đã nhận nhưng chưa đủ dữ liệu để khôi phục lớp và lịch học.'
                 : request.completed
                   ? 'Buổi học đã hoàn tất. Bạn có thể để lại đánh giá.'
                   : request.status === 'rejected'
                     ? 'Gia sư đã từ chối yêu cầu.'
-                    : 'Yêu cầu đã hủy trong bản demo.'}
+                    : 'Yêu cầu đã hủy.'}
           </p>
           {request.status === 'pending' && (
             <button
               className="public-btn public-btn--outline-blue"
               onClick={() => update({ status: 'cancelled' })}
             >
-              Hủy yêu cầu demo
+              Hủy yêu cầu
             </button>
           )}
         </aside>
@@ -169,4 +173,3 @@ export function RequestDetail() {
     </LearnerShell>
   );
 }
-

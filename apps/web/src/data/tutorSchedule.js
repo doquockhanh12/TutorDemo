@@ -17,6 +17,7 @@ export const proposalLabel = (range) => shortDate(range.date) + ' · ' + timeLab
 export const latestAllowedStart = (duration) => Math.min(MAX_START, END_MINUTES - duration);
 export const snapMinute = (minute, step = 5) => Math.round(minute / step) * step;
 const sameDay = (a, b) => a.date === b.date && (!a.tutorId || !b.tutorId || a.tutorId === b.tutorId);
+const sameAvailabilityContext = (a, b) => a.date === b.date && a.tutorId === b.tutorId;
 export const overlaps = (a, b) => sameDay(a, b) && a.start < b.end && a.end > b.start;
 export const containsRange = (outer, inner) => sameDay(outer, inner) && outer.start <= inner.start && outer.end >= inner.end;
 const validDate = (date) => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && localDateKey(new Date(date + 'T12:00:00')) === date;
@@ -27,10 +28,14 @@ export function normalizeRanges(ranges) {
 export function mergeAdjacentRanges(ranges) {
   return normalizeRanges(ranges).reduce((result, range) => {
     const previous = result.at(-1);
-    if (previous && sameDay(previous, range) && previous.end >= range.start) previous.end = Math.max(previous.end, range.end);
+    if (previous && sameAvailabilityContext(previous, range) && previous.end >= range.start) previous.end = Math.max(previous.end, range.end);
     else result.push({ ...range });
     return result;
   }, []);
+}
+export const isValidTimeRange = validRange;
+export function isValidFlexibleProposal(proposal, bookableRanges, selected = []) {
+  return validRange(proposal) && mergeAdjacentRanges(bookableRanges).some((range) => containsRange(range, proposal)) && !selected.some((range) => overlaps(range, proposal));
 }
 export function subtractRange(range, occupied) {
   if (!overlaps(range, occupied)) return [{ ...range }];
@@ -51,7 +56,7 @@ export function isValidAvailability(candidate, availability = [], lessons = [], 
   return validRange(candidate) && candidate.start <= MAX_START && !availability.some((range) => (!excludeId || range.id !== excludeId) && overlaps(range, candidate)) && !lessons.some((lesson) => lesson.status !== 'cancelled' && overlaps(lesson, candidate));
 }
 export function isValidProposal(proposal, bookableRanges, sessionMinutes, selected = []) {
-  return validRange(proposal) && proposal.start <= MAX_START && proposal.end === proposal.start + sessionMinutes && mergeAdjacentRanges(bookableRanges).some((range) => containsRange(range, proposal)) && !selected.some((range) => overlaps(range, proposal));
+  return isValidFlexibleProposal(proposal, bookableRanges, selected) && proposal.start <= MAX_START && (sessionMinutes == null || proposal.end === proposal.start + sessionMinutes);
 }
 export function isFutureSession(proposal, now = new Date()) {
   if (!validRange(proposal)) return false;
@@ -106,14 +111,42 @@ export function proposedLessons(request, dates = weekDates()) {
   const proposals = Array.isArray(request.proposals) ? request.proposals : legacy ? legacy.days.map((day) => ({ date: localDateKey(dates[day]), start: legacy.start, end: legacy.end })) : [];
   return proposals.map((proposal, index) => ({ id: 'request-' + request.id + '-' + proposal.date + '-' + proposal.start + '-' + index, tutorId: request.tutorId || CANONICAL_TUTOR_ID, requestId: request.id, learnerId: request.learnerId, date: proposal.date, start: proposal.start, end: proposal.end, subject: request.subject, learner: request.learner, place: request.area, sessionFee: request.sessionFee, status: 'confirmed' }));
 }
+export function classFromRequest(request, lessons) {
+  const ordered = [...lessons].sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start);
+  return {
+    id: request.classId || request.id,
+    requestId: request.id,
+    tutorId: request.tutorId || ordered[0]?.tutorId,
+    learnerId: request.learnerId ?? null,
+    learner: request.learner || ordered[0]?.learner || '',
+    subject: request.subject || ordered[0]?.subject || '',
+    format: request.format || request.formats?.join(', ') || ordered[0]?.format || null,
+    sessionFee: request.sessionFee ?? ordered[0]?.sessionFee ?? null,
+    startDate: ordered[0]?.date || null,
+    lessonIds: ordered.map((lesson) => lesson.id),
+  };
+}
 export function acceptanceResult(state, id) {
   const request = state.requests.find((item) => item.id === id);
   if (!request) return { error: 'Không tìm thấy yêu cầu.' };
+  const existingClass = (state.classes || []).find((item) => item.requestId === id);
+  if (existingClass) {
+    if (!['pending', 'accepted'].includes(request.status)) return { error: 'Yêu cầu này không còn hợp lệ để nhận lớp.' };
+    if (existingClass.tutorId !== request.tutorId) return { error: 'Lớp hiện có không thuộc gia sư của yêu cầu.' };
+    return { state: { ...state, requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId: existingClass.id, reconciliationError: null } : item) }, classId: existingClass.id };
+  }
   if (request.status !== 'pending') return { error: 'Yêu cầu này đã được xử lý.' };
+  if (state.lessons.some((lesson) => lesson.requestId === id)) return { error: 'Lớp học đã tồn tại cho yêu cầu này.' };
+  if (!request.subject?.trim()) return { error: 'Yêu cầu chưa có chuyên môn hợp lệ.' };
+  if (!(request.format?.trim() || request.formats?.length)) return { error: 'Yêu cầu chưa có hình thức học đã thống nhất.' };
+  if (!Number.isFinite(request.sessionFee) || request.sessionFee <= 0) return { error: 'Yêu cầu chưa có học phí hợp lệ.' };
   const lessons = proposedLessons(request);
-  if (!lessons.length || lessons.some((lesson) => !validRange(lesson) || lesson.start > MAX_START)) return { error: 'Yêu cầu chưa có khung giờ cụ thể hợp lệ để thêm vào lịch.' };
-  if (lessons.some((next, index) => state.lessons.some((existing) => existing.status !== 'cancelled' && overlaps(existing, next)) || lessons.slice(0, index).some((other) => overlaps(other, next)))) return { error: 'Khung giờ đề xuất trùng một buổi dạy hiện có. Yêu cầu vẫn đang chờ.' };
-  return { state: { ...state, requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted' } : item), lessons: [...state.lessons, ...lessons], availability: subtractLessons(state.availability, lessons) } };
+  if (!lessons.length || lessons.some((lesson) => !validRange(lesson))) return { error: 'Yêu cầu chưa có khung giờ cụ thể hợp lệ để thêm vào lịch.' };
+  if (lessons.some((next, index) => state.lessons.some((existing) => existing.status !== 'cancelled' && overlaps(existing, next)) || lessons.slice(0, index).some((other) => overlaps(other, next)))) return { error: 'Không thể nhận lớp vì thời gian học trùng với lịch đã xác nhận.' };
+  const classId = request.classId || request.id;
+  if ((state.classes || []).some((item) => item.id === classId)) return { error: 'Mã lớp đã được dùng cho yêu cầu khác.' };
+  const classRecord = classFromRequest(request, lessons);
+  return { state: { ...state, classes: [...(state.classes || []), classRecord], requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId, reconciliationError: null } : item), lessons: [...state.lessons, ...lessons.map((lesson) => ({ ...lesson, classId }))], availability: subtractLessons(state.availability, lessons) }, classId };
 }
 export function seedLessons(dates = weekDates()) {
   return demoReferenceData.lessonTemplates.map(({day, ...lesson}) => ({...lesson, date: localDateKey(dates[day])}));

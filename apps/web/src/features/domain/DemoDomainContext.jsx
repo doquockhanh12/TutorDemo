@@ -5,6 +5,7 @@ import {
   restoreDemoState,
   requestIsCompleted,
   decideRequest,
+  confirmLearnerRequest,
   updateLearnerRequest,
   completeDomainLesson,
   addLearnerRequest,
@@ -17,7 +18,7 @@ import {
   warnUserIssue,
   dismissIssue,
 } from './demoDomain.js';
-import { normalizeRanges, normalizeSessionMinutes, isValidAvailability, overlaps } from '../../data/tutorSchedule.js';
+import { normalizeRanges, mergeAdjacentRanges, normalizeSessionMinutes, isValidAvailability, overlaps } from '../../data/tutorSchedule.js';
 import { selectTutorIncome } from './incomeSelectors.js';
 import { submitAppeal, reviewAppeal } from './appeals.js';
 import { subjectById, subjectIdsFromNames } from '../../data/subjectCatalog.js';
@@ -50,7 +51,20 @@ export function DemoDomainProvider({ children }) {
     if (result.state) setState(result.state);
     return result;
   };
-  const decide = (id, status) => { const result = decideRequest(state, id, status, tutorId); if (result.error) return result.error; setState(result.state); return ''; };
+  const decide = (id, status) => {
+    const result = decideRequest(state, id, status, tutorId);
+    if (result.error) return result.error;
+    try { localStorage.setItem(DOMAIN_STORAGE_KEY, JSON.stringify(result.state)); }
+    catch { return 'Không thể lưu lớp trong trình duyệt. Yêu cầu vẫn chưa được nhận.'; }
+    setState(result.state);
+    return '';
+  };
+  const confirmRequest = (id) => { const result = confirmLearnerRequest(state, user?.id, id); if (result.state) setState(result.state); return result.error || ''; };
+  const proposeSubject = (values) => {
+    if (!tutorId || !values.name?.trim() || !values.categoryId) return false;
+    setState((current) => ({ ...current, subjectRequests: [...(current.subjectRequests || []), { ...values, id: `subject-request-${Date.now()}-${(current.subjectRequests || []).length + 1}`, tutorId, status: 'PENDING' }] }));
+    return true;
+  };
   const updateLearnerRequests = (items) => setState((current) => items.reduce((next, item) => updateLearnerRequest(next, user?.id, item.id, item), current));
   const setSaved = (update) => {
     if (user?.role !== 'learner') { setAnonymousSaved(update); return; }
@@ -58,11 +72,9 @@ export function DemoDomainProvider({ children }) {
       [user.id]: typeof update === 'function' ? update(current.savedByAccount[user.id] || []) : update } }));
   };
   const saveAvailability = (ranges, duration) => {
-    const next = normalizeRanges(ranges);
-    if (!tutorId || next.length !== ranges.length || next.some((range) => {
-      const unchanged = state.availability.some((old) => old.id === range.id && old.date === range.date && old.start === range.start && old.end === range.end);
-      return range.tutorId !== tutorId || (!unchanged && !isValidAvailability(range, next, state.lessons, range.id)) || next.some((other) => other !== range && overlaps(other, range)) || state.lessons.some((l) => l.status !== 'cancelled' && overlaps(l, range));
-    })) return 'Không thể lưu: khoảng thời gian không hợp lệ hoặc trùng lịch. Lịch nháp được giữ để bạn chỉnh sửa.';
+    const normalized = normalizeRanges(ranges);
+    const next = mergeAdjacentRanges(normalized);
+    if (!tutorId || normalized.length !== ranges.length || next.some((range) => range.tutorId !== tutorId || state.lessons.some((lesson) => lesson.status !== 'cancelled' && overlaps(lesson, range)))) return 'Không thể lưu: khoảng thời gian không hợp lệ hoặc trùng buổi học. Lịch nháp được giữ để bạn chỉnh sửa.';
     setState((current) => ({ ...current, availability: [...current.availability.filter((r) => r.tutorId !== tutorId), ...next],
       settings: duration === undefined ? current.settings : { ...current.settings, [tutorId]: { sessionMinutes: normalizeSessionMinutes(duration) } } })); return '';
   };
@@ -74,6 +86,7 @@ export function DemoDomainProvider({ children }) {
       ...profile, name: draft.name.trim(), initials: draft.name.trim().split(/\s+/).slice(-2).map((s) => s[0]).join(''),
       subjects: (draft.subjectIds || subjectIdsFromNames(draft.subjects.split(',').map((s) => s.trim()))).map((id) => subjectById(id)?.name).filter(Boolean),
       subjectIds: draft.subjectIds || subjectIdsFromNames(draft.subjects.split(',').map((s) => s.trim())), levels: [...draft.levels],
+      subjectLevels: draft.subjectLevels ? Object.fromEntries((draft.subjectIds || []).map((id) => [id, draft.subjectLevels[id] || []])) : profile.subjectLevels,
       location: draft.area.trim(), areas: [draft.area.trim()], price: Number(draft.fee), intro: draft.bio,
       sessionMinutes: normalizeSessionMinutes(draft.sessionMinutes),
       formats: draft.formats ? [...draft.formats] : profile.formats,
@@ -123,6 +136,8 @@ export function DemoDomainProvider({ children }) {
         anonymousSaved,
         createRequest,
         decide,
+        confirmRequest,
+        proposeSubject,
         updateLearnerRequests,
         setSaved,
         saveAvailability,
@@ -166,7 +181,7 @@ export function useTutorProfile() {
   const profile = state.profiles.find((p) => p.id === state.tutorId);
   return [{ name: profile?.name || user?.fullName || '', subjects: profile?.subjects.join(', ') || user?.subjects?.join(', ') || '',
     subjectIds: profile?.subjectIds || subjectIdsFromNames(profile?.subjects || user?.subjects || []),
-    levels: profile?.levels || [], area: profile?.location || user?.area || '', fee: profile?.price ?? user?.fee ?? '',
+    levels: profile?.levels || [], subjectLevels: profile?.subjectLevels, area: profile?.location || user?.area || '', fee: profile?.price ?? user?.fee ?? '',
     bio: profile?.intro || '', formats: profile?.formats || [], rating: profile?.rating, sessionMinutes: normalizeSessionMinutes(state.settings[state.tutorId]?.sessionMinutes ?? user?.duration) }, state.saveTutorProfile];
 }
 export function usePublicTutors() {
