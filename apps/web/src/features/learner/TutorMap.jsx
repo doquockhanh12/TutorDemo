@@ -1,6 +1,9 @@
 import { mapTutors } from '../../data/tutorMap.js';
 
-export default function TutorMap({ first, second, onSelect }) {
+export default function TutorMap({ learner, tutor, first, second, onSelect }) {
+  const learnerPoint = learner || (second ? first : null);
+  const activeTutor = tutor || second || first;
+
   return (
     <svg className="tutor-map" viewBox="0 0 600 440" aria-label="Bản đồ minh họa khu vực gia sư">
       <rect width="600" height="440" className="tutor-map__ground" />
@@ -12,28 +15,43 @@ export default function TutorMap({ first, second, onSelect }) {
         <text x="450" y="95">THỦ ĐỨC</text>
         <text x="45" y="385">QUẬN 3</text>
       </g>
-      {first && second && <path d={`M${first.x} ${first.y} L${second.x} ${second.y}`} className="tutor-map__connection" />}
-      {mapTutors.map((tutor) => {
-        const active = tutor.id === first?.id || tutor.id === second?.id;
+      {learnerPoint && activeTutor && (
+        <path
+          d={`M${learnerPoint.x} ${learnerPoint.y} L${activeTutor.x} ${activeTutor.y}`}
+          className="tutor-map__connection"
+        />
+      )}
+      {learnerPoint && (
+        <g
+          transform={`translate(${learnerPoint.x} ${learnerPoint.y})`}
+          className="tutor-map__pin tutor-map__pin--learner"
+          aria-label={`Vị trí của bạn (${learnerPoint.location || 'Quận 1'})`}
+        >
+          <circle r="25" />
+          <text textAnchor="middle" dominantBaseline="central">BẠN</text>
+        </g>
+      )}
+      {mapTutors.map((item) => {
+        const active = activeTutor && item.id === activeTutor.id;
         return (
           <g
-            key={tutor.id}
-            transform={`translate(${tutor.x} ${tutor.y})`}
+            key={item.id}
+            transform={`translate(${item.x} ${item.y})`}
             className={`tutor-map__pin ${active ? 'is-selected' : ''}`}
             role={onSelect ? 'button' : undefined}
             tabIndex={onSelect ? 0 : undefined}
-            aria-label={onSelect ? `Chọn ${tutor.name}, ${tutor.location}` : undefined}
+            aria-label={onSelect ? `Chọn gia sư ${item.name}, ${item.location}` : undefined}
             aria-pressed={onSelect ? active : undefined}
-            onClick={onSelect ? () => onSelect(tutor) : undefined}
+            onClick={onSelect ? () => onSelect(item) : undefined}
             onKeyDown={onSelect ? (event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                onSelect(tutor);
+                onSelect(item);
               }
             } : undefined}
           >
             <circle r="25" />
-            <text textAnchor="middle" dominantBaseline="central">{tutor.initials}</text>
+            <text textAnchor="middle" dominantBaseline="central">{item.initials}</text>
           </g>
         );
       })}

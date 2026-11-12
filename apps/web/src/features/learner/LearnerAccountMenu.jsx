@@ -1,13 +1,16 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, ClipboardList, Heart, LockKeyhole, LogOut, UserRound } from 'lucide-react';
+import { BookOpen, CalendarDays, ChevronDown, ClipboardList, Heart, LockKeyhole, LogOut, MessageSquare, UserRound } from 'lucide-react';
 import Avatar from '../../components/Avatar.jsx';
 import './account-menu.css';
 
 const accountLinks = [
-  { label: 'Hồ sơ cá nhân', to: '/learner/dashboard?tab=profile', icon: UserRound },
+  { label: 'Lớp học của tôi', to: '/learner/classes', icon: BookOpen },
+  { label: 'Thời khóa biểu', to: '/learner/schedule', icon: CalendarDays },
   { label: 'Yêu cầu học', to: '/requests', icon: ClipboardList },
+  { label: 'Tin nhắn với gia sư', to: '/learner/messages', icon: MessageSquare },
   { label: 'Gia sư yêu thích', to: '/learner/dashboard?tab=saved', icon: Heart },
+  { label: 'Hồ sơ cá nhân', to: '/learner/dashboard?tab=profile', icon: UserRound },
   { label: 'Đổi mật khẩu', to: '/learner/dashboard?tab=password', icon: LockKeyhole },
 ];
 

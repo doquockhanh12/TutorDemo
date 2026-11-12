@@ -22,7 +22,7 @@ export default function LearnerAccountPanel({ addressOnly = false, startEditingI
     setEditing(false); setNotice(addressOnly ? 'Đã lưu địa chỉ mới.' : 'Đã cập nhật thông tin cá nhân.');
   };
   return <section className="learner-dashboard-panel" id={addressOnly ? 'account-address' : 'account-profile'} aria-labelledby={addressOnly ? 'address-title' : 'profile-title'}>
-    <div className="learner-dashboard-section-head"><div><span className="learner-dashboard-kicker">{addressOnly ? 'KHU VỰC CỦA BẠN' : 'HỒ SƠ TÀI KHOẢN'}</span><h2 id={addressOnly ? 'address-title' : 'profile-title'}>{addressOnly ? <MapPin size={21} /> : <UserRound size={21} />}{addressOnly ? 'Địa chỉ đang sinh sống' : 'Thông tin cá nhân'}</h2></div>
+    <div className="learner-dashboard-section-head"><div><h2 id={addressOnly ? 'address-title' : 'profile-title'}>{addressOnly ? <MapPin size={21} /> : <UserRound size={21} />}{addressOnly ? 'Địa chỉ đang sinh sống' : 'Thông tin cá nhân'}</h2></div>
       {!editing && <Button variant="secondary" size="sm" onClick={startEdit}><Pencil size={16} />{addressOnly ? 'Sửa địa chỉ' : 'Chỉnh sửa'}</Button>}</div>
     {editing ? <form onSubmit={submit} noValidate className="learner-dashboard-form">
       {addressOnly ? <label>Địa chỉ đang sinh sống *<textarea autoFocus autoComplete="street-address" rows={3} maxLength={400} value={draft.address} onChange={(e) => change('address', e.target.value)} placeholder="Số nhà, đường, phường/xã, tỉnh/thành phố" /></label> : <div className="learner-dashboard-field-grid">

@@ -1,0 +1,619 @@
+/* ==========================================================================
+   Learner Messages App — Full-bleed Workspace with Unified Centered Header
+   ========================================================================== */
+
+/* Hủy bỏ khoảng trống giữ chỗ thanh cuộn để khung chat bung full 100% không còn rãnh thừa */
+html:has(.learner-messages-view),
+body:has(.learner-messages-view) {
+  scrollbar-gutter: auto !important;
+  overflow: hidden !important;
+}
+
+.public-page.learner-messages-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.learner-messages-main--fullbleed {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-top: 0 !important; /* Xóa border-top để tiếp giáp mượt với dải gradient của header */
+}
+
+.learner-messages-card--fullbleed {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   Cột trái: Danh sách cuộc hội thoại (Sidebar)
+   ========================================================================== */
+.learner-msg-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+/* Khối cố định ở trên đỉnh cột trái: Tiêu đề + Nút lọc + Thanh tìm kiếm */
+.learner-msg-sidebar__fixed-top {
+  flex: none;
+  padding: 16px 18px 14px;
+  background:
+    radial-gradient(circle at 88% 20%, rgb(99 102 241 / 10%), transparent 38%),
+    radial-gradient(circle at 12% 80%, rgb(59 130 246 / 8%), transparent 42%),
+    linear-gradient(135deg, #f8faff 0%, #eef2ff 55%, #f0f9ff 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.learner-msg-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.learner-msg-sidebar__header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.learner-msg-unread-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.learner-msg-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.learner-msg-filters button {
+  padding: 5px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.learner-msg-filters button:hover {
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.learner-msg-filters button.is-active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgb(37 99 235 / 20%);
+}
+
+.learner-msg-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  transition: all var(--motion-fast);
+}
+
+.learner-msg-search-box:focus-within {
+  background: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+.public-page.learner-messages-view .learner-msg-search-box input,
+.learner-msg-search-box input {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #0f172a !important;
+  font: inherit !important;
+  font-size: 0.86rem !important;
+  line-height: 38px !important;
+  outline: none !important;
+}
+
+.learner-msg-search-box input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Danh sách hội thoại cuộn độc lập */
+.learner-msg-conversation-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0;
+}
+
+.learner-msg-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--motion-fast);
+}
+
+.learner-msg-item:hover {
+  background: #f8fafc;
+}
+
+.learner-msg-item.is-active {
+  background: #edf4ff;
+}
+
+.learner-msg-item.is-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: #2563eb;
+}
+
+.learner-msg-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.learner-msg-avatar--blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.learner-msg-avatar--purple {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.learner-msg-avatar--green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.learner-msg-avatar--orange {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.learner-msg-item__info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.learner-msg-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.learner-msg-item__name {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.learner-msg-item__time {
+  flex-shrink: 0;
+  color: #94a3b8;
+  font-size: 0.72rem;
+}
+
+.learner-msg-item__subject {
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.learner-msg-item__snippet {
+  margin: 0;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.learner-msg-unread-dot {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.learner-msg-empty-list {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   Cột phải: Khung trò chuyện (Chat Pane)
+   ========================================================================== */
+.learner-msg-chat-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* Header cố định ở trên của khung chat */
+.learner-msg-chat-header {
+  flex: none;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background:
+    radial-gradient(circle at 88% 20%, rgb(99 102 241 / 10%), transparent 38%),
+    radial-gradient(circle at 12% 80%, rgb(59 130 246 / 8%), transparent 42%),
+    linear-gradient(135deg, #f8faff 0%, #eef2ff 55%, #f0f9ff 100%);
+  z-index: 2;
+}
+
+.learner-msg-back-btn {
+  display: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.learner-msg-chat-header__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.learner-msg-chat-header__info h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.learner-msg-chat-header__info p {
+  margin: 2px 0 0;
+  color: #64748b;
+  font-size: 0.76rem;
+}
+
+.learner-msg-profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--motion-fast);
+}
+
+.learner-msg-profile-link:hover {
+  background: #dbeafe;
+  text-decoration: none;
+}
+
+.learner-msg-notice-bar {
+  flex: none;
+  padding: 8px 20px;
+  background: #eff6ff;
+  border-bottom: 1px solid #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Vùng hiển thị tin nhắn cuộn độc lập */
+.learner-msg-messages-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 24px;
+  background: #f8faff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learner-msg-date-divider {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.learner-msg-date-divider span {
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.learner-msg-row {
+  display: flex;
+  width: 100%;
+}
+
+.learner-msg-row--me {
+  justify-content: flex-end;
+}
+
+.learner-msg-row--them {
+  justify-content: flex-start;
+}
+
+.learner-msg-bubble {
+  max-width: min(75%, 460px);
+  padding: 10px 14px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px 16px 16px 4px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 4%);
+}
+
+.learner-msg-row--me .learner-msg-bubble {
+  border-color: #2563eb;
+  border-radius: 16px 16px 4px 16px;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.learner-msg-bubble p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.learner-msg-bubble__time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 0.7rem;
+}
+
+.learner-msg-row--me .learner-msg-bubble__time {
+  color: #bfdbfe;
+}
+
+/* Thanh nhập tin nhắn cố định ở đáy */
+.learner-msg-composer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  z-index: 2;
+}
+
+.learner-msg-composer input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  outline: 0;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.86rem;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.learner-msg-composer input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+.learner-msg-composer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 11px;
+  background: #2563eb;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--motion-fast);
+}
+
+.learner-msg-composer button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.learner-msg-composer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.learner-msg-no-chat {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  height: 100%;
+  padding: 30px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.learner-msg-no-chat h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.learner-msg-no-chat p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+/* ==========================================================================
+   Responsive Mobile
+   ========================================================================== */
+@media (max-width: 768px) {
+  .learner-messages-main,
+  .learner-messages-main--fullbleed {
+    padding-block: 0;
+  }
+
+  .learner-messages-card,
+  .learner-messages-card--fullbleed {
+    display: block;
+    border-radius: 0;
+  }
+
+  .learner-msg-sidebar,
+  .learner-msg-chat-pane {
+    width: 100%;
+    height: 100%;
+  }
+
+  .learner-messages-card.is-chat-open .learner-msg-sidebar,
+  .learner-messages-card--fullbleed.is-chat-open .learner-msg-sidebar {
+    display: none;
+  }
+
+  .learner-messages-card:not(.is-chat-open) .learner-msg-chat-pane,
+  .learner-messages-card--fullbleed:not(.is-chat-open) .learner-msg-chat-pane {
+    display: none;
+  }
+
+  .learner-msg-back-btn {
+    display: grid;
+  }
+
+  .learner-msg-chat-header {
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .learner-msg-messages-scroll {
+    padding: 14px;
+  }
+
+  .learner-msg-composer {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .learner-msg-composer button {
+    padding: 10px 14px;
+  }
+}

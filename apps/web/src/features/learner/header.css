@@ -23,7 +23,7 @@
   background: transparent;
   color: var(--learner-header-text);
   font-size: var(--text-compact);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.4;
   transition: color var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast);
 }
@@ -47,6 +47,88 @@
 .learner-app-header--compact.public-header { height: 72px; border-radius: 0; }
 .learner-app-header--compact .public-header__inner { width: min(1200px, calc(100% - 2 * var(--page-padding))); padding: 0; }
 .learner-app-header--compact .public-header__actions > * { box-shadow: none; }
+
+/* Trang tin nhắn: bù trừ đúng khoảng scrollbar để Header căn giữa chính xác từng pixel như các trang có thanh cuộn */
+.learner-app-header--messages.public-header {
+  padding-right: var(--app-scrollbar-width, 17px) !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 900px) {
+  .learner-app-header--messages.public-header {
+    padding-right: 0 !important;
+  }
+}
+
+.learner-app-header .public-header__actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.learner-app-header .public-header__actions > .learner-header-msg-btn {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  max-width: 40px !important;
+  max-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--learner-header-border, #cbdcf6) !important;
+  border-radius: var(--learner-header-radius, 11px) !important;
+  background: #ffffff !important;
+  color: var(--learner-header-text, #33415c) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+  transition: background-color var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast) !important;
+}
+
+.learner-app-header .public-header__actions > .learner-header-msg-btn:hover {
+  background: var(--learner-header-hover-bg, #f3f7ff) !important;
+  color: var(--learner-header-active-text, #153f91) !important;
+  border-color: var(--learner-header-border, #cbdcf6) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.learner-app-header .public-header__actions > .learner-header-msg-btn.is-active {
+  background: var(--learner-header-active-bg, #eaf1ff) !important;
+  color: var(--learner-header-active-text, #153f91) !important;
+  border-color: var(--learner-header-border, #cbdcf6) !important;
+}
+
+.learner-app-header .public-header__actions > .learner-header-msg-btn:focus-visible {
+  outline: 2px solid var(--learner-header-focus, #184aae) !important;
+  outline-offset: 2px !important;
+}
+
+.learner-header-msg-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+  border: 2px solid #ffffff;
+}
 
 @media (max-width: 900px) {
   .learner-app-header { --learner-header-control-height: 44px; }

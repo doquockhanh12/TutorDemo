@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import LearnerSearch from './features/learner/LearnerSearch.jsx';
 import LearnerDashboard from './features/learner/LearnerDashboard.jsx';
+import LearnerSchedulePage from './features/learner/LearnerSchedulePage.jsx';
+import LearnerClassesPage, { LearnerClassDetailPage } from './features/learner/LearnerClassesPage.jsx';
 import TutorDashboard from './features/tutor/TutorDashboard.jsx';
 import TutorClassMap from './features/tutor/TutorClassMap.jsx';
 import TutorClassSearch from './features/tutor/TutorClassSearch.jsx';
@@ -17,6 +19,8 @@ import TutorLanding from './features/public/TutorLanding.jsx';
 import { MyRequests, NewRequest, RequestDetail } from './features/learner/LearnerPages.jsx';
 import LearnerMapPage from './features/learner/LearnerMapPage.jsx';
 import TutorProfilePage from './features/learner/TutorProfilePage.jsx';
+import LearnerMessages from './features/learner/LearnerMessages.jsx';
+import { LearnerMessagesProvider } from './features/learner/LearnerMessagesState.jsx';
 import { TutorProfile, TutorRequestDetail, TutorRequests } from './features/tutor/TutorPages.jsx';
 import TutorTimetable from './features/tutor/TutorTimetable.jsx';
 import TutorIncome from './features/tutor/TutorIncome.jsx';
@@ -28,11 +32,17 @@ import { ProtectedRoute } from './features/auth/AuthNavigation.jsx';
 function Protected({ role, children }) { return <ProtectedRoute role={role}>{children}</ProtectedRoute>; }
 
 export default function App() {
-  return <TutorWorkspaceProvider><Routes>
+  return <TutorWorkspaceProvider><LearnerMessagesProvider><Routes>
     <Route path="/" element={<HomePage />} /><Route path="/learner" element={<LearnerLanding />} /><Route path="/tutor" element={<TutorLanding />} />
     <Route path="/login" element={<LoginPage />} /><Route path="/register" element={<RegistrationPage role="learner" />} /><Route path="/tutor/register" element={<RegistrationPage role="tutor" />} />
     <Route path="/learner/search" element={<Protected role="learner"><LearnerSearch /></Protected>} />
+    <Route path="/learner/classes" element={<Protected role="learner"><LearnerClassesPage /></Protected>} />
+    <Route path="/learner/classes/:id" element={<Protected role="learner"><LearnerClassDetailPage /></Protected>} />
+    <Route path="/learner/classes/:id/:section" element={<Protected role="learner"><LearnerClassDetailPage /></Protected>} />
     <Route path="/map" element={<Protected role="learner"><LearnerMapPage /></Protected>} />
+    <Route path="/learner/map" element={<Protected role="learner"><LearnerMapPage /></Protected>} />
+    <Route path="/learner/schedule" element={<Protected role="learner"><LearnerSchedulePage /></Protected>} />
+    <Route path="/learner/messages" element={<Protected role="learner"><LearnerMessages /></Protected>} />
     <Route path="/learner/dashboard" element={<Protected role="learner"><LearnerDashboard /></Protected>} />
     <Route path="/tutor/timetable" element={<Protected role="tutor"><TutorTimetable /></Protected>} />
     <Route path="/tutor/income" element={<Protected role="tutor"><TutorIncome /></Protected>} />
@@ -49,5 +59,5 @@ export default function App() {
     <Route path="/admin/appeals" element={<Protected role="admin"><AdminAppealsPage /></Protected>} />
     <Route path="/appeals" element={<UserAppealsPage />} />
     <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes></TutorWorkspaceProvider>;
+  </Routes></LearnerMessagesProvider></TutorWorkspaceProvider>;
 }

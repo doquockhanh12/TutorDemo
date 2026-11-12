@@ -98,7 +98,6 @@ export default function BookingModal({ tutor, open, onClose }) {
     >
       <div className="booking-modal__header">
         <div className="booking-modal__header-copy">
-          <span className="eyebrow">ĐẶT LỊCH HỌC</span>
           <h2 id="booking-modal-title">Đặt lịch với {tutor.name}</h2>
           <p>Chọn thông tin buổi học phù hợp với bạn.</p>
         </div>

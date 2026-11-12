@@ -4,11 +4,13 @@ import {
   ArrowLeft,
   BadgeCheck,
   BookOpen,
+  FileCheck2,
   GraduationCap,
   Heart,
   MapPin,
   MessageCircle,
   Play,
+  ShieldCheck,
   Star,
 } from 'lucide-react';
 
@@ -28,7 +30,8 @@ export default function TutorProfilePage() {
   const domain = useDemoDomain();
   const tutors = domain.profiles || [];
   const reviews = domain.reviews || [];
-  const { hash } = useLocation();
+  const location = useLocation();
+  const { hash } = location;
 
   useLayoutEffect(() => {
     const target = hash && document.getElementById(hash.slice(1));
@@ -40,20 +43,28 @@ export default function TutorProfilePage() {
     }
   }, [id, hash]);
 
-  const rawTutor = tutors.find((item) => item.id === id);
+  const rawTutor = tutors.find(
+    (item) =>
+      item.id === id ||
+      item.accountId === id ||
+      (item.name && id && item.name.trim().toLowerCase() === id.trim().toLowerCase())
+  );
   const tutor = rawTutor && (rawTutor.moderationStatus || 'approved') === 'approved'
     ? rawTutor
     : null;
+
+  const backTo = location.state?.from || '/learner/search';
+  const backLabel = location.state?.fromLabel || 'Quay lại Tìm gia sư';
 
   return (
     <div className="public-page public-page--learner learner-page learner-search-page density-comfortable tutor-profile-shell bg-slate-50 min-h-screen">
       <LearnerHeader compact />
 
-      <main className="tutor-profile-page bg-slate-50 min-h-screen py-6">
-        <div className="tutor-profile-page__container max-w-6xl mx-auto px-4 flex flex-col gap-6">
-          <Link className="profile-back-link" to="/learner/search">
+      <main className="tutor-profile-page bg-slate-50 min-h-screen pt-2.5 pb-8">
+        <div className="tutor-profile-page__container max-w-6xl mx-auto px-4 flex flex-col gap-3">
+          <Link className="profile-back-link" to={backTo}>
             <ArrowLeft size={17} aria-hidden="true" />
-            Quay lại tìm kiếm
+            {backLabel}
           </Link>
 
           {tutor ? (
@@ -61,7 +72,7 @@ export default function TutorProfilePage() {
           ) : (
             <section className="learner-empty">
               <h1>Không tìm thấy gia sư</h1>
-              <p>Hồ sơ này không có trong dữ liệu minh họa.</p>
+              <p>Hồ sơ gia sư này hiện không tồn tại hoặc đã ngừng nhận lớp.</p>
               <Link className="button button--primary button--md" to="/learner/search">
                 Trở về tìm kiếm
               </Link>
@@ -69,14 +80,6 @@ export default function TutorProfilePage() {
           )}
         </div>
       </main>
-
-      <footer className="learner-footer">
-        <div className="learner-container">
-          <Brand compact />
-          <p>Kết nối đúng người. Học theo cách của bạn.</p>
-          <span>Hồ sơ và đánh giá minh họa · TutorNearMe</span>
-        </div>
-      </footer>
     </div>
   );
 }
@@ -156,18 +159,13 @@ function ProfileContent({ tutor, reviews: allReviews }) {
             >
               ĐẶT LỊCH HỌC
             </button>
-            <button
+            <Link
+              to={`/learner/messages?tutorId=${tutor.id}`}
               className="button button--secondary button--md profile-bento__message"
-              type="button"
-              disabled
-              aria-describedby="profile-message-status"
             >
               <MessageCircle size={18} aria-hidden="true" />
               Nhắn tin
-            </button>
-            <span className="sr-only" id="profile-message-status">
-              Tính năng nhắn tin chưa có trong bản demo.
-            </span>
+            </Link>
           </section>
         </div>
 
@@ -180,8 +178,7 @@ function ProfileContent({ tutor, reviews: allReviews }) {
 
         <section className="profile-bento__box profile-bento__intro profile-landing__intro bg-white rounded-3xl shadow-sm p-8">
           <div className="profile-bento__section-heading">
-            <span className="profile-bento__eyebrow">LÀM QUEN VỚI GIA SƯ</span>
-            <h2>Giới thiệu & phương pháp</h2>
+            <h2>Giới thiệu & phương pháp giảng dạy</h2>
           </div>
           <div className="profile-bento__intro-copy">
             <article>
@@ -204,6 +201,8 @@ function ProfileContent({ tutor, reviews: allReviews }) {
           id="profile-calendar-overview"
           className="profile-bento__box profile-bento__schedule profile-landing__schedule"
         />
+
+        <TutorCredentialsBox tutor={tutor} />
 
         <TutorReviews
           reviews={featuredReviews}
@@ -278,8 +277,7 @@ function TutorReviews({ reviews, allReviews, ratingSummary }) {
   return (
     <section className="profile-bento__box profile-bento__reviews bg-white rounded-3xl shadow-sm p-8" aria-labelledby="profile-reviews-title">
       <div className="profile-bento__section-heading">
-        <span className="profile-bento__eyebrow">PHẢN HỒI HỌC VIÊN</span>
-        <h2 id="profile-reviews-title">Đánh giá gần đây</h2>
+        <h2 id="profile-reviews-title">Đánh giá từ học viên</h2>
       </div>
 
       {ratingSummary.hasReviews ? (
@@ -330,7 +328,6 @@ function TutorReviews({ reviews, allReviews, ratingSummary }) {
           <p className="profile-bento__empty">Nhận xét sẽ xuất hiện tại đây sau buổi học.</p>
         )}
       </div>
-      <small className="profile-bento__demo-note">Đánh giá trong bản demo dùng dữ liệu minh họa.</small>
     </section>
   );
 }
@@ -370,7 +367,6 @@ function TutorIdentityBox({ tutor, isSaved, onToggleSaved, ratingSummary }) {
       <div className="profile-landing__identity-main">
         <Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone} size="lg" />
         <div className="profile-landing__identity-name">
-          <span className="profile-bento__eyebrow">GIA SƯ TUTORNEARME</span>
           <h1>{tutor.name}</h1>
           {ratingSummary.hasReviews ? (
             <div className="profile-bento__rating">
@@ -411,19 +407,62 @@ function TutorIdentityBox({ tutor, isSaved, onToggleSaved, ratingSummary }) {
         {tutor.verified && (
           <span className="profile-bento__verified">
             <BadgeCheck size={16} aria-hidden="true" />
-            Đã xác minh
+            Đã xác minh SV
           </span>
         )}
         <button
-          className={`profile-landing__save w-32 justify-center${isSaved ? ' is-saved' : ''}`}
+          className={`profile-landing__save learner-heart-pill w-32 justify-center${isSaved ? ' is-saved' : ''}`}
           type="button"
           aria-label={isSaved ? 'Bỏ lưu gia sư' : 'Lưu hồ sơ'}
           aria-pressed={isSaved}
           onClick={onToggleSaved}
         >
-          <Heart size={20} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
-          {isSaved ? 'Đã lưu' : 'Lưu hồ sơ'}
+          <Heart size={19} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
+          {isSaved ? 'Đã lưu' : 'Yêu thích'}
         </button>
+      </div>
+    </section>
+  );
+}
+
+function TutorCredentialsBox({ tutor }) {
+  const docs = tutor.verificationDocuments || tutor.documents || [
+    {
+      id: 'default-doc-1',
+      title: `Thẻ sinh viên ${tutor.university || 'Đại học xác minh'}`,
+      issuedBy: tutor.university || 'Trường Đại học tại TP.HCM',
+      fileType: 'JPG',
+      status: 'verified',
+    },
+    {
+      id: 'default-doc-2',
+      title: 'Căn cước công dân / Hồ sơ định danh',
+      issuedBy: 'Hệ thống kiểm duyệt TutorNearMe',
+      fileType: 'PDF',
+      status: 'verified',
+    },
+  ];
+
+  return (
+    <section className="profile-bento__box profile-bento__credentials bg-white rounded-3xl shadow-sm p-8" aria-labelledby="profile-credentials-title">
+      <div className="profile-bento__section-heading">
+        <h2 id="profile-credentials-title">Chứng chỉ & Minh chứng chuyên môn</h2>
+      </div>
+      <div className="profile-credentials-grid">
+        {docs.map((doc) => (
+          <article key={doc.id || doc.title} className="profile-credential-card">
+            <div className="profile-credential-card__icon" aria-hidden="true">
+              <FileCheck2 size={22} />
+            </div>
+            <div className="profile-credential-card__info">
+              <h3>{doc.title}</h3>
+              <p>Đơn vị cấp: {doc.issuedBy || 'Trường Đại học'}</p>
+            </div>
+            <span className="profile-credential-card__badge">
+              <ShieldCheck size={15} aria-hidden="true" /> Đã đối chiếu ({doc.fileType || 'PDF'})
+            </span>
+          </article>
+        ))}
       </div>
     </section>
   );

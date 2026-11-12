@@ -1,5 +1,18 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Banknote, MapPin, Search, SlidersHorizontal, Sparkles, Star, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Banknote,
+  BookOpen,
+  CalendarCheck2,
+  MapPin,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
+  Star,
+  X,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Brand from '../../components/Brand.jsx';
 import Button from '../../components/Button.jsx';
@@ -28,6 +41,11 @@ export default function LearnerSearch() {
     { label: 'Đánh giá cao nhất', value: 'rating', icon: Star },
     { label: 'Học phí thấp nhất', value: 'price', icon: Banknote },
   ];
+  const quickSubjects = useMemo(
+    () => [...new Set(tutors.flatMap((tutor) => tutor.subjects))].slice(0, 6),
+    [tutors]
+  );
+
   const [query, setQuery] = useState('');
   const [subject, setSubject] = useState('');
   const [location, setLocation] = useState('');
@@ -87,17 +105,77 @@ export default function LearnerSearch() {
       <main>
         <section className="learner-search-hero" aria-labelledby="learner-search-title">
           <div className="learner-container">
-            <span className="eyebrow">GIA SƯ GẦN BẠN</span>
-            <h1 id="learner-search-title">Tìm gia sư phù hợp với bạn</h1>
-            <p>Khám phá gia sư theo môn học, khu vực, lịch rảnh và mức học phí mong muốn.</p>
+            <div className="learner-search-hero__grid">
+              <div className="learner-search-hero__copy">
+                <h1 id="learner-search-title">Tìm gia sư sinh viên phù hợp nhất với bạn</h1>
+                <p>Khám phá đội ngũ gia sư sinh viên đã xác minh theo môn học, khu vực, khung giờ rảnh và mức học phí minh bạch.</p>
+                <div className="learner-search-trust-pills" aria-label="Cam kết nền tảng">
+                  <span><BadgeCheck size={16} aria-hidden="true" /> 100% Xác minh thẻ SV</span>
+                  <span><CalendarCheck2 size={16} aria-hidden="true" /> Đặt lịch theo ca rảnh thực tế</span>
+                  <span><ShieldCheck size={16} aria-hidden="true" /> Học phí minh bạch, không phụ phí</span>
+                </div>
+              </div>
+              <aside className="learner-search-hero__spotlight" aria-label="Thống kê nhanh">
+                <div className="learner-spotlight-card">
+                  <div className="learner-spotlight-card__head">
+                    <Sparkles size={18} aria-hidden="true" />
+                    <span>Kết nối nhanh trong khu vực</span>
+                  </div>
+                  <div className="learner-spotlight-card__stats">
+                    <div>
+                      <strong>{tutors.length}+</strong>
+                      <small>Gia sư sẵn sàng</small>
+                    </div>
+                    <div>
+                      <strong>4.9 ★</strong>
+                      <small>Đánh giá học viên</small>
+                    </div>
+                    <div>
+                      <strong>150k+</strong>
+                      <small>Học phí / buổi</small>
+                    </div>
+                  </div>
+                  <div className="learner-spotlight-card__actions">
+                    <Link to="/map" className="learner-spotlight-link">
+                      <MapPin size={15} aria-hidden="true" /> Khám phá trên bản đồ
+                    </Link>
+                    <Link to="/learner/classes" className="learner-spotlight-link learner-spotlight-link--secondary">
+                      <BookOpen size={15} aria-hidden="true" /> Lớp học của tôi
+                    </Link>
+                  </div>
+                </div>
+              </aside>
+            </div>
+
             <form className="learner-search-form" role="search" aria-label="Tìm gia sư" onSubmit={showResults}>
               <label className="sr-only" htmlFor="tutor-search">Tên hoặc từ khóa</label>
-              <SearchInput id="tutor-search" value={query} onChange={setQuery} placeholder="Tìm theo tên, môn học hoặc khu vực..." />
+              <SearchInput id="tutor-search" value={query} onChange={setQuery} placeholder="Tìm theo tên gia sư, trường đại học, môn học hoặc khu vực..." />
               <Button type="submit"><Search size={18} aria-hidden="true" /> Tìm gia sư</Button>
               <Button variant="secondary" className="learner-search-filter-toggle" aria-haspopup="dialog" aria-expanded={filtersOpen} aria-controls="search-filters" onClick={() => setFiltersOpen(true)}>
                 <SlidersHorizontal size={18} aria-hidden="true" /> Bộ lọc{activeFilterCount > 0 && ` (${activeFilterCount})`}
               </Button>
             </form>
+
+            <div className="learner-quick-subjects" aria-label="Chọn nhanh môn học phổ biến">
+              <span className="learner-quick-subjects__label">Môn phổ biến:</span>
+              <button
+                type="button"
+                className={`learner-subject-chip ${!subject ? 'is-active' : ''}`}
+                onClick={() => setSubject('')}
+              >
+                Tất cả
+              </button>
+              {quickSubjects.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`learner-subject-chip ${subject === item ? 'is-active' : ''}`}
+                  onClick={() => setSubject(subject === item ? '' : item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -127,7 +205,7 @@ export default function LearnerSearch() {
             </div>
             <div className="learner-results__actions flex items-center gap-4">
               <Link className="learner-search-map-link" to="/map">
-                <MapPin size={17} aria-hidden="true" /> Xem bản đồ
+                <MapPin size={17} aria-hidden="true" /> Xem bản đồ khu vực
               </Link>
               <div className="learner-sort-control flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg bg-white shadow-sm">
                 <QuickFilter
@@ -140,6 +218,38 @@ export default function LearnerSearch() {
               </div>
             </div>
           </div>
+
+          {(subject || location || availability || maxPrice !== 'all' || query) && (
+            <div className="learner-active-filters" aria-label="Tiêu chí đang lọc">
+              <span>Đang lọc theo:</span>
+              {query && (
+                <button type="button" className="learner-filter-tag" onClick={() => setQuery('')}>
+                  Từ khóa: “{query}” <X size={14} aria-hidden="true" />
+                </button>
+              )}
+              {subject && (
+                <button type="button" className="learner-filter-tag" onClick={() => setSubject('')}>
+                  Môn: {subject} <X size={14} aria-hidden="true" />
+                </button>
+              )}
+              {location && (
+                <button type="button" className="learner-filter-tag" onClick={() => setLocation('')}>
+                  Khu vực: {location} <X size={14} aria-hidden="true" />
+                </button>
+              )}
+              {availability && (
+                <button type="button" className="learner-filter-tag" onClick={() => setAvailability('')}>
+                  Khung giờ: {availability} <X size={14} aria-hidden="true" />
+                </button>
+              )}
+              {maxPrice !== 'all' && (
+                <button type="button" className="learner-filter-tag" onClick={() => setMaxPrice('all')}>
+                  Tối đa {Number(maxPrice).toLocaleString('vi-VN')}đ <X size={14} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          )}
+
           {results.length ? (
             <div className="tutor-results-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {results.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} saved={savedIds.includes(tutor.id)} onSave={toggleSave} />)}
@@ -155,7 +265,6 @@ export default function LearnerSearch() {
         </section>
       </main>
 
-      <footer className="learner-footer"><div className="learner-container"><Brand compact /><p>Kết nối đúng người. Học theo cách của bạn.</p><span>Giao diện mẫu · TutorNearMe</span></div></footer>
       {filtersOpen && <div className="learner-search-scrim" onClick={() => setFiltersOpen(false)} aria-hidden="true" />}
     </div>
   );
