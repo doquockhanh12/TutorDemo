@@ -1,5 +1,190 @@
 # Frontend Regression Notes
 
+## Wallet linking coming-soon UI — latest 2026-11-15
+
+Supersedes the live bank-link UI described below. LearnerWalletPage no longer imports/renders provider selection or bank-link confirmation, including from the old bankLink query. Tài khoản liên kết always shows Chưa liên kết and the existing secondary Liên kết tài khoản button; clicking shows the exact requested sentence as role=status with existing learner-wallet-note styling. New nạp/rút attempts without eligible recipients use that same notice. Persisted wallet data/services remain untouched; existing recipient financial flows remain functional.
+
+Build passed. Existing wallet financial E2E at 1440/390 and protected-route/legacy redirect tests passed with persisted recipients; replacement coming-soon test passed at 1440/390/320, including no provider choices/dialog, no link session storage mutations, and old query bypass prevention. Desktop/mobile screenshots visually reviewed. Earlier provider-confirmation E2E assertions were replaced because that UI is no longer exposed; service tests retained.
+
+## Learner wallet linking and natural labels — 2026-11-15 (revised)
+
+Supersedes the UI/contract and tuition scope in the earlier wallet entry below. Route/menu remain `/learner/wallet` with existing protection, icon, placement, close and active treatment. Page now has Tài khoản liên kết, naturally worded Nạp tiền/Rút tiền/Mã QR and no Ví demo/QR demo/Mock/Mô phỏng/Dữ liệu mẫu labels. Small Kiểm thử trạng thái groups sit at the end of dialogs, separate from primary actions. History lists nạp/rút only, with code/time/amount/status and masked account details. Tuition remains deferred; preexisting records are not deleted from storage.
+
+Provider options and masked fixtures live in data/walletDemo.js. Production-facing walletService has nine methods; simulateBankLink/TopUp/Withdrawal remain mock-only. MoMo fixture returns an internal confirmation URL (not a real app); bank fixtures return local QR data. UI renders returned url/qrPayload, polls link status, retries failed/expired sessions, and resumes original nạp/rút intent after successful linkage. Eligible recipient dropdown comes from service; requestWithdrawal now accepts `{amount, linkedAccountId}`. Service rejects foreign/ineligible recipients and maintains hold/refund/terminal idempotency. Existing wallets gain absent link collections without resetting funds/history.
+
+Verification: `node --test` 206 passed (11 wallet service cases), build passed with existing large-chunk warning. `E2E_BASE_URL=http://127.0.0.1:5174 npx playwright test tests/e2e/wallet.spec.js`: 5 passed. Full flows at 1440/390: menu route/active, link-first nạp then resume, +500000, withdraw 200000/hold/reload/success, overdraw rejected, withdraw 50000/failure/refund, topup expiry/recreate/failure, final 300000 persisted, read error/loading/retry. Two synchronous form submissions for both nạp and rút create exactly one transaction. All three providers tested with failure/expiry/retry/success, three recipients persisted, and URL confirmation at a second tab resumes original rút intent. Additional 1024/768/320px checks cover page overflow and dialog bounds. Desktop/mobile history, link QR and recipient dialogs visually reviewed. Browser page errors empty in full flows.
+
+No real partner authentication or payment backend added. API shapes, mocked confirmation URL, persistence limitations and files are documented in features/learner/WALLET.md.
+
+## Learner demo wallet — 2026-11-15
+
+Protected `/learner/wallet` replaces query-only wallet page; old query redirects. Existing avatar wallet row/icon/order retained and points to new route, closes menu and exposes active aria-current. Wallet async service is separate from JSX; mock defaults/labels in data/walletDemo.js, per-account localStorage and transitions in mockWalletService, integration facade in walletService. No real payment/backend or changes to teaching domain.
+
+Verification: `node --test` 202 passed including 7 new wallet service tests; `npm run build` passed (existing large-chunk warning remains); `E2E_BASE_URL=http://127.0.0.1:5174 npx playwright test tests/e2e/wallet.spec.js` 4 passed using installed Chrome. Full desktop/mobile flow: menu open/close/active, empty wallet, nạp 500000 via local QR, withdraw 200000, reject 500001, reserve/reload/settle, fail withdrawal 50000 and release hold, expired/failed topups without credit, history newest first, loading/error/retry, persisted total 300000. Service tests exercise concurrent repeated outcomes, insufficient available money after hold, independent accounts, invalid amounts, QR expiry clock and storage failures. Extra UI check shows tuition/lesson metadata only when supplied by source, with 1024/768/320px layout and modal bounds checks. Desktop/mobile history and QR screenshots visually reviewed; mobile rows reflow without page overflow. Browser page errors empty in full flows.
+
+Seed is 0 VND and empty history, not fabricated historical payments. QR is locally encoded `TUTORNEARME-DEMO|...|NOT-A-REAL-PAYMENT`, contains no bank destination; manual simulation controls live in mock. Holds/settlement are frontend demo arithmetic only; future backend must own authorization, idempotency and payment state. API method contracts and integration limits documented in features/learner/WALLET.md.
+
+## Learner message action label — 2026-11-15
+
+LearnerHeader's existing /learner/messages link now contains the chat icon followed by “Tin nhắn”, with intrinsic width, 7px gap and non-shrinking icon/control. Existing border/radius, 40px height, unread badge, accessible unread label, route and active behavior are retained. At <=480px the Learner header uses two rows (112px total): brand/menu above, message/account actions below, with mobile navigation offset aligned to 112px. This keeps the full label visible without overlapping the account control. Other role/public headers are unchanged.
+
+Browser checks passed icon/text bounds and center hit targets at 1440/1024/768/480/390/320px, mobile menu position and chat navigation/active. Search and messages mobile screenshots reviewed; build passed.
+
+## Request report neutral styling — 2026-11-15
+
+User requested the request-detail report button match the profile's quieter gray treatment. Its existing outlined control now uses --text-muted/--color-border on white, with --text-primary/--color-border-strong hover. Position, sizing, status availability and form/payload are unchanged. Completed/pending desktop/mobile placement, gray colors and exact dialog identity E2E passed; desktop screenshot reviewed; build passed. Supersedes earlier red styling notes.
+
+## Profile report moved into identity actions — 2026-11-15
+
+Supersedes the previous profile price-card placement: the profile identity card keeps verification on its own upper row; favorite and the single report button share a lower, right-aligned flex-wrap row. Both controls are 44px high, content width; profile report is dark gray on white with a light-gray border. Price card contains booking/message only. Profile-scoped CSS handles this treatment; request-detail report remains red and keeps its current location. Shared form/domain/persistence are unchanged.
+
+Build and six report E2E cases pass. Profile placement/geometry/identity checked at 1440/1024/390/320px, badge above buttons, equal heights, desktop same row, no page overflow, exact Tutor name in the existing form. Screenshots reviewed desktop/mobile. Existing completed/pending request placement and report flow regressions also pass.
+
+## Report button visibility on profile and request detail — 2026-11-15
+
+Profile now has its sole report button inside the price/booking card immediately below Nhắn tin, matching its full width; removed from the identity/favorite group. Request detail retains its one report action to the right of Xem hồ sơ gia sư, stacked on mobile, for pending and completed. Both opt into the same outlined style using existing --color-danger / --color-danger-bg tokens (the root muted danger palette), preserving Đặt lịch học as the primary CTA. No form/domain/mock/route/review/priority changes.
+
+Six report E2E tests pass, including profile placement and equal widths at 1440/390/320px, default danger text/border, one trigger, booking primary treatment, completed/pending request geometry and exact form identities, plus existing send/reload/Admin/error-retry cases. Build passed; desktop/mobile screenshots reviewed.
+
+## Request-detail report action placement — 2026-11-15
+
+Moved the single existing report action from the Tutor-name row to an outlined button immediately right of “Xem hồ sơ gia sư” in the left Tutor card. Actions stack at narrow mobile widths. No new status gating: completion remains request.completed from the existing Lesson/legacy selector, so pending and completed both retain the same report form and exact tutorId/requestId. Missing-profile case still keeps the request target ID. Profile-page report placement and submission/domain flow are unchanged.
+
+Build and all five tutor-report E2E tests pass. New geometry/identity test opens completed demo-03 (Phạm Hà Linh, #YC-1003) and pending demo-01 (Nguyễn Mai Anh, #YC-1001), checks one report button, desktop side-by-side/mobile stacked actions, exact form identity and cancel. Desktop/mobile screenshots visually reviewed. Existing send/persist/Admin, quota retry, request priority/review and missing-profile tests also pass.
+
+## Learner tutor reports — 2026-11-15
+
+- Shared `TutorReportForm.jsx` opens inline via a portal from profile (under favorite, right aligned) and request detail (alongside Tutor name in the left card). Uses existing focus-trap/Escape/restore-focus hook and shared Button; 44px targets and internally scrollable dialog on mobile. No new routes or fixture changes. MyRequests priority/filter/count/action treatments and the review form remain intact.
+- `domain/tutorReports.js` validates learner ownership, exact request/tutor association, mandatory reason and Other description. Five profile reasons plus three request-only reasons; optional image evidence reuses existing file/total size limits and evidence validation. PNG/JPEG/WebP only, max 3, 500 KB each / 1 MB total. Missing profile retains the request's tutor ID, never the first profile.
+- Context action adds a new record to existing shared issues and confirms success only after localStorage write. Failure does not update state or dismiss/reset the form; reason, description and images remain available for retry. Admin selector/drawer expose reporter, target, reason, description, requestId and actual image data. Reporting itself does not warn, suspend or alter requests/reviews.
+- Build and 195 unit tests pass. Four report E2E tests pass: both entry points, pending/completed, required reason/Other validation, image format rejection, quota failure/retry with draft retention, reload and Admin identity/evidence, missing profile, Escape/focus return, 320/390px dialog geometry, preserved request list order/counts/primary action and review section. Desktop/mobile screenshots visually reviewed.
+- Additional existing Admin regression suite: 16 pass; one existing Learner appeal-entry test cannot find the Kháng cáo link on the current Dashboard. Existing account-menu suite: 9 fail against current expanded menu/long-username geometry (tests expect the old four-item menu). These current-code discrepancies are outside this report feature; menu, Dashboard and legacy tests were not changed.
+
+## Learner requests visual hierarchy (2026-11-14)
+
+Only MyRequests opts into `.learner-requests-view`; request detail and other roles/pages retain existing styles. Statistics keep their calculations/text but use quieter surfaces, smaller numbers and no shadow. Selected status tab has stronger weight/background/count; other tabs are muted. Subject/Tutor heading and status remain primary, secondary metadata/fee are subdued. “Chi tiết yêu cầu” is the primary card action; other links keep their URLs/state with secondary treatment and 44px targets.
+
+Display sorting is pending → accepted ongoing → completed → cancelled → remaining statuses, newest valid ISO createdAt first within each group, stable original order for undated ties. Sorting operates on a filtered copy, never domain state. Existing All excludes cancelled and counts are unchanged. Cancelled tab no longer truncates to one record. Unknown/rejected records and labels remain intact.
+
+Browser checks with isolated multi-status test storage verified all five tabs/counts, multiple cancelled records, timestamp ordering including invalid dates, unknown label, no records lost by sorting, unchanged domain storage and class/detail navigation. Screenshots reviewed desktop/mobile; no page overflow at 1440/1024/768/390/320px. Build passed. Fixture, services, Context and actions unchanged.
+
+## Immediate live-session demo (2026-11-14)
+
+User requested a session to test immediately: fixture `demo-live-session-2026-11-14`, existing demo-02/quoc-bao/demo-learner, confirmed 22:00–22:45 UTC+07 on November 14. Explicit note identifies this as an additional UI test session, separate from the six-session planned demo sequence. Added to the existing absolute-date seed collection so normal reconciliation loads it without resetting storage. No render-time time shifting, recurrence or completion. Live progress verified in the browser against the actual clock; 191 unit tests passed. After 22:45 this one-off session will no longer appear in the ongoing section. Existing class progress remains the six-session prototype display, not an attendance counter for this extra test.
+
+## Learner live session display (2026-11-14)
+
+User repurposed the removed status-check area as “Buổi học đang diễn ra”. It appears above the other session lists only for actual confirmed/upcoming Lessons with valid date/time and start <= current local time < end. Completed/cancelled/pending, undated schedules, invalid intervals and elapsed sessions are excluded. The existing one-second UI clock drives elapsed-duration percentage, elapsed minutes and remaining minutes; this measures scheduled time, not attendance or completion. End 24:00 resolves to midnight of the following day. At end the section disappears without changing persisted business status.
+
+Browser fixed-clock checks passed before start, at start (0%), midpoint (50%), per-second bar growth and exact end, with the existing November 21 seed lesson. Upcoming counts transition 4 → 3, history stays based on completed status and domain storage is unchanged. Class link preserved. Screenshots reviewed at 1440/390px; layout also checked at 320px. Production build passed.
+
+## Learner schedule overdue section removed — user request (2026-11-14)
+
+Supersedes the separate uncertain/past-session section described below: remove “Buổi học cần kiểm tra trạng thái” from the schedule page. Past non-completed or unknown-time Lessons remain in shared data and the dated week board, but do not appear in upcoming/history lists. No status conversion or deletion. Build and browser checks passed for four future sessions, then no future sessions after clock advancement, retained history and unchanged stored domain data; mobile screenshot reviewed.
+
+## Learner dated demo refresh (2026-11-14)
+
+- `demoReferenceData.js` adds six absolute dated Lessons to the existing `historicalLessons` seed collection, which is already reconciled by stable ID into shared state. All belong to existing class/request `demo-02`, learner `demo-learner`, tutor `quoc-bao`, subject Tiếng Anh, 09:00–09:45 Saturday, snapshot fee 220000. November 7/14 have explicit completed status/completedAt; November 21/28 and December 5/12 remain confirmed. Other existing history and operational templates are unchanged. These are fixed demo dates, not an evergreen or render-time recurrence.
+- Request demo-02's obsolete dated schedule label becomes “Thứ 7 · 09:00–09:45”. Existing reconciliation updates only that exact old label for the same request/learner/tutor; runtime schedule edits and same-ID Lesson edits win. No reset of localStorage, new store or schema change.
+- Tests cover 2/6 completion, future timestamps, matching identities/subject/duration/fee and idempotent old-state reconciliation preserving edits. Browser QA verifies four future sessions as of November 14, correct Saturday placement, empty later week, class/detail progress 33%, shared Tutor records and reload without duplicates. Build and unit suite pass. Existing class progress remains the prototype's current presentation logic; this refresh aligns its initial 2/6 state and does not redesign that logic.
+
+## Learner schedule — dated weeks and display status (2026-11-14)
+
+- `/learner/schedule` shows Monday–Sunday date columns with previous/next/current-week controls and today's indicator. Only owned, non-cancelled Lessons with matching concrete dates appear in the week; accepted Requests without linked Lessons remain separate undated class schedules. Removed the page's fabricated fallback Request; no provider, fixture or service changes.
+- Upcoming requires confirmed/upcoming status and a valid future local start timestamp, refreshed while the page stays open. History requires actual completed Lesson status. Past/started or unknown/incomplete records remain visible separately without writing status changes. Fixed schedules are never repeated into concrete Lessons.
+- Start time is emphasized over end time for upcoming sessions; fees are hidden and the existing class action reads “Vào lớp học”. New CSS opts in through `.learner-schedule-view`; seven columns scroll inside a keyboard-focusable region on narrow screens.
+- Verification: production build; Edge browser checks for month/year boundaries, current week/today, matching Lesson dates, unchanged domain storage after navigation/reload, class route/navigation state, future/past/missing date-time classification, and 1440/768/390/320px layout/internal scroll. Fresh canonical seed was checked separately from isolated persisted test scenarios using existing operational Lesson records. Screenshots reviewed on desktop/mobile. Fresh seed may contain no owned future dated Lessons; empty weeks/upcoming lists are expected and are not filled from recurring class text.
+
+## LACCOUNT-002 — Learner account identity accent (2026-10-10)
+
+### Scope and behavior
+
+Only two scoped rules in Learner `account-menu.css` change the UI. Account initials avatars (trigger and dropdown identity) use existing brand-primary #1346A0 with white text, contrast approximately 8.71:1. Trigger avatar remains circular and 28px. Trigger username retains real auth data and 14px size, with weight 700, brand-primary-deep #0A2E73 and -.01em tracking. Current minhanh trigger width does not increase (about 129.31px before / 129.30px after on desktop); target heights stay 40px desktop / 44px mobile/tablet. Navigation/header CSS, JSX, shared Avatar, menu items, auth/logout and data are untouched. Closed trigger remains transparent with no visible border; hover/open/focus states remain as in LHEADER-002.
+
+### Verification
+
+- Build passed; existing ~548 kB main JS chunk warning remains.
+- All nine `learner-account-menu.spec.js` cases passed via installed Edge and the existing ignored config: viewport geometry, keyboard/Tab/Escape, dismissal, routes/saved state/logout, parent identity and long username after reload.
+- Before/after browser comparison at 1440, 1366, 1024, 768, 390, 375 and 320px: no page overflow, unchanged header/main bounds and navigation styles, navigation geometry within 0.05px subpixel tolerance, trigger width no greater than before, heights and 28px avatar unchanged. Desktop/mobile hover and open states preserve trigger geometry; Escape returns focus. No permanent tests or dependencies added.
+- Visually reviewed before/after desktop, closed/hover/open desktop/mobile. Ignored artifacts: `apps/web/tmp/account-accent-*.png`, `account-accent-baseline.json` and `account-accent-results.json`.
+
+## LHEADER-002 — Balanced controls and a quiet closed account trigger (2026-10-10)
+
+### Scope and behavior
+
+Supersedes the visual sizing/state choices in LHEADER-001 following user review. Only Learner `header.css` and `account-menu.css` change in the UI. Shared control height is 40px above 900px, 44px in the existing mobile/tablet navigation mode; radius is 11px and the trigger avatar is 28px across viewports. Header heights and Search/hero/filter/card layouts remain unchanged. Desktop dropdown offsets compensate for the shorter trigger so the panel stays below the header.
+
+Default navigation/account trigger: transparent background and reserved transparent border, navy #33415C, weight 600. Hover: #F3F7FF with 160ms transitions. Navigation active: existing aria-current, #EAF1FF, #153F91, weight 700 and #CBDCF6 border; no underline or shadow. Closed account trigger has no persistent fill/visible border. Open account trigger uses the paler hover fill and a subtle border, with the existing chevron rotation; dimensions and username weight remain fixed. Keyboard focus remains a separate outline and global reduced motion still applies. Dropdown contents/handlers, routes including /learner#stories, auth/logout and domain data are unchanged; no JSX/shared/Public/Tutor/Admin styles changed.
+
+### Verification
+
+- Build passed; existing main JS chunk warning remains (~548 kB).
+- `learner-account-menu.spec.js` and `learner-search.spec.js`: 18 passed using installed Edge via ignored `tmp/playwright-edge.config.js`. Existing size assertions now check 40px desktop / 44px mobile, 28px avatar and identical trigger geometry when opened. Keyboard, Escape/Tab, dismissal, all account destinations, saved state/reload, parent/long identity and Search/filter behavior pass.
+- Browser review at 320, 375, 390, 768, 900, 901, 1024, 1366 and 1440px: expected navigation/account height, header height, bounds and center hit targets pass. Desktop/mobile state review checks transparent closed account background/border, a single active item on Search/Requests/detail, no active navigation on account Dashboard, stable navigation geometry on hover, stable trigger geometry when opened, keyboard focus and reduced motion.
+- Public landing header snapshots still match the earlier baseline; disabling Learner header/account styles leaves computed styles and geometry of Public/Tutor/Admin headers unchanged.
+- Screenshots visually reviewed: desktop/mobile default, active, hover, focus and open dropdown. Ignored artifacts: `apps/web/tmp/header-balanced-*.png` and `header-balanced-review-results.json`.
+
+## LHEADER-001 — Learner navigation pills (2026-10-10)
+
+Historical visual settings; superseded by LHEADER-002 above. Original verification is retained.
+
+### Scope and behavior
+
+LearnerHeader imports its own `header.css`; header rules previously in `search.css` move there without changing the Search layout. All selectors opt in through `.learner-app-header`. The three navigation links share 12px corners and 44px minimum targets with the account trigger. Default navy text, pale blue hover, and a stronger active fill/border/weight replace the underline. Active styling consumes existing `aria-current="page"` from the unchanged pathname matching, including request detail. Navigation and account trigger have visible keyboard outlines; global reduced-motion remains effective.
+
+Only the account trigger's visual treatment changes. Dropdown JSX, content, routes, keyboard handlers, dismissal, identity and logout are unchanged. At ≤360px the trigger hides its visual username to fit beside the brand and navigation button, retaining its accessible name and the full identity in the dropdown. Search header remains 72px desktop / 64px mobile; other header heights and scroll behavior remain unchanged. Public/Tutor/Admin, auth/domain and `/learner#stories` behavior are untouched, including the existing SPA anchor limitation recorded in LACCOUNT-001.
+
+### Verification
+
+- `npm.cmd run build` passed; the existing main JS chunk warning (>500 kB, approximately 548 kB) remains.
+- Existing Playwright suites `learner-account-menu.spec.js`, `learner-search.spec.js` and `responsive.spec.js`: 22 passed using installed Edge via the existing ignored `tmp/playwright-edge.config.js`. Coverage includes Search/filter behavior, dropdown keyboard/dismissal, saved state after reload, parent/long identity and connected public/Learner/Tutor screens.
+- Additional browser review at widths 320, 375, 390, 768, 900, 901, 1024, 1366 and 1440px: no header overflow or obscured control centers, navigation targets ≥44px and unchanged compact height. Request list/detail active state, navigation Tab focus and reduced motion checked. Public landing header snapshots match the before state; toggling Learner header/account CSS leaves Public/Tutor/Admin header geometry and computed styles identical.
+- Screenshots visually reviewed for desktop, tablet, narrow mobile, hover, focus, request active and account open. Ignored artifacts: `apps/web/tmp/header-before-*.png`, `header-after-*.png`, `header-hover.png`, `header-focus.png`, `header-requests.png`, `header-account.png` and `header-review-results.json`.
+
+## LACCOUNT-001 — Learner account dropdown (2026-10-10)
+
+### Scope and behavior
+
+LearnerHeader replaces the account link and standalone logout with one avatar/username/chevron button. The 280px menu shows session identity and accountType, with existing Dashboard, Requests and Dashboard saved-tutors destinations. Logout calls the unchanged auth callback. Menu buttons/items expose menu semantics and support arrows, Home/End, Enter/Space, Escape, Tab, outside pointer/focus dismissal and navigation dismissal. Escape restores trigger focus; outside clicks retain destination focus.
+
+PublicHeader's opt-in `persistentActions` renders this account control once, including mobile. Focusing/clicking Learner actions closes mobile navigation; clicking/focusing outside the dropdown closes it. Default public header behavior remains unchanged. CSS is scoped to `.learner-app-header`. Dashboard now honors existing hash targets instead of always resetting scroll; `#saved-tutors` receives focus. No auth/domain/route/data changes.
+
+### Parent corner analysis — unchanged
+
+“Góc phụ huynh” targets `/learner#stories`, three public guidance articles about choosing a tutor, maintaining a schedule and describing learning goals. It is not a parent account-management feature. Learner/Parent share role `learner`, distinguished by accountType. Browser inspection found an existing SPA anchor limitation: clicking from Search updates URL but does not scroll to stories (1366×600: scrollY=0, section y≈6337). This navigation/landing was deliberately left unchanged as requested.
+
+### Verification
+
+- Build passed (approximately 548 kB main JS chunk; existing >500 kB warning). Unit tests: 186 passed.
+- `learner-account-menu.spec.js`: six viewport cases plus keyboard, real routes/saved focus/logout persistence, and long parent identity. Browser screenshots reviewed at desktop, tablet and mobile, including the parent label. Menu bounds/hit testing, unchanged header/search positions and mobile navigation exclusion are asserted.
+- Responsive coverage: 1440×650, 1366×600, 1024×768, 768×1024, 390×844, 375×667. Existing Search, auth, account isolation and connected public/Tutor responsive suites passed (34 E2E cases including the nine account cases).
+- Final focused pass: 12 passed, rerunning the nine account cases with Space activation/mobile keyboard navigation, plus Admin header/logout and Learner appeal-entry regression checks (37 distinct E2E cases across both runs).
+- Browser: installed Microsoft Edge/Chromium via ignored temporary Playwright config; no library or runner-config changes committed. Screenshots remain ignored artifacts in `apps/web/test-results/`.
+
+## LSEARCH-001 — Search-first Learner UI (2026-10-10)
+
+### Scope and behavior
+
+`/learner/search` has a dedicated compact cream hero, keyword search inside the hero, one multi-select filter set, removable filter chips, and a full-width tutor grid at 3/2/1 columns. The “Xem bản đồ” link opens the illustrative Learner map at `/map`; tutor coordinates and distances there are examples only. Mobile reuses the same filter controls in a scrollable dialog. Search CSS uses the exclusive `.learner-search-view` scope because other Learner pages also use `.learner-search-page`.
+
+Learner app navigation replaces the Tutor acquisition link with `/requests` and exposes route-based `aria-current`, including request detail. Only Search opts into the compact header. PublicHeader adds optional class/current-link rendering; public landing structure, Tutor/Admin workspaces, auth guards and shared domain data are unchanged.
+
+### Regression found and fixed
+
+At 390×844 and 375×667, signing in from the scrolled mobile login form carried the scroll offset into Search. The keyword field started at y=-237.61 / -322.61 instead of appearing in the first viewport. The two viewport tests failed before the fix and passed after Search resets scroll on mount before paint. Do not hide this regression by resetting scroll in test setup after login.
+
+Desktop filter popovers measure available viewport space, open above when needed, and scroll internally. Test the last checkbox as well as panel bounds; page-level overflow alone does not prove the dropdown is usable. Resizing an open mobile dialog to desktop closes it and releases the body scroll lock.
+
+### Verification
+
+- `npm run build`: passed; Vite reports a bundle over 500 kB (approximately 545 kB minified). Bundle splitting is outside this Learner UI batch.
+- `npm test`: 186 passed, 0 failed/skipped.
+- `tests/e2e/learner-search.spec.js`: 9 passed after the scroll fix. Covers first viewport, control bounds, dropdown scrolling, OR/AND multi-select, fee, keyword, sorting, empty reset, keyboard/focus/ESC, resize, saved-state reload and Learner navigation.
+- Existing `learner-tutor-interface`, `account-scoping`, `domain-regressions` and `responsive` suites: 25 passed. These exercise Learner routes, request propagation, account isolation and connected public/Tutor screens without React/page console errors.
+- Browser: installed Microsoft Edge (Chromium) through an ignored temporary Playwright config, because this environment does not have Playwright's downloaded Chromium binary. No dependency or committed runner-config change.
+- Visual review: 1440×650, 1366×600, 1024×768, 768×1024, 390×844 and 375×667. No page overflow or horizontally clipped controls. Hero is about 240–245px desktop/tablet and 281px mobile; keyword field ends at y≈283 desktop and y≈263 mobile. At 1366×600 the first tutor row begins at y≈548.
+- Screenshots are local ignored artifacts in `apps/web/tmp/` and `apps/web/test-results/`; the search page uses no remote illustration. Public landing image loading still depends on its existing external assets.
+
 ## ADM-REG-005 — Mobile table actions clipped inside cells
 
 ### Symptom

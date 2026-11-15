@@ -18,7 +18,7 @@ Chạy `npm run build` tại `apps/web` để build production.
 |---|---|
 | Public | `/`, `/learner`, `/tutor` |
 | Auth | Shared `/login`, `/register`, `/tutor/register` |
-| Learner | `/learner/search`, `/learner/dashboard`, `/learner/map`, `/tutors/:id`, `/requests`, `/requests/:id`, `/requests/new` |
+| Learner | `/learner/search` (lưới gia sư full-width), `/map` (bản đồ minh họa), `/learner/dashboard`, `/tutors/:id`, `/requests`, `/requests/:id`, `/requests/new` |
 | Tutor | `/tutor/dashboard`, `/tutor/profile`, `/tutor/timetable`, `/tutor/income`, `/tutor/map`, `/tutor/find-students`, `/tutor/requests`, `/tutor/requests/:id` |
 | Admin | `/admin/dashboard`, `/admin/tutors`, `/admin/users`, `/admin/reviews`, `/admin/issues`, `/admin/appeals` |
 | Kháng cáo Learner/Tutor | `/appeals` |

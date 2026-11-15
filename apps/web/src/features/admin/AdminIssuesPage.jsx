@@ -17,6 +17,7 @@ import Button from '../../components/Button.jsx';
 import AdminShell from './AdminShell.jsx';
 import AdminSlideOver from './AdminSlideOver.jsx';
 import AccountReportHistory from './AccountReportHistory.jsx';
+import AppealEvidence from '../appeals/AppealEvidence.jsx';
 import { formatRecordCount, formatAdminDate } from './AdminTutorsPage.jsx';
 import {
   useAdminIssues,
@@ -453,6 +454,10 @@ export default function AdminIssuesPage() {
               <div className="admin-issue-desc-box">
                 <p><strong>Nội dung phản ánh:</strong> {selectedIssue.description || 'Không có mô tả chi tiết kèm theo.'}</p>
               </div>
+
+              {selectedIssue.reasonLabel && <p><strong>Lý do báo cáo:</strong> {selectedIssue.reasonLabel}</p>}
+              {selectedIssue.requestId && <p><strong>ID yêu cầu học:</strong> {selectedIssue.requestId}</p>}
+              {selectedIssue.evidence.length > 0 && <div className="admin-report-evidence"><h4>Ảnh minh chứng</h4><AppealEvidence evidence={selectedIssue.evidence} /></div>}
 
               {/* Kết quả xử lý đã lưu nếu có */}
               {selectedIssue.resolutionAction === 'warning_issued' && (

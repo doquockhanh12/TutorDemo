@@ -1,0 +1,216 @@
+{
+  "referenceTime": "2026-11-15T05:34:00Z",
+  "timezone": "Asia/Bangkok",
+  "externalHttpsAssets": "blocked equally in both passes",
+  "errors": [],
+  "checks": [
+    {
+      "viewport": 1440,
+      "route": "/learner/classes",
+      "beforePNG": "7fd774a0f7d6d71b64fce7d6ca4288cd325dbd322af5d542d12d11f8a8a36397",
+      "afterPNG": "7fd774a0f7d6d71b64fce7d6ca4288cd325dbd322af5d542d12d11f8a8a36397",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/classes/demo-02",
+      "beforePNG": "86e3020f13ba5db917dad5d7abf2624994efc98ed1d88ba9f012bbe133d496e5",
+      "afterPNG": "86e3020f13ba5db917dad5d7abf2624994efc98ed1d88ba9f012bbe133d496e5",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/classes/demo-02/assignments",
+      "beforePNG": "093f50b718045b3fc07237b00c7e82587b03a2d7af9cd06ac4dbb5cad016940e",
+      "afterPNG": "093f50b718045b3fc07237b00c7e82587b03a2d7af9cd06ac4dbb5cad016940e",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/schedule",
+      "beforePNG": "257382b63b86e34d2bb06d4b5a2a7f306d8995b2825e0f2a4970bde12c18d528",
+      "afterPNG": "257382b63b86e34d2bb06d4b5a2a7f306d8995b2825e0f2a4970bde12c18d528",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/requests",
+      "beforePNG": "a266a4dedfe4cb93ee9043c95fb5889356c82e99a9c7951380bc4c714acb7328",
+      "afterPNG": "a266a4dedfe4cb93ee9043c95fb5889356c82e99a9c7951380bc4c714acb7328",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/requests/demo-01",
+      "beforePNG": "777f5ba12a9bbcec8df210e38ab6360b44fe4d3cf76c6f3ed9be132e754d3d95",
+      "afterPNG": "777f5ba12a9bbcec8df210e38ab6360b44fe4d3cf76c6f3ed9be132e754d3d95",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/tutors/quoc-bao",
+      "beforePNG": "5badf32b40ecf048c026638049a816fe512209b6af260e8c3496e4ecef95ce6e",
+      "afterPNG": "5badf32b40ecf048c026638049a816fe512209b6af260e8c3496e4ecef95ce6e",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/search",
+      "beforePNG": "4c7ff1e5f6d68f2c1a0cb683203d77a2304178d42c1fb8e256c39e8b9381c334",
+      "afterPNG": "4c7ff1e5f6d68f2c1a0cb683203d77a2304178d42c1fb8e256c39e8b9381c334",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/map",
+      "beforePNG": "7840e0e9738305fd32a379911f614192f496f168a0dd9dbcf45d7a56eb2d5d2c",
+      "afterPNG": "7840e0e9738305fd32a379911f614192f496f168a0dd9dbcf45d7a56eb2d5d2c",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/dashboard?tab=saved",
+      "beforePNG": "e35aa8145201864d2f86c87816fd7b10713ffbcfb2262883f8c59809ef48e015",
+      "afterPNG": "e35aa8145201864d2f86c87816fd7b10713ffbcfb2262883f8c59809ef48e015",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/dashboard?tab=profile",
+      "beforePNG": "13d43c1eb7917ddce1aa7ccde5f978ff7e3c8162ffea909fae086c957676e934",
+      "afterPNG": "13d43c1eb7917ddce1aa7ccde5f978ff7e3c8162ffea909fae086c957676e934",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/messages",
+      "beforePNG": "e375cc080713bfd8a2afcaa5e7dda64ef82983b1e2019384d084a21f2e98883f",
+      "afterPNG": "e375cc080713bfd8a2afcaa5e7dda64ef82983b1e2019384d084a21f2e98883f",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 1440,
+      "route": "/learner/wallet",
+      "beforePNG": "436ac5b315a7f4e2d988b1a2d4ef17942aaa3cdd4d80b74da46c3641f4802abd",
+      "afterPNG": "436ac5b315a7f4e2d988b1a2d4ef17942aaa3cdd4d80b74da46c3641f4802abd",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/classes",
+      "beforePNG": "2c9b2939e25c8318185782622dc35b65425e5a25e5578f56ccc57bac24944fcf",
+      "afterPNG": "2c9b2939e25c8318185782622dc35b65425e5a25e5578f56ccc57bac24944fcf",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/classes/demo-02",
+      "beforePNG": "26f359f3955473049455b0bea9dc4e74441f7ef7a99f2e32c01de6fa7a7038a2",
+      "afterPNG": "26f359f3955473049455b0bea9dc4e74441f7ef7a99f2e32c01de6fa7a7038a2",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/classes/demo-02/assignments",
+      "beforePNG": "de0816697672c6cba5f7b0882e43bb570dd2b2f6417e88a6227370a798a0af28",
+      "afterPNG": "de0816697672c6cba5f7b0882e43bb570dd2b2f6417e88a6227370a798a0af28",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/schedule",
+      "beforePNG": "b17ad8720664bd14c98d8de9e28ebaaad16b36c8fa6ec401710f363a998946cd",
+      "afterPNG": "b17ad8720664bd14c98d8de9e28ebaaad16b36c8fa6ec401710f363a998946cd",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/requests",
+      "beforePNG": "158f5c32511c0b0a7e3ab81518b497b9aa8737f3c7272678cb14ad40d9336d43",
+      "afterPNG": "158f5c32511c0b0a7e3ab81518b497b9aa8737f3c7272678cb14ad40d9336d43",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/requests/demo-01",
+      "beforePNG": "fe53123724e82f1af0bdac8a2e7172be91ecce82893218af0f563c7facb51e5e",
+      "afterPNG": "fe53123724e82f1af0bdac8a2e7172be91ecce82893218af0f563c7facb51e5e",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/tutors/quoc-bao",
+      "beforePNG": "6485e4f14e280961d5133dbf67f773581c3a1429ba5c68a1788a2bee580458cb",
+      "afterPNG": "6485e4f14e280961d5133dbf67f773581c3a1429ba5c68a1788a2bee580458cb",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/search",
+      "beforePNG": "adff831270cb81202441e5829dd6937fbee80415a715679faeeba19827accb53",
+      "afterPNG": "adff831270cb81202441e5829dd6937fbee80415a715679faeeba19827accb53",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/map",
+      "beforePNG": "76814aa30c409d5d1c47510691f9657c4aa6e9f872529626b0880e0553c3d978",
+      "afterPNG": "76814aa30c409d5d1c47510691f9657c4aa6e9f872529626b0880e0553c3d978",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/dashboard?tab=saved",
+      "beforePNG": "7df1bdd7e5ff1a39ef3134e46df1164987009671a129ca368368c9cff2081ba5",
+      "afterPNG": "7df1bdd7e5ff1a39ef3134e46df1164987009671a129ca368368c9cff2081ba5",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/dashboard?tab=profile",
+      "beforePNG": "17adac71968cdcac923394714d839b13602414cb47cfce3f9ee4d168c34457ed",
+      "afterPNG": "17adac71968cdcac923394714d839b13602414cb47cfce3f9ee4d168c34457ed",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/messages",
+      "beforePNG": "d2138ef7254fc1e53a2d6583a2a4d3ed13920bd3bd5006aa505098b38b3ee1cd",
+      "afterPNG": "d2138ef7254fc1e53a2d6583a2a4d3ed13920bd3bd5006aa505098b38b3ee1cd",
+      "samePixels": true,
+      "sameText": true
+    },
+    {
+      "viewport": 390,
+      "route": "/learner/wallet",
+      "beforePNG": "35ef3be30e47b19384722840003c6bada0f7330d96f3cca108bdc997f644f8e3",
+      "afterPNG": "35ef3be30e47b19384722840003c6bada0f7330d96f3cca108bdc997f644f8e3",
+      "samePixels": true,
+      "sameText": true
+    }
+  ]
+}

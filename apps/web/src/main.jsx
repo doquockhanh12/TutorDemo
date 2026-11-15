@@ -26,6 +26,29 @@ import './features/public/public.css';
 import './features/auth/auth.css';
 import './styles/flows.css';
 
+function syncScrollbarWidth() {
+  if (typeof document === 'undefined') return;
+  const outer = document.createElement('div');
+  outer.style.visibility = 'hidden';
+  outer.style.overflow = 'scroll';
+  outer.style.position = 'absolute';
+  outer.style.top = '-9999px';
+  outer.style.width = '100px';
+  document.body.appendChild(outer);
+  const width = outer.offsetWidth - outer.clientWidth;
+  document.body.removeChild(outer);
+  document.documentElement.style.setProperty('--app-scrollbar-width', `${width || 17}px`);
+}
+
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncScrollbarWidth);
+  } else {
+    syncScrollbarWidth();
+  }
+  window.addEventListener('resize', syncScrollbarWidth, { passive: true });
+}
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>

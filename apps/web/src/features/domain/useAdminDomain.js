@@ -6,6 +6,7 @@
  */
 
 import { accountHistory } from './appeals.js';
+import { tutorReportReasons, requestReportReasons } from './tutorReports.js';
 
 let useDemoDomain = () => {
   throw new Error('useDemoDomain is only available within a React environment');
@@ -107,6 +108,8 @@ export const issueStatusTones = {
 };
 
 export const issueCategoryLabels = {
+  ...tutorReportReasons,
+  ...requestReportReasons,
   absence: 'Vắng mặt không báo trước',
   vang_mat: 'Vắng mặt không báo trước',
   lesson_dispute: 'Tranh chấp giờ học',
@@ -570,6 +573,9 @@ export function selectAdminIssues(state = {}) {
       label: issue.label || issue.title || issueCategoryLabels[issue.category] || 'Sự cố',
       description: issue.description || '',
       category: issue.category || 'other',
+      reasonLabel: issue.reasonLabel || '',
+      requestId: issue.requestId || null,
+      evidence: issue.evidence || [],
       status: issue.status || 'new',
       createdAt: issue.createdAt || '',
       received: issue.received || issue.createdAtFormatted || 'Gần đây',

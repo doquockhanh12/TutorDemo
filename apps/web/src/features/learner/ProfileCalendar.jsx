@@ -8,91 +8,41 @@ import {
 
 import Button from '../../components/Button.jsx';
 
-import {
-  usePublicTutorSchedule,
-} from '../tutor/TutorWorkspaceState.jsx';
+import useLearnerProfileCalendar from './hooks/useLearnerProfileCalendar.js';
 
 import {
-  isValidProposal,
-  isFutureSession,
   localDateKey,
   proposalLabel,
   timetableDays,
   timeLabel,
-  weekDates,
 } from '../../data/tutorSchedule.js';
-
-import {
-  bookableSessions,
-} from './profileSelection.js';
-
-const sameSession = (a, b) =>
-  a.date === b.date &&
-  a.start === b.start &&
-  a.end === b.end;
 
 export default function ProfileCalendar({
   tutor,
-  selected,
-  onAdd,
-  onRemove,
+  selected = [],
+  onAdd = () => {},
+  onRemove = () => {},
   invalid = false,
+  readOnly = false,
+  stackOnMobile = false,
+  id = 'profile-calendar',
+  className = '',
 }) {
   const [offset, setOffset] =
     useState(0);
 
-  const dates = weekDates(offset);
-
-  const {
-    ranges,
-    sessionMinutes,
-  } = usePublicTutorSchedule(
-    tutor,
-    dates
-  );
-
-  const sessions =
-    bookableSessions(
-      ranges,
-      sessionMinutes
-    );
-
-  const choose = (session) => {
-    const existing =
-      selected.find(
-        (proposal) =>
-          sameSession(
-            proposal,
-            session
-          )
-      );
-
-    if (existing) {
-      onRemove(existing);
-      return;
-    }
-
-    if (
-      isFutureSession(session) && isValidProposal(
-        session,
-        ranges,
-        sessionMinutes,
-        selected
-      )
-    ) {
-      onAdd(session);
-    }
-  };
+  const { dates, sessions, sessionMinutes, choose, dailySessions, sessionState } = useLearnerProfileCalendar(tutor, offset, selected, onAdd, onRemove);
 
   return (
     <section
-      className={
-        'profile-section' +
-        (invalid
-          ? ' is-validation-error'
-          : '')
-      }
-      id="profile-calendar"
+      className={[
+        'profile-section profile-calendar',
+        readOnly && 'profile-calendar--readonly',
+        stackOnMobile && 'profile-calendar--stacked',
+        invalid && 'is-validation-error',
+        className,
+      ].filter(Boolean).join(' ')}
+      id={id}
       aria-invalid={
         invalid || undefined
       }
@@ -109,9 +59,9 @@ export default function ProfileCalendar({
       </div>
 
       <p>
-        Chọn buổi học có sẵn để thêm vào
-        “Gửi yêu cầu học”. Có thể chọn
-        nhiều buổi; nhấn lại để bỏ chọn.
+        {readOnly
+          ? 'Lịch này chỉ để tham khảo. Chọn “Đặt lịch học” để đề xuất các khung giờ.'
+          : 'Chọn buổi học có sẵn để thêm vào yêu cầu. Có thể chọn nhiều buổi; nhấn lại để bỏ chọn.'}
       </p>
 
       <div className="schedule-week-nav">
@@ -222,48 +172,44 @@ export default function ProfileCalendar({
           <tbody>
             <tr>
               {dates.map(
-                (date) => {
+                (date, index) => {
                   const key =
                     localDateKey(
                       date
                     );
 
-                  const daily =
-                    sessions.filter(
-                      (
-                        session
-                      ) =>
-                        session.date ===
-                        key
-                    );
+                  const daily = dailySessions(key);
 
                   return (
-                    <td key={key}>
+                    <td
+                      key={key}
+                      data-day={`${timetableDays[index]} ${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`}
+                    >
                       <div className="profile-session-list">
                         {daily.length ? (
                           daily.map(
                             (
                               session
                             ) => {
-                              const active =
-                                selected.some(
-                                  (
-                                    proposal
-                                  ) =>
-                                    sameSession(
-                                      proposal,
-                                      session
-                                    )
+                              if (readOnly) {
+                                return (
+                                  <div
+                                    key={session.start}
+                                    className="profile-session-view"
+                                    role="group"
+                                    aria-label={proposalLabel(session)}
+                                  >
+                                    <span>
+                                      {timeLabel(session.start)}
+                                      {' – '}
+                                      {timeLabel(session.end)}
+                                    </span>
+                                    <small>Còn trống</small>
+                                  </div>
                                 );
+                              }
 
-                              const disabled =
-                                !isFutureSession(session) || (!active &&
-                                !isValidProposal(
-                                  session,
-                                  ranges,
-                                  sessionMinutes,
-                                  selected
-                                ));
+                              const { active, disabled } = sessionState(session);
 
                               return (
                                 <button
@@ -331,19 +277,25 @@ export default function ProfileCalendar({
         </table>
       </div>
 
-      <p
-        className="profile-schedule-feedback"
-        role="status"
-      >
-        {selected.length
-          ? 'Đã chọn: ' +
-            selected
-              .map(
-                proposalLabel
-              )
-              .join('; ')
-          : 'Chưa chọn buổi học.'}
-      </p>
+      {invalid && (
+        <small className="profile-field-error" role="alert">
+          Chọn ít nhất một khung giờ phù hợp.
+        </small>
+      )}
+
+      {!readOnly && (
+        <p
+          className="profile-schedule-feedback"
+          role="status"
+        >
+          {selected.length
+            ? 'Đã chọn: ' +
+              selected
+                .map(proposalLabel)
+                .join('; ')
+            : 'Chưa chọn buổi học.'}
+        </p>
+      )}
     </section>
   );
 }

@@ -1073,7 +1073,7 @@ const baseReferenceData = {
       "tutorId": "mai-anh",
       "subject": "Toán",
       "goal": "Củng cố kiến thức lớp 9",
-      "schedule": "Thứ 3 · 18:00",
+      "schedule": "Thứ 3, 14/10 · 18:00–19:30",
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 180000,
@@ -1084,33 +1084,23 @@ const baseReferenceData = {
       "tutorId": "quoc-bao",
       "subject": "Tiếng Anh",
       "goal": "Luyện giao tiếp",
-      "schedule": "Thứ 7 · 09:00",
+      "schedule": "Thứ 7 · 09:00–09:45",
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 220000,
-      "status": "accepted",
-      "proposalTemplate": {
-        "days": [5],
-        "start": 540,
-        "end": 585
-      }
+      "status": "accepted"
     },
     {
       "id": "demo-03",
       "tutorId": "ha-linh",
       "subject": "Ngữ văn",
       "goal": "Luyện viết",
-      "schedule": "Thứ 5 · 19:00",
+      "schedule": "Thứ 5, 16/10 · 19:00–20:30",
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 160000,
       "status": "accepted",
-      "legacyLessonStatus": "completed",
-      "confirmedDate": "2026-10-08",
-      "confirmedStartTime": "19:00",
-      "confirmedStart": 1140,
-      "confirmedEnd": 1185,
-      "confirmedSchedule": "Thứ 5, 08/10 · 19:00–19:45"
+      "legacyLessonStatus": "completed"
     },
 
     {
@@ -1310,6 +1300,117 @@ const baseReferenceData = {
   ],
 
   "historicalLessons": [
+    // Explicit one-off live UI test, fixed time in Asia/Bangkok (UTC+07).
+    {
+      "id": "demo-live-session-2026-11-14",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-11-14",
+      "start": 1320,
+      "end": 1365,
+      "status": "confirmed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000,
+      "notes": "Buổi demo bổ sung để kiểm thử trạng thái Đang diễn ra và tiến độ thời gian, ngày 14/11/2026 từ 22:00 đến 22:45 (UTC+07)."
+    },
+    // This existing collection supplies absolute dated seed lessons (including upcoming).
+    // Six confirmed sessions for demo-02: two completed, four still scheduled as of 2026-11-14.
+    {
+      "id": "demo-02-lesson-2026-11-07",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-11-07",
+      "start": 540,
+      "end": 585,
+      "status": "completed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000,
+      "completedAt": "2026-11-07T09:45:00+07:00"
+    },
+    {
+      "id": "demo-02-lesson-2026-11-14",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-11-14",
+      "start": 540,
+      "end": 585,
+      "status": "completed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000,
+      "completedAt": "2026-11-14T09:45:00+07:00"
+    },
+    {
+      "id": "demo-02-lesson-2026-11-21",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-11-21",
+      "start": 540,
+      "end": 585,
+      "status": "confirmed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000
+    },
+    {
+      "id": "demo-02-lesson-2026-11-28",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-11-28",
+      "start": 540,
+      "end": 585,
+      "status": "confirmed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000
+    },
+    {
+      "id": "demo-02-lesson-2026-12-05",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-12-05",
+      "start": 540,
+      "end": 585,
+      "status": "confirmed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000
+    },
+    {
+      "id": "demo-02-lesson-2026-12-12",
+      "tutorId": "quoc-bao",
+      "requestId": "demo-02",
+      "learnerId": "demo-learner",
+      "learner": "Nguyễn Minh Anh",
+      "subject": "Tiếng Anh",
+      "date": "2026-12-12",
+      "start": 540,
+      "end": 585,
+      "status": "confirmed",
+      "format": "Online",
+      "place": "Online",
+      "sessionFee": 220000
+    },
     {
       "id": "history-lesson-2026-05-09-01",
       "tutorId": "quoc-bao",
@@ -1584,24 +1685,6 @@ const baseReferenceData = {
       "place": "Online",
       "sessionFee": 220000,
       "completedAt": "2026-10-03T09:45:00+07:00"
-    },
-    {
-      "id": "history-lesson-demo-03",
-      "tutorId": "ha-linh",
-      "requestId": "demo-03",
-      "learnerId": "demo-learner",
-      "learner": "Nguyễn Minh Anh",
-      "subject": "Ngữ văn",
-      "level": "THCS",
-      "date": "2026-10-08",
-      "start": 1140,
-      "end": 1185,
-      "status": "completed",
-      "format": "Tại nhà",
-      "area": "Quận 3",
-      "place": "Quận 3",
-      "sessionFee": 160000,
-      "completedAt": "2026-10-08T19:45:00+07:00"
     }
   ],
 

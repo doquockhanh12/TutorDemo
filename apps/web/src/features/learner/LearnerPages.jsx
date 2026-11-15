@@ -1,4 +1,6 @@
+import { useLearnerRequestList, useLearnerRequestDetail } from './hooks/useLearnerRequestsData.js';
 import Badge from '../../components/Badge.jsx';
+import Avatar from '../../components/Avatar.jsx';
 import { requestLabel, requestTone } from '../domain/statusMetadata.js';
 import RequestSelectionDetails from './RequestSelectionDetails.jsx';
 import { useState } from 'react';
@@ -6,170 +8,67 @@ import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
+  BookOpen,
   CalendarDays,
+  CheckCircle2,
+  Clock3,
+  FolderOpen,
+  Flag,
+  GraduationCap,
+  Hourglass,
+  Layers,
+  MapPin,
+  Search,
+  Sparkles,
   Star,
-  MessageCircle,
-  X,
-  Send
+  UserCheck,
 } from 'lucide-react';
-import { useLearnerRequests } from '../domain/DemoDomainContext.jsx';
-import { proposalLabel } from './profileSelection.js';
-import { PublicFooter } from '../public/PublicChrome.jsx';
-import LearnerHeader from './LearnerHeader.jsx';
-import './search.css';
-import { money } from '../../data/public.js';
 import { usePublicTutors } from '../domain/DemoDomainContext.jsx';
+import LearnerHeader from './LearnerHeader.jsx';
+import TutorReportForm from './TutorReportForm.jsx';
+import './search.css';
+import './learnerSchedule.css';
+import { money } from '../../data/public.js';
 
-// Component Khung Chat Nổi cố định ở góc dưới màn hình (Floating Chat Widget)
-function FloatingChatWidget({ tutorName }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [inputMsg, setInputMsg] = useState('');
-  const [chatLog, setChatLog] = useState([
-    {
-      sender: 'tutor',
-      text: `Chào bạn, mình là ${tutorName || 'gia sư'}. Buổi học sắp tới bạn muốn tập trung vào phần kiến thức nào trước nhé?`,
-      time: 'Vừa xong'
-    }
-  ]);
-
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!inputMsg.trim()) return;
-    setChatLog((prev) => [
-      ...prev,
-      { sender: 'learner', text: inputMsg, time: 'Vừa xong' }
-    ]);
-    setInputMsg('');
-  };
-
-  return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
-      {isOpen && (
-        <div style={{
-          width: '320px',
-          height: '420px',
-          backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          border: '1px solid #e5e7eb',
-          marginBottom: '12px',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            backgroundColor: '#2563eb',
-            color: '#ffffff',
-            padding: '12px 16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '15px' }}>Trao đổi với gia sư</div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>{tutorName || 'Gia sư'} · Đang hoạt động</div>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '4px' }}
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          <div style={{ flex: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {chatLog.map((msg, idx) => (
-              <div
-                key={idx}
-                style={{
-                  alignSelf: msg.sender === 'learner' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
-                  backgroundColor: msg.sender === 'learner' ? '#2563eb' : '#f3f4f6',
-                  color: msg.sender === 'learner' ? '#ffffff' : '#1f2937',
-                  padding: '8px 12px',
-                  borderRadius: msg.sender === 'learner' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
-                  fontSize: '13px',
-                  lineHeight: '1.4'
-                }}
-              >
-                {msg.text}
-              </div>
-            ))}
-          </div>
-
-          <form onSubmit={handleSend} style={{ display: 'flex', padding: '10px', borderTop: '1px solid #e5e7eb', gap: '8px' }}>
-            <input
-              type="text"
-              placeholder="Nhập tin nhắn trao đổi..."
-              value={inputMsg}
-              onChange={(e) => setInputMsg(e.target.value)}
-              style={{
-                flex: 1,
-                border: '1px solid #d1d5db',
-                borderRadius: '20px',
-                padding: '6px 12px',
-                fontSize: '13px',
-                outline: 'none'
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                backgroundColor: '#2563eb',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
-              }}
-            >
-              <Send size={15} />
-            </button>
-          </form>
-        </div>
-      )}
-
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '54px',
-          height: '54px',
-          borderRadius: '50%',
-          backgroundColor: '#2563eb',
-          color: '#ffffff',
-          border: 'none',
-          boxShadow: '0 4px 14px rgba(37, 99, 235, 0.4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          marginLeft: 'auto'
-        }}
-        title="Nhắn tin với gia sư"
-      >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
-      </button>
-    </div>
-  );
+export function formatRequestId(id = '') {
+  if (!id) return '';
+  if (id.startsWith('demo-0')) return `#YC-100${id.slice(6)}`;
+  if (id.startsWith('demo-')) return `#YC-10${id.slice(5)}`;
+  if (id.startsWith('req-')) return `#YC-200${id.slice(4)}`;
+  if (id.startsWith('request-')) return `#YC-300${id.slice(8)}`;
+  return `#YC-${id}`;
 }
 
-function LearnerShell({ children, title, intro }) {
+function LearnerShell({
+  children,
+  title,
+  intro,
+  actions,
+  className = '',
+  backTo = '/learner/classes',
+  backLabel = 'Quay lại Lớp học của tôi',
+}) {
   return (
-    <div className="public-page public-page--learner learner-search-page learner-flow density-comfortable">
-      <LearnerHeader />
-      <div className="learner-flow__band">
-        <div className="public-wrap">
-          <span className="public-kicker">KHÔNG GIAN NGƯỜI HỌC · DEMO</span>
-          <h1>{title}</h1>
-          <p>{intro}</p>
+    <div className={`public-page public-page--learner learner-page learner-search-page learner-flow density-comfortable ${className}`}>
+      <LearnerHeader compact />
+      <section className="learner-page-banner">
+        <div className="learner-container">
+          {backTo && (
+            <Link className="flow-back" to={backTo}>
+              <ArrowLeft size={17} aria-hidden="true" /> {backLabel}
+            </Link>
+          )}
+          <div className="learner-page-banner__row">
+            <div>
+              <h1>{title}</h1>
+              <p>{intro}</p>
+            </div>
+            {actions && <div className="learner-page-banner__actions">{actions}</div>}
+          </div>
         </div>
-      </div>
-      <main className="public-wrap learner-flow__main">{children}</main>
-      <PublicFooter />
+      </section>
+      <main className="learner-container learner-flow__main">{children}</main>
     </div>
   );
 }
@@ -177,76 +76,202 @@ function LearnerShell({ children, title, intro }) {
 export function NewRequest() {
   const publicTutors = usePublicTutors();
   const [params] = useSearchParams();
-  const tutorId = params.get('tutor') || publicTutors[0]?.id;
+  const tutorId = params.get('tutor') || publicTutors[0].id;
   return <Navigate replace to={`/tutors/${encodeURIComponent(tutorId)}?${params.toString()}#profile-request`} />;
 }
 
 export function MyRequests() {
-  const publicTutors = usePublicTutors();
-  const [requests] = useLearnerRequests();
   const [filter, setFilter] = useState('all');
-
-  // Logic lọc danh sách theo 5 nhóm trạng thái
-  const visible = requests.filter((item) => {
-    if (filter === 'all') return true;
-    if (filter === 'active') return ['accepted', 'confirmed'].includes(item.status) && !item.completed;
-    if (filter === 'closed') return ['rejected', 'cancelled'].includes(item.status);
-    if (filter === 'completed') return item.completed;
-    return item.status === filter && !item.completed;
-  });
+  const { counts, visible, rows } = useLearnerRequestList(filter);
 
   return (
-    <LearnerShell title="Yêu cầu học của tôi" intro="Theo dõi trạng thái kết nối và lịch học trong bản demo.">
-      <div className="flow-toolbar">
-        <div className="flow-tabs">
-          {/* Mảng hiển thị chỉ còn 5 tab */}
+    <LearnerShell
+      className="learner-requests-view"
+      title="Yêu cầu học của tôi"
+      intro="Theo dõi tiến độ duyệt lịch từ gia sư, vào lớp học đã xác nhận hoặc gửi đánh giá chất lượng dạy học."
+      backTo={null}
+      actions={(
+        <div className="learner-page-banner__actions">
+          <Link className="button button--secondary button--sm" to="/learner/classes">
+            <BookOpen size={16} aria-hidden="true" /> Lớp học của tôi
+          </Link>
+          <Link className="button button--primary button--sm" to="/learner/search">
+            <Search size={16} aria-hidden="true" /> Tìm gia sư mới
+          </Link>
+        </div>
+      )}
+    >
+      <section className="learner-stats-grid" aria-label="Thống kê yêu cầu học">
+        <div className="learner-stat-card learner-stat-card--blue">
+          <div className="learner-stat-card__icon" aria-hidden="true">
+            <CalendarDays size={22} />
+          </div>
+          <div className="learner-stat-card__body">
+            <span>Tổng số yêu cầu</span>
+            <strong>{counts.all} yêu cầu</strong>
+            <small>Đã gửi tới các gia sư</small>
+          </div>
+        </div>
+
+        <div className="learner-stat-card learner-stat-card--indigo">
+          <div className="learner-stat-card__icon" aria-hidden="true">
+            <Hourglass size={22} />
+          </div>
+          <div className="learner-stat-card__body">
+            <span>Chờ phản hồi</span>
+            <strong>{counts.pending} yêu cầu</strong>
+            <small>Đang chờ gia sư phản hồi</small>
+          </div>
+        </div>
+
+        <div className="learner-stat-card learner-stat-card--green">
+          <div className="learner-stat-card__icon" aria-hidden="true">
+            <CheckCircle2 size={22} />
+          </div>
+          <div className="learner-stat-card__body">
+            <span>Đã hoàn thành</span>
+            <strong>{counts.completed} lớp</strong>
+            <small>Đã kết thúc khóa học</small>
+          </div>
+        </div>
+      </section>
+
+      <div className="learner-classes-bar">
+        <div className="learner-segmented-tabs" role="tablist" aria-label="Lọc yêu cầu học">
           {[
-            ['all', 'Tất cả'],
-            ['pending', 'Chờ phản hồi'],
-            ['active', 'Đang xử lý'],
-            ['completed', 'Hoàn tất'],
-            ['closed', 'Đã hủy / Từ chối']
-          ].map(([item, label]) => (
+            ['all', 'Tất cả', counts.all],
+            ['pending', 'Chờ phản hồi', counts.pending],
+            ['accepted', 'Đã xác nhận', counts.accepted],
+            ['completed', 'Hoàn tất', counts.completed],
+            ['cancelled', 'Đã hủy', counts.cancelled],
+          ].map(([item, label, count]) => (
             <button
-              className={filter === item ? 'is-active' : ''}
+              type="button"
+              role="tab"
+              aria-selected={filter === item}
+              className={`learner-segmented-tab ${filter === item ? 'is-active' : ''}`}
               onClick={() => setFilter(item)}
               key={item}
             >
-              {label}
+              <span>{label}</span>
+              <em className="learner-segmented-tab__count">{count}</em>
             </button>
           ))}
         </div>
+
+        <div className="learner-classes-bar__actions">
+          <Link className="learner-action-link-btn" to="/learner/schedule">
+            <CalendarDays size={16} aria-hidden="true" />
+            <span>Mở Thời khóa biểu tuần</span>
+          </Link>
+        </div>
       </div>
-      <div className="flow-list">
-        {visible.map((request) => {
-          const tutor = publicTutors.find((t) => t.id === request.tutorId);
+
+      <div className="learner-request-cards">
+        {rows.map(({ request, tutor, isAccepted, isPending, isCompleted }) => {
           return (
-            <Link key={request.id} to={`/requests/${request.id}`} className="flow-row">
-              <span className="flow-row__icon"><CalendarDays size={21} /></span>
-              <span>
-                <strong>{request.subject} với {tutor?.name || 'Gia sư demo'}</strong>
-                <small>{request.goal} · {request.schedule}</small>
-              </span>
+            <article key={request.id} className="learner-request-card">
+              <div className="learner-request-card__head">
+                <div className="learner-request-card__tutor">
+                  <Avatar
+                    initials={tutor?.initials || 'GS'}
+                    name={tutor?.name || 'Gia sư'}
+                    tone={tutor?.tone || 'blue'}
+                    size="md"
+                  />
+                  <div>
+                    <div className="learner-request-card__meta-top">
+                      <span className="learner-request-card__id">{formatRequestId(request.id)}</span>
+                      <span className="learner-request-card__subject">Môn {request.subject}</span>
+                    </div>
+                    <h3>
+                      <Link to={`/requests/${request.id}`} className="tutor-card__name-link">
+                        Yêu cầu học môn {request.subject} — {tutor?.name}
+                      </Link>
+                    </h3>
+                    <p><GraduationCap size={14} aria-hidden="true" /> {tutor?.university || 'Đại học xác minh'} · {tutor?.area || 'TP. Hồ Chí Minh'}</p>
+                  </div>
+                </div>
 
-              {/* Sửa lỗi hiển thị chữ của Badge */}
-              <Badge tone={requestTone(request)}>
-                {request.completed
-                  ? 'Hoàn tất'
-                  : request.status === 'confirmed'
-                  ? 'Đã chốt lịch'
-                  : request.status === 'accepted'
-                  ? 'Gia sư đã nhận'
-                  : requestLabel(request)}
-              </Badge>
+                <div className="learner-request-card__status">
+                  <Badge tone={requestTone(request)}>{requestLabel(request)}</Badge>
+                </div>
+              </div>
 
-              <ArrowRight size={18} />
-            </Link>
+              <div className="learner-request-card__body">
+                <div className="learner-request-card__info-grid">
+                  <div>
+                    <span className="learner-request-card__info-label"><Clock3 size={14} /> Thời gian học:</span>
+                    <strong>{request.schedule || 'Lịch theo thỏa thuận'}</strong>
+                  </div>
+                  <div>
+                    <span className="learner-request-card__info-label"><Sparkles size={14} /> Hình thức & Mục tiêu:</span>
+                    <span>{request.format || 'Tại nhà'} · {request.goal || 'Bám sát lộ trình'}</span>
+                  </div>
+                  <div>
+                    <span className="learner-request-card__info-label"><GraduationCap size={14} /> Học phí tham khảo:</span>
+                    <strong className="learner-request-card__fee">{money(request.sessionFee || tutor?.price || 180000)}đ/buổi</strong>
+                  </div>
+                </div>
+
+                {isCompleted && (
+                  <div className="learner-request-card__review-preview">
+                    {request.review ? (
+                      <div className="learner-request-card__reviewed">
+                        <div className="learner-request-card__stars">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={14} fill={s <= (request.rating || 5) ? 'currentColor' : 'none'} aria-hidden="true" />
+                          ))}
+                        </div>
+                        <span>Đã đánh giá: “{request.review}”</span>
+                      </div>
+                    ) : (
+                      <div className="learner-request-card__unreviewed">
+                        <Star size={14} aria-hidden="true" />
+                        <span>Khóa học đã kết thúc. Bạn có thể gửi đánh giá cho gia sư {tutor?.name}.</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="learner-request-card__actions">
+                <Link className="button button--primary button--sm" to={`/requests/${request.id}`}>
+                  Chi tiết yêu cầu
+                </Link>
+
+                {isAccepted && (
+                  <Link
+                    className="button button--secondary button--sm"
+                    to={`/learner/classes/${request.id}`}
+                    state={{ from: '/requests', fromLabel: 'Yêu cầu học' }}
+                  >
+                    Vào bài học <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                )}
+
+                {isCompleted && !request.review && (
+                  <Link className="button button--secondary button--sm" to={`/requests/${request.id}#danh-gia`}>
+                    <Star size={15} aria-hidden="true" /> Đánh giá gia sư
+                  </Link>
+                )}
+
+                {isPending && (
+                  <Link className="button button--secondary button--sm" to={`/requests/${request.id}`}>
+                    Xem trạng thái chờ duyệt
+                  </Link>
+                )}
+              </div>
+            </article>
           );
         })}
+
         {!visible.length && (
-          <div className="public-empty">
-            <h3>Chưa có yêu cầu trong nhóm này</h3>
-            <p>Chọn trạng thái khác để xem các yêu cầu đã gửi.</p>
+          <div className="learner-empty">
+            <Sparkles size={28} aria-hidden="true" />
+            <h3>Chưa có yêu cầu nào trong mục này</h3>
+            <p>Chọn tab trạng thái khác hoặc khám phá thêm gia sư để gửi yêu cầu học mới.</p>
+            <Link className="button button--primary" to="/learner/search">Tìm gia sư mới</Link>
           </div>
         )}
       </div>
@@ -255,198 +280,279 @@ export function MyRequests() {
 }
 
 export function RequestDetail() {
-  const publicTutors = usePublicTutors();
   const { id } = useParams();
-  const [requests, setRequests, submitLearnerReview, confirmLearnerRequest] = useLearnerRequests();
-
-  // Lấy dữ liệu đơn gốc từ hệ thống
-  const baseRequest = requests.find((item) => item.id === id);
-
-  const request = baseRequest;
-
-  const tutor = publicTutors.find((item) => item.id === request?.tutorId);
+  const { request, tutor, update } = useLearnerRequestDetail(id);
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState('');
-  const [reviewError, setReviewError] = useState('');
-  const [selectedProposalKey, setSelectedProposalKey] = useState('');
-  const [confirmError, setConfirmError] = useState('');
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportNotice, setReportNotice] = useState('');
 
   if (!request) {
     return (
-      <LearnerShell title="Không tìm thấy yêu cầu" intro="Yêu cầu này không có trong dữ liệu demo.">
-        <Link to="/requests">Xem các yêu cầu</Link>
+      <LearnerShell
+        title="Không tìm thấy yêu cầu"
+        intro="Không tìm thấy thông tin yêu cầu học này trong hệ thống."
+        backTo="/requests"
+        backLabel="Tất cả yêu cầu học"
+      >
+        <div className="learner-empty">
+          <Link className="button button--primary" to="/requests">Xem các yêu cầu học</Link>
+        </div>
       </LearnerShell>
     );
   }
 
-  // Cập nhật cả State cục bộ lẫn hệ thống
-  const update = (patch) => {
-    if (typeof setRequests === 'function') {
-      setRequests(requests.map((item) => item.id === id ? { ...item, ...patch } : item));
-    }
-  };
-
-  const sendReview = (event) => {
-    event.preventDefault();
-    const result = submitLearnerReview(id, { rating, comment: review });
-    setReviewError(result.error || '');
-  };
-  const proposals = request.proposals || [];
-  const proposalKey = (proposal) => `${proposal.date}:${proposal.start}:${proposal.end}`;
-  const selectedProposal = proposals.find((proposal) => proposalKey(proposal) === selectedProposalKey)
-    || (proposals.length === 1 ? proposals[0] : null);
-  const confirmSchedule = () => {
-    if (!selectedProposal) { setConfirmError('Chọn một khung giờ để xác nhận.'); return; }
-    const result = confirmLearnerRequest(id, selectedProposal);
-    setConfirmError(result.error || '');
-  };
-
-  const isAcceptedOrConfirmed = ['accepted', 'confirmed', 'completed'].includes(request.status);
+  const reportButton = request.tutorId && (
+    <button className="button button--secondary button--sm tutor-report-button" type="button" onClick={() => { setReportNotice(''); setReportOpen(true); }}><Flag size={16} aria-hidden="true" />Báo cáo gia sư</button>
+  );
 
   return (
     <LearnerShell
-      title="Chi tiết yêu cầu học"
-      intro={`Mã ${request.id} · ${request.completed ? 'Hoàn tất' : request.status === 'confirmed' ? 'Đã chốt lịch' : request.status === 'accepted' ? 'Gia sư đã nhận' : requestLabel(request)}`}
+      title={`Chi tiết yêu cầu môn ${request.subject}`}
+      intro={`Mã hồ sơ: ${formatRequestId(request.id)} · Trạng thái: ${requestLabel(request)}`}
+      backTo="/requests"
+      backLabel="Quay lại danh sách yêu cầu học"
+      actions={(
+        <div className="learner-page-banner__actions">
+          {request.status === 'accepted' && (
+            <Link
+              className="button button--primary button--sm"
+              to={`/learner/classes/${request.id}`}
+              state={{ from: `/requests/${request.id}`, fromLabel: 'Chi tiết yêu cầu' }}
+            >
+              Vào bài học <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          )}
+          <Link
+            className="button button--secondary button--sm"
+            to={`/requests/new?tutor=${encodeURIComponent(request.tutorId)}`}
+          >
+            Tạo yêu cầu mới
+          </Link>
+        </div>
+      )}
     >
-      <div className="flow-toolbar">
-        <Link className="flow-back" to="/requests"><ArrowLeft size={17} /> Tất cả yêu cầu</Link>
-        <Link className="public-btn public-btn--blue" to={`/requests/new?tutor=${encodeURIComponent(request.tutorId)}`}>
-          Tạo yêu cầu mới
-        </Link>
-      </div>
-
-      <div className="flow-detail-panel">
-        <div>
-          {/* Badge phân biệt rõ Gia sư đã nhận và Đã chốt lịch */}
-          <Badge tone={requestTone(request)}>
-            {request.completed
-              ? 'Hoàn tất'
-              : request.status === 'confirmed'
-              ? 'Đã chốt lịch'
-              : request.status === 'accepted'
-              ? 'Gia sư đã nhận'
-              : requestLabel(request)}
-          </Badge>
-
-          <h2>{request.subject} với {tutor?.name}</h2>
-          <p>{request.goal}</p>
-          <dl>
-            <div><dt>Lịch đã đề xuất</dt><dd>{request.schedule}</dd></div>
-            {request.confirmedSchedule && <div><dt>Lịch đã xác nhận</dt><dd>{request.confirmedSchedule}</dd></div>}
-            <div><dt>Hình thức</dt><dd>{request.format || 'Tại nhà'}</dd></div>
-            <div><dt>Khu vực gia sư</dt><dd>{tutor?.area}</dd></div>
-            <div><dt>Học phí tham khảo</dt><dd>{money(tutor?.fee || 0)}đ / buổi</dd></div>
-
-            {isAcceptedOrConfirmed && (
-              <div>
-                <dt>Hotline / Zalo liên hệ</dt>
-                <dd style={{ color: '#2563eb', fontWeight: 600 }}>0900 000 002 (Gia sư {tutor?.name})</dd>
+      <div className="flow-detail-panel learner-request-detail-grid">
+        <aside className="learner-request-detail-aside">
+          <div className="learner-request-summary-card">
+            {tutor && (
+              <div className="learner-request-summary-card__tutor">
+                <div className="learner-request-tutor-card__header">
+                  <Avatar initials={tutor.initials} name={tutor.name} tone={tutor.avatarTone || tutor.tone || 'blue'} size="lg" />
+                  <div className="learner-request-tutor-card__info">
+                    <h3 className="learner-request-tutor-card__name">{tutor.name}</h3>
+                    <p className="learner-request-tutor-card__uni">{tutor.university}</p>
+                    <p className="learner-request-tutor-sub">
+                      <span>Môn dạy: <strong>{request.subject || tutor.subject || (tutor.subjects && tutor.subjects[0])}</strong></span>
+                      {tutor.rating && <span className="rating-star"> · ⭐ {Number(tutor.rating).toFixed(1)}</span>}
+                    </p>
+                  </div>
+                </div>
+                <div className="tutor-report-request-actions">
+                  <Link
+                    to={`/tutors/${tutor.id}`}
+                    state={{ from: `/requests/${request.id}`, fromLabel: 'Quay lại chi tiết yêu cầu' }}
+                    className="button button--secondary button--sm"
+                  >
+                    Xem hồ sơ gia sư <ArrowUpRight size={14} aria-hidden="true" />
+                  </Link>
+                  {reportButton}
+                </div>
               </div>
             )}
-          </dl>
-          <RequestSelectionDetails request={request} />
-        </div>
 
-        <aside>
-          <h3>Bước tiếp theo</h3>
-          <p>
-            {request.status === 'pending'
-              ? 'Gia sư sẽ xem yêu cầu trong luồng demo.'
-              : request.status === 'accepted' && !request.completed
-              ? 'Gia sư đã nhận lớp! Bạn vui lòng bấm Xác nhận lịch học để chốt thời gian chính thức.'
-              : request.status === 'confirmed' && !request.completed
-              ? 'Lịch học đã được chốt chính thức thành công!'
-              : request.completed
-              ? 'Buổi học đã hoàn tất. Bạn có thể để lại đánh giá chất lượng gia sư bên dưới.'
-              : request.status === 'rejected'
-              ? 'Gia sư đã từ chối yêu cầu.'
-              : 'Yêu cầu đã được hủy.'}
-          </p>
+            {!tutor && <div><h3>Gia sư ({request.tutorId || 'Chưa rõ ID'})</h3><div className="tutor-report-request-actions">{reportButton}</div></div>}
+            {reportNotice && <p className="tutor-report-feedback" role="status">{reportNotice}</p>}
+            {tutor && <div className="learner-request-summary-card__divider" />}
 
-          {/* Nút Xác nhận lịch: Chỉ xuất hiện khi trạng thái là accepted */}
-          {request.status === 'accepted' && !request.completed && (
-            <div className="request-confirm-schedule">
-              {proposals.length ? <>
-                <fieldset>
-                  <legend>Chọn lịch cuối cùng *</legend>
-                  {proposals.map((proposal) => <label key={proposalKey(proposal)}>
-                    <input type="radio" name="confirmed-schedule" value={proposalKey(proposal)} checked={selectedProposalKey === proposalKey(proposal) || (proposals.length === 1 && !selectedProposalKey)} onChange={() => { setSelectedProposalKey(proposalKey(proposal)); setConfirmError(''); }} />
-                    {proposalLabel(proposal)}
-                  </label>)}
-                </fieldset>
-                {confirmError && <p role="alert">{confirmError}</p>}
-                <button className="public-btn public-btn--blue" style={{ width: '100%', marginBottom: '10px' }} onClick={confirmSchedule}>
-                  Xác nhận lịch học
+            <div className="learner-request-summary-card__status">
+              <div className="learner-request-status-card__top">
+                <h3>Trạng thái & Tiến trình</h3>
+              </div>
+              <p>
+                {request.status === 'pending'
+                  ? 'Gia sư đã nhận được yêu cầu học của bạn và sẽ sớm phản hồi để thống nhất lịch học.'
+                  : request.status === 'accepted' && !request.completed
+                    ? 'Lịch học đã được gia sư xác nhận thành công! Bạn có thể xem trên Thời khóa biểu hoặc vào trực tiếp bài học.'
+                    : request.completed
+                      ? 'Khóa học đã kết thúc tốt đẹp. Hãy gửi đánh giá sao và chia sẻ trải nghiệm học cùng gia sư nhé!'
+                      : request.status === 'rejected'
+                        ? 'Gia sư đã từ chối yêu cầu do trùng lịch dạy. Bạn có thể gửi yêu cầu khác hoặc chọn gia sư mới.'
+                        : 'Yêu cầu học này đã được hủy theo nguyện vọng của học viên.'}
+              </p>
+
+              {request.status === 'accepted' && (
+                <div className="learner-request-next-actions">
+                  <Link
+                    className="button button--primary button--sm"
+                    to={`/learner/classes/${request.id}`}
+                    state={{ from: `/requests/${request.id}`, fromLabel: 'Chi tiết yêu cầu' }}
+                  >
+                    Vào bài học <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                  <Link className="button button--secondary button--sm" to="/learner/schedule">
+                    <CalendarDays size={16} aria-hidden="true" /> Xem Thời khóa biểu
+                  </Link>
+                </div>
+              )}
+
+              {request.status === 'pending' && (
+                <button
+                  type="button"
+                  className="button button--secondary button--sm learner-request-cancel-btn"
+                  onClick={() => update({ status: 'cancelled' })}
+                >
+                  Hủy yêu cầu học
                 </button>
-              </> : <p role="status">Yêu cầu cũ này chưa có ngày và giờ cụ thể để xác nhận. Bạn có thể tạo yêu cầu mới từ hồ sơ gia sư.</p>}
+              )}
             </div>
-          )}
-
-          {/* Nút Hủy yêu cầu */}
-          {['pending', 'accepted', 'confirmed'].includes(request.status) && !request.completed && (
-            <button
-              className="public-btn public-btn--outline-blue"
-              style={{ width: '100%' }}
-              onClick={() => update({ status: 'cancelled' })}
-            >
-              Hủy yêu cầu
-            </button>
-          )}
+          </div>
         </aside>
+
+        <div className="learner-request-detail-card">
+          <div className="learner-request-detail-card__head">
+            <Badge tone={requestTone(request)}>{requestLabel(request)}</Badge>
+            <span>Mã hồ sơ: <strong>{formatRequestId(request.id)}</strong></span>
+          </div>
+          <h2>Lớp {request.subject} — {tutor?.name}</h2>
+
+          <dl className="learner-request-dl">
+            <div>
+              <dt><Clock3 size={15} aria-hidden="true" /> Thời gian</dt>
+              <dd>
+                {request.schedule ? (
+                  request.schedule.includes(';') ? (
+                    <div className="learner-request-schedules-col">
+                      {request.schedule.split(';').map((s, idx) => (
+                        <span key={idx} className="learner-request-schedule-badge">
+                          {s.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span>{request.schedule}</span>
+                  )
+                ) : (
+                  'Lịch theo thỏa thuận'
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt><BookOpen size={15} aria-hidden="true" /> Hình thức</dt>
+              <dd>{request.format || (request.formats?.length ? request.formats.join(', ') : 'Tại nhà')}</dd>
+            </div>
+            {(request.areas?.length > 0 || request.area || tutor?.area || tutor?.location) && (
+              <div>
+                <dt><MapPin size={15} aria-hidden="true" /> Khu vực</dt>
+                <dd>{(request.areas?.length ? request.areas.join(', ') : request.area) || tutor?.area || tutor?.location || 'TP. Hồ Chí Minh'}</dd>
+              </div>
+            )}
+            <div>
+              <dt><GraduationCap size={15} aria-hidden="true" /> Mức phí</dt>
+              <dd>{money(request.sessionFee || tutor?.price || 0)}đ / buổi</dd>
+            </div>
+            {(request.subject || request.subjects?.length > 0) && (
+              <div>
+                <dt><BookOpen size={15} aria-hidden="true" /> Môn học</dt>
+                <dd>{request.subject || request.subjects?.join(', ')}</dd>
+              </div>
+            )}
+            {request.levels?.length > 0 && (
+              <div>
+                <dt><Layers size={15} aria-hidden="true" /> Cấp độ</dt>
+                <dd>{request.levels.join(', ')}</dd>
+              </div>
+            )}
+            <div>
+              <dt><Sparkles size={15} aria-hidden="true" /> Nguyện vọng</dt>
+              <dd>{request.goal || request.note || 'Theo lộ trình chuẩn của gia sư'}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
-      {/* Form Đánh giá 5 sao */}
-      {request.completed && (
-        <form
-          className="flow-form flow-review"
-          onSubmit={sendReview}
-        >
-          <h2>Đánh giá gia sư</h2>
-          {request.reviewId || request.review ? (
-            <p role="status">Đánh giá {request.rating}/5 sao đã được lưu.{request.review ? ` Nhận xét: “${request.review}”` : ''}</p>
-          ) : (
-            <>
-              <div style={{ marginBottom: '16px' }}>
-                <span id="learner-review-rating-label" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Chấm điểm gia sư *</span>
-                <div role="group" aria-labelledby="learner-review-rating-label" style={{ display: 'flex', gap: '8px' }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
+      {reportOpen && <TutorReportForm key={request.id} tutorId={request.tutorId} tutorName={tutor?.name} requestId={request.id} requestCode={formatRequestId(request.id)} onClose={() => setReportOpen(false)} onSuccess={() => { setReportOpen(false); setReportNotice('Đã gửi báo cáo. Quản trị viên sẽ xem xét.'); }} />}
+      <div className="learner-request-review-wrapper">
+        {request.completed || request.status === 'accepted' ? (
+          <form
+            id="danh-gia"
+            className="flow-form flow-review learner-review-box"
+            onSubmit={(event) => {
+              event.preventDefault();
+              update({ rating, review });
+            }}
+          >
+            <div className="learner-review-box__head">
+              <h2>Đánh giá & Nhận xét gia sư {tutor?.name}</h2>
+              <p>Ý kiến phản hồi chân thực của bạn giúp gia sư cải thiện chất lượng giảng dạy và hỗ trợ các bạn học sinh khác chọn gia sư phù hợp.</p>
+            </div>
+
+            {request.review ? (
+              <div className="learner-review-submitted" role="status">
+                <CheckCircle2 size={24} aria-hidden="true" />
+                <div>
+                  <strong>Bạn đã đánh giá {request.rating || 5}/5 sao</strong>
+                  <p>“{request.review}”</p>
+                  <small>Cảm ơn bạn đã đóng góp đánh giá cho gia sư!</small>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="learner-star-picker" role="group" aria-label="Chọn số sao đánh giá">
+                  {[1, 2, 3, 4, 5].map((value) => (
                     <button
+                      key={value}
                       type="button"
-                      key={star}
-                      onClick={() => setRating(star)}
-                      aria-label={`${star} sao`}
-                      aria-pressed={rating === star}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
-                      title={`${star} sao`}
+                      className={`learner-star-btn ${value <= rating ? 'is-active' : ''}`}
+                      onClick={() => setRating(value)}
                     >
-                      <Star
-                        size={30}
-                        fill={star <= rating ? '#f59e0b' : 'none'}
-                        color={star <= rating ? '#f59e0b' : '#d1d5db'}
-                      />
+                      <Star size={22} fill={value <= rating ? 'currentColor' : 'none'} aria-hidden="true" />
+                      <span>{value} sao</span>
                     </button>
                   ))}
                 </div>
-              </div>
-
-              <label>
-                Nhận xét buổi học (không bắt buộc)
-                <textarea
-                  rows="3"
-                  value={review}
-                  onChange={(e) => setReview(e.target.value)}
-                  placeholder="Gia sư giảng dạy ra sao? Bạn có tiến bộ hơn không?"
-                />
-              </label>
-              {reviewError && <p role="alert">{reviewError}</p>}
-              <button className="public-btn public-btn--blue" type="submit">Gửi đánh giá</button>
-            </>
-          )}
-        </form>
-      )}
-
-      {/* Nút khung Chat nổi */}
-      {isAcceptedOrConfirmed && <FloatingChatWidget tutorName={tutor?.name} />}
+                <label>
+                  Mức độ hài lòng
+                  <select
+                    value={rating}
+                    onChange={(event) => setRating(Number(event.target.value))}
+                  >
+                    <option value={5}>5 sao — Rất hài lòng, giảng bài dễ hiểu và nhiệt tình</option>
+                    <option value={4}>4 sao — Hài lòng, đúng giờ và nắm vững chuyên môn</option>
+                    <option value={3}>3 sao — Bình thường, cần cải thiện phương pháp</option>
+                    <option value={2}>2 sao — Chưa hài lòng</option>
+                    <option value={1}>1 sao — Không hài lòng</option>
+                  </select>
+                </label>
+                <label>
+                  Nhận xét chi tiết
+                  <textarea
+                    required
+                    rows="3"
+                    value={review}
+                    onChange={(event) => setReview(event.target.value)}
+                    placeholder="Gia sư giảng dạy như thế nào? Buổi học đã giúp bạn tiến bộ ra sao?..."
+                  />
+                </label>
+                <button className="button button--primary" type="submit">
+                  Gửi đánh giá gia sư
+                </button>
+              </>
+            )}
+          </form>
+        ) : (
+          <div className="flow-form learner-review-box learner-review-box--disabled">
+            <div className="learner-review-box__head">
+              <h2>Đánh giá & Nhận xét gia sư {tutor?.name}</h2>
+              <p>
+                {request.status === 'cancelled'
+                  ? 'Yêu cầu học này đã hủy nên không áp dụng đánh giá gia sư.'
+                  : 'Mục đánh giá sẽ tự động mở sau khi gia sư xác nhận lịch và bắt đầu các buổi học.'}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </LearnerShell>
   );
 }

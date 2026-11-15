@@ -6,8 +6,6 @@ import {
   requestIsCompleted,
   decideRequest,
   updateLearnerRequest,
-  submitLearnerReview as submitLearnerReviewResult,
-  confirmLearnerRequest as confirmLearnerRequestResult,
   completeDomainLesson,
   addLearnerRequest,
   approveTutor,
@@ -22,6 +20,7 @@ import {
 import { normalizeRanges, normalizeSessionMinutes, isValidAvailability, overlaps } from '../../data/tutorSchedule.js';
 import { selectTutorIncome } from './incomeSelectors.js';
 import { submitAppeal, reviewAppeal } from './appeals.js';
+import { submitTutorReport } from './tutorReports.js';
 
 const Context = createContext(null);
 export function DemoDomainProvider({ children }) {
@@ -46,6 +45,17 @@ export function DemoDomainProvider({ children }) {
   }, [user]);
   useEffect(() => { try { localStorage.setItem(DOMAIN_STORAGE_KEY, JSON.stringify(state)); } catch { /* Demo storage may be unavailable. */ } }, [state]);
   const tutorId = state.profiles.find((p) => p.accountId === user?.id)?.id;
+  const createTutorReport = (values) => {
+    const result = submitTutorReport(state, user, values);
+    if (result.error) return { error: result.error };
+    try {
+      localStorage.setItem(DOMAIN_STORAGE_KEY, JSON.stringify(result.state));
+    } catch {
+      return { error: 'Không lưu được báo cáo. Vui lòng thử lại hoặc giảm dung lượng ảnh.' };
+    }
+    setState(result.state);
+    return { id: result.id };
+  };
   const createRequest = (values) => {
     const result = addLearnerRequest(state, user, values);
     if (result.state) setState(result.state);
@@ -53,16 +63,6 @@ export function DemoDomainProvider({ children }) {
   };
   const decide = (id, status) => { const result = decideRequest(state, id, status, tutorId); if (result.error) return result.error; setState(result.state); return ''; };
   const updateLearnerRequests = (items) => setState((current) => items.reduce((next, item) => updateLearnerRequest(next, user?.id, item.id, item), current));
-  const submitLearnerReview = (requestId, values) => {
-    const result = submitLearnerReviewResult(state, user, requestId, values);
-    if (result.state) setState(result.state);
-    return result;
-  };
-  const confirmLearnerRequest = (requestId, proposal) => {
-    const result = confirmLearnerRequestResult(state, user, requestId, proposal);
-    if (result.state) setState(result.state);
-    return result;
-  };
   const setSaved = (update) => {
     if (user?.role !== 'learner') { setAnonymousSaved(update); return; }
     setState((current) => ({ ...current, savedByAccount: { ...current.savedByAccount,
@@ -131,10 +131,9 @@ export function DemoDomainProvider({ children }) {
         sessionMinutes: normalizeSessionMinutes(state.settings[tutorId]?.sessionMinutes ?? user?.duration),
         anonymousSaved,
         createRequest,
+        createTutorReport,
         decide,
         updateLearnerRequests,
-        submitLearnerReview,
-        confirmLearnerRequest,
         setSaved,
         saveAvailability,
         setSessionMinutes,
@@ -169,7 +168,7 @@ export function useTutorIncome(referenceDate = new Date()) {
 }
 export function useLearnerRequests() {
   const state = useDemoDomain(); const { user } = useDemoAuth();
-  return [state.requests.filter((r) => r.learnerId === user?.id).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests, state.submitLearnerReview, state.confirmLearnerRequest];
+  return [state.requests.filter((r) => r.learnerId === user?.id).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests];
 }
 export function useSavedTutors() { const state = useDemoDomain(); const { user } = useDemoAuth(); return [user?.role === 'learner' ? state.savedByAccount[user.id] || [] : state.anonymousSaved, state.setSaved]; }
 export function useTutorProfile() {

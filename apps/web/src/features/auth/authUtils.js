@@ -1,4 +1,4 @@
-export const LEARNER_HOME_PATH = '/learner/search';
+export const LEARNER_HOME_PATH = '/learner/classes';
 
 export function safeRedirect(value) {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return null;
