@@ -37,7 +37,7 @@ export default function LessonDetailModal({ lesson, onClose, onSaveNotes, onComp
       {lesson.status === 'completed' && <p className="lesson-detail-feedback">{Number.isFinite(lesson.sessionFee)
         ? `Buổi học này được tính vào thu nhập tháng ${lesson.date.slice(5, 7)}/${lesson.date.slice(0, 4)} theo ngày học.`
         : 'Buổi học chưa được tính vào thu nhập vì chưa có học phí. Không lấy mức phí hiện tại của hồ sơ thay thế.'}</p>}
-      <label className="lesson-detail-notes" htmlFor="lesson-notes">Ghi chú cho lớp học<textarea id="lesson-notes" rows={4} value={notes} onChange={(event) => { setNotes(event.target.value); setMessage(''); }} placeholder="Nội dung đã học, bài tập hoặc lưu ý cho buổi sau…"/></label>
+      <label className="lesson-detail-notes" htmlFor="lesson-notes">Ghi chú cho lớp học<textarea id="lesson-notes" rows={4} maxLength={1000} value={notes} onChange={(event) => { setNotes(event.target.value); setMessage(''); }} placeholder="Nội dung đã học, bài tập hoặc lưu ý cho buổi sau…"/><small>{notes.length}/1000 ký tự</small></label>
       {message && <p className="lesson-detail-feedback" role="status">{message}</p>}
       <footer><Button variant="secondary" onClick={saveNotes} disabled={notes === (lesson.notes || '')}>Lưu ghi chú</Button>{canCompleteLesson(lesson) && <Button onClick={complete}><Check size={17}/>Đánh dấu hoàn tất</Button>}</footer>
     </section>

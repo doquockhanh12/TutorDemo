@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   CalendarDays,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -131,7 +132,7 @@ export default function ProfileCalendar({
 
       {!readOnly && <form className="profile-custom-time" onSubmit={addCustom}>
         <strong>Đề xuất giờ riêng</strong>
-        <label>Ngày<select value={customDate || localDateKey(dates[0])} onChange={(event) => { setCustomDate(event.target.value); setCustomError(''); }}>{dates.map((date) => <option key={localDateKey(date)} value={localDateKey(date)}>{date.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}</option>)}</select></label>
+        <label>Ngày<span className="select-control"><select className="appearance-none pr-10" value={customDate || localDateKey(dates[0])} onChange={(event) => { setCustomDate(event.target.value); setCustomError(''); }}>{dates.map((date) => <option key={localDateKey(date)} value={localDateKey(date)}>{date.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}</option>)}</select><ChevronDown size={16} className="select-control__icon" aria-hidden="true"/></span></label>
         <label>Bắt đầu<input type="text" inputMode="numeric" maxLength={5} placeholder="HH:mm" value={customStart} onChange={(event) => { setCustomStart(event.target.value); setCustomError(''); }}/></label>
         <label>Kết thúc<input type="text" inputMode="numeric" maxLength={5} placeholder="HH:mm" value={customEnd} onChange={(event) => { setCustomEnd(event.target.value); setCustomError(''); }}/></label>
         <button type="submit" className="button button--secondary button--sm">Thêm giờ đề xuất</button>

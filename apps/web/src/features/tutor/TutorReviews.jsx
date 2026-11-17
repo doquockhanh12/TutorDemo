@@ -7,8 +7,10 @@ import {
   Send,
   ThumbsUp,
   MessageCircle,
+  ChevronDown,
 } from 'lucide-react';
 import { TutorShell } from './TutorPages.jsx';
+import { MAX_REVIEW_WORDS, countWords, validateWordLimit } from '../domain/demoDomain.js';
 import './tutor-reviews.css';
 
 const initialReviews = [
@@ -80,13 +82,27 @@ function Stars({ value, size = 17 }) {
   );
 }
 
+export function applyTutorReply(reviews, id, text) {
+  const error = validateWordLimit(text, MAX_REVIEW_WORDS);
+  if (error) return { error };
+  const trimmed = String(text).trim();
+  return {
+    reviews: reviews.map((review) =>
+      review.id === id ? { ...review, reply: trimmed } : review
+    ),
+  };
+}
+
 export default function TutorReviews() {
   const [reviews, setReviews] = useState(initialReviews);
   const [search, setSearch] = useState('');
   const [ratingFilter, setRatingFilter] = useState('all');
   const [replyingId, setReplyingId] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [replyError, setReplyError] = useState('');
   const [notice, setNotice] = useState('');
+  const replyWordCount = countWords(replyText);
+  const isReplyOverLimit = replyWordCount > MAX_REVIEW_WORDS;
 
   const average = reviews.length
     ? reviews.reduce((sum, item) => sum + item.rating, 0) /
@@ -117,18 +133,16 @@ export default function TutorReviews() {
   }));
 
   function saveReply(id) {
-    if (!replyText.trim()) return;
+    const result = applyTutorReply(reviews, id, replyText);
+    if (result.error) {
+      setReplyError(result.error);
+      return;
+    }
 
-    setReviews((current) =>
-      current.map((review) =>
-        review.id === id
-          ? { ...review, reply: replyText.trim() }
-          : review
-      )
-    );
-
+    setReviews(result.reviews);
     setReplyingId(null);
     setReplyText('');
+    setReplyError('');
     setNotice('Đã lưu phản hồi trong trình duyệt.');
   }
 
@@ -193,17 +207,21 @@ export default function TutorReviews() {
 
             <label className="reviews-filter">
               <span className="sr-only">Lọc theo số sao</span>
-              <select
-                value={ratingFilter}
-                onChange={(event) => setRatingFilter(event.target.value)}
-              >
-                <option value="all">Tất cả số sao</option>
-                <option value="5">5 sao</option>
-                <option value="4">4 sao</option>
-                <option value="3">3 sao</option>
-                <option value="2">2 sao</option>
-                <option value="1">1 sao</option>
-              </select>
+              <span className="select-control">
+                <select
+                  className="appearance-none pr-10"
+                  value={ratingFilter}
+                  onChange={(event) => setRatingFilter(event.target.value)}
+                >
+                  <option value="all">Tất cả số sao</option>
+                  <option value="5">5 sao</option>
+                  <option value="4">4 sao</option>
+                  <option value="3">3 sao</option>
+                  <option value="2">2 sao</option>
+                  <option value="1">1 sao</option>
+                </select>
+                <ChevronDown size={16} className="select-control__icon" aria-hidden="true" />
+              </span>
             </label>
           </div>
 
@@ -235,14 +253,14 @@ export default function TutorReviews() {
                     <Stars value={review.rating} />
                   </div>
 
-                  <p className="review-card__comment">{review.comment}</p>
+                  <p className="review-card__comment break-words">{review.comment}</p>
 
                   {review.reply && (
                     <div className="review-reply">
                       <MessageCircle size={16} />
-                      <div>
+                      <div className="review-reply__content">
                         <strong>Phản hồi của gia sư</strong>
-                        <p>{review.reply}</p>
+                        <p className="break-words">{review.reply}</p>
                       </div>
                     </div>
                   )}
@@ -252,17 +270,32 @@ export default function TutorReviews() {
                       <textarea
                         rows={3}
                         value={replyText}
-                        onChange={(event) => setReplyText(event.target.value)}
+                        aria-invalid={isReplyOverLimit || Boolean(replyError)}
+                        onChange={(event) => {
+                          setReplyText(event.target.value);
+                          setReplyError('');
+                        }}
                         placeholder="Nhập phản hồi của bạn..."
                         autoFocus
                       />
-                      <div>
+                      <div className="review-reply-form__meta">
+                        <small className={`review-word-counter${isReplyOverLimit ? ' is-over-limit' : ''}`}>
+                          {replyWordCount}/{MAX_REVIEW_WORDS} từ
+                        </small>
+                        {(isReplyOverLimit || replyError) && (
+                          <small className="review-reply-error" role="alert">
+                            {replyError || `Nội dung không được vượt quá ${MAX_REVIEW_WORDS} từ.`}
+                          </small>
+                        )}
+                      </div>
+                      <div className="review-reply-form__actions">
                         <button
                           type="button"
                           className="reviews-button reviews-button--secondary"
                           onClick={() => {
                             setReplyingId(null);
                             setReplyText('');
+                            setReplyError('');
                           }}
                         >
                           Hủy
@@ -270,7 +303,7 @@ export default function TutorReviews() {
                         <button
                           type="button"
                           className="reviews-button"
-                          disabled={!replyText.trim()}
+                          disabled={!replyText.trim() || isReplyOverLimit}
                           onClick={() => saveReply(review.id)}
                         >
                           <Send size={15} />
@@ -285,6 +318,7 @@ export default function TutorReviews() {
                       onClick={() => {
                         setReplyingId(review.id);
                         setReplyText(review.reply);
+                        setReplyError('');
                         setNotice('');
                       }}
                     >

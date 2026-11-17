@@ -9,11 +9,13 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
+  ChevronDown,
   SlidersHorizontal,
 } from 'lucide-react';
 
 import Badge from '../../components/Badge.jsx';
 import { requestLabel, requestTone } from '../domain/statusMetadata.js';
+import { sortRequestsFifo } from '../domain/demoDomain.js';
 import TutorWorkspaceLayout from './TutorWorkspaceLayout.jsx';
 import useDemoDomain, { useTutorProfile } from '../domain/DemoDomainContext.jsx';
 import { subjectById } from '../../data/subjectCatalog.js';
@@ -202,27 +204,31 @@ export function TutorProfile() {
           <label>
             Thời gian dạy cho một buổi
 
-            <select
-              value={
-                draft.sessionMinutes
-              }
-              onChange={(event) =>
-                change(
-                  'sessionMinutes',
-                  Number(
-                    event.target.value
+            <span className="select-control">
+              <select
+                className="appearance-none pr-10"
+                value={
+                  draft.sessionMinutes
+                }
+                onChange={(event) =>
+                  change(
+                    'sessionMinutes',
+                    Number(
+                      event.target.value
+                    )
                   )
-                )
-              }
-            >
-              <option value="45">
-                45 phút
-              </option>
+                }
+              >
+                <option value="45">
+                  45 phút
+                </option>
 
-              <option value="90">
-                90 phút
-              </option>
-            </select>
+                <option value="90">
+                  90 phút
+                </option>
+              </select>
+              <ChevronDown size={16} className="select-control__icon" aria-hidden="true" />
+            </span>
           </label>
 
           <label>
@@ -230,6 +236,7 @@ export function TutorProfile() {
 
             <textarea
               rows="4"
+              maxLength={1000}
               value={draft.bio}
               onChange={(event) =>
                 change(
@@ -238,6 +245,7 @@ export function TutorProfile() {
                 )
               }
             />
+            <small>{(draft.bio || '').length}/1000 ký tự</small>
           </label>
 
           <button
@@ -291,7 +299,7 @@ export function TutorProfile() {
             phút / buổi
           </p>
 
-          <p>
+          <p className="break-words">
             {draft.bio}
           </p>
           {draft.subjectIds.map((id) => <p key={id}>Đối tượng {subjectById(id)?.name}: {draft.subjectLevels?.[id]?.join(', ') || 'Chưa chọn'}</p>)}
@@ -326,11 +334,10 @@ export function TutorRequests() {
   ] = useState('');
 
   const visible =
-    requests.filter(
+    sortRequestsFifo(requests).filter(
       (item) =>
         (status === 'all' ||
           item.status === status ||
-          (status === 'pending' && ['needs_revision', 'pending_learner_confirmation'].includes(item.status)) ||
           (status === 'rejected' && ['cancelled', 'expired'].includes(item.status))) &&
         `${item.learner} ${item.subject} ${item.area} ${item.note || ''} ${item.goal || ''}`
           .toLocaleLowerCase(
@@ -355,10 +362,6 @@ export function TutorRequests() {
               [
                 'all',
                 'Tất cả',
-              ],
-              [
-                'pending',
-                'Chờ phản hồi',
               ],
               [
                 'accepted',
@@ -684,19 +687,15 @@ export function TutorRequestDetail() {
             </div>
           ) : (
             <p
-              className={request.status === 'accepted' && request.classId ? 'flow-success' : 'flow-error'}
+              className={request.status === 'accepted' ? 'flow-success' : 'flow-error'}
               role="status"
             >
-              {request.reconciliationError
-                ? `Chưa thể khôi phục lớp từ yêu cầu cũ: ${request.reconciliationError}`
-                : request.status === 'accepted' && request.classId
+              {request.status === 'accepted'
                 ? 'Đã nhận lớp trong dữ liệu trình duyệt.'
-                : ['accepted', 'pending_learner_confirmation'].includes(request.status)
-                  ? 'Yêu cầu cũ chưa đủ dữ liệu đã thống nhất để khôi phục lớp; cần kiểm tra lại điều kiện học.'
-                  : `Đã cập nhật trạng thái: ${requestLabel(request, 'tutor')}.`}
+                : `Đã cập nhật trạng thái: ${requestLabel(request, 'tutor')}.`}
             </p>
           )}
-          {request.status === 'accepted' && request.classId && <Link className="button button--secondary" to={`/tutor/classes/${encodeURIComponent(request.classId)}`}>Xem lớp</Link>}
+          {request.status === 'accepted' && <Link className="button button--secondary" to={`/tutor/classes/${encodeURIComponent(request.classId || request.id)}`}>Xem lớp</Link>}
         </aside>
       </div>
     </TutorShell>

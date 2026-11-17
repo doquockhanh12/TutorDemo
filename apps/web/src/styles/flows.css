@@ -517,6 +517,41 @@
 
 .flow-review {
   margin-top: 24px;
+  min-width: 0;
+}
+
+.flow-review p,
+.flow-review__submitted,
+.flow-review textarea,
+.break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.flow-review__meta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.word-counter {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.word-counter.is-over-limit {
+  color: var(--status-danger, #dc2626);
+}
+
+.flow-error {
+  color: var(--status-danger, #dc2626) !important;
+  font-weight: 700;
+}
+
+.flow-form button:disabled,
+.public-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .flow-success {

@@ -355,7 +355,12 @@ function ReviewCard({ review }) {
           <Star size={14} fill="currentColor" aria-hidden="true" />
           {review.rating}/5
         </span>
-        {text && <p>{text}</p>}
+        {text && <p className="break-words">{text}</p>}
+        {review.reply && (
+          <div className="profile-bento__review-reply break-words">
+            <strong>Phản hồi của gia sư:</strong> <p className="break-words">{review.reply}</p>
+          </div>
+        )}
       </div>
     </article>
   );

@@ -240,10 +240,12 @@ export default function TutorRequestForm({
         <textarea
           className="profile-request__goal-input border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           rows="4"
+          maxLength={500}
           value={goal}
           onChange={(event) => setGoal(event.target.value)}
           placeholder="Mục tiêu học, phần cần hỗ trợ và lưu ý cho gia sư..."
         />
+        <small>{goal.length}/500 ký tự</small>
       </label>
 
       {!proposalsValid && (

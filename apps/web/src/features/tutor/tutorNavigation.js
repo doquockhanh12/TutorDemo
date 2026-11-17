@@ -3,7 +3,7 @@ export const tutorNavigation = [
   ['Yêu cầu học', '/tutor/requests'],
   ['Lịch dạy học', '/tutor/timetable'],
   ['Quản lý lớp học', '/tutor/classes'],
-  ['Lọc yêu cầu học', '/tutor/find-students'],
+  ['Tìm lớp phù hợp', '/tutor/find-students'],
   ['Thu nhập', '/tutor/income'],
   ['Ví gia sư', '/tutor/wallet'],
   ['Hồ sơ gia sư', '/tutor/profile'],

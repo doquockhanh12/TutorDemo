@@ -50,7 +50,9 @@
 .tutor-find__class { background: var(--surface-white); border: var(--border-default); border-radius: var(--radius-md); padding: 22px; }
 .tutor-find__class-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .tutor-find__class-heading > div { flex: 1; min-width: 160px; }
+.tutor-find__tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .tutor-find__subject { display: inline-flex; align-items: center; gap: 6px; color: var(--brand-primary); font-size: .8rem; font-weight: 800; }
+.tutor-find__level, .tutor-find__format { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; background: var(--color-surface-muted, #f1f5f9); color: var(--color-text-secondary); font-size: .75rem; font-weight: 700; }
 .tutor-find__class h3 { margin: 6px 0 0; font-size: 1.12rem; line-height: 1.4; }
 .tutor-find__price { display: flex; align-items: baseline; gap: 4px; color: var(--brand-primary); font-size: 1.2rem; }
 .tutor-find__price small { font-size: .8rem; font-weight: 400; color: var(--text-muted); }
@@ -60,6 +62,10 @@
 .tutor-find__class-times { display: flex; flex-wrap: wrap; list-style: none; gap: 8px 18px; padding: 14px 0; margin: 14px 0; border-block: var(--border-default); }
 .tutor-find__class-times li { display: flex; align-items: center; gap: 6px; font-size: .82rem; }
 .tutor-find__class > .text-link { font-size: .9rem; }
+.tutor-find__class-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 6px; }
+.tutor-find__applied-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
+.tutor-find__applied-badge { display: inline-flex; align-items: center; gap: 6px; color: var(--color-success, #16a34a); font-size: .88rem; font-weight: 800; }
+.tutor-find__notice { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; padding: 12px 16px; border: 1px solid var(--color-success, #16a34a); border-radius: var(--radius-sm); background: var(--color-success-bg, #ecfdf3); color: var(--color-success, #15803d); font-size: .9rem; font-weight: 700; }
 .tutor-find__blocked, .tutor-find__empty { padding: 32px; background: var(--surface-white); border: var(--border-default); border-radius: var(--radius-md); }
 .tutor-find__blocked { border-color: #e8b7bc; background: #fff5f6; }
 .tutor-find__blocked > svg { color: var(--status-danger); }

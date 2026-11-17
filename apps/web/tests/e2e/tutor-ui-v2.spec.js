@@ -13,7 +13,7 @@ test('Tutor topbar follows each route while the dashboard keeps its greeting', a
     ['/tutor/map', 'Tìm lớp gần tôi'],
     ['/tutor/requests', 'Yêu cầu học'], ['/tutor/requests/req-2', 'Chi tiết yêu cầu'],
     ['/tutor/timetable', 'Lịch dạy học'], ['/tutor/classes', 'Quản lý lớp học'],
-    ['/tutor/classes/missing', 'Chi tiết lớp học'], ['/tutor/find-students', 'Lọc yêu cầu học'],
+    ['/tutor/classes/missing', 'Chi tiết lớp học'], ['/tutor/find-students', 'Tìm lớp phù hợp'],
     ['/tutor/income', 'Thu nhập'], ['/tutor/wallet', 'Ví gia sư'],
     ['/tutor/profile', 'Hồ sơ gia sư'], ['/tutor/reviews', 'Đánh giá'],
     ['/tutor/messages', 'Tin nhắn'], ['/tutor/settings', 'Cài đặt'],
@@ -24,7 +24,7 @@ test('Tutor topbar follows each route while the dashboard keeps its greeting', a
     expect(await page.locator('.tutor-topbar').evaluate((element) => element.getBoundingClientRect().height)).toBe(topbarHeight);
     await expect(page.locator('.tutor-page-head')).toHaveCount(0);
     if (route === '/tutor/requests') {
-      await expect(page.locator('.flow-tabs button')).toHaveText(['Tất cả', 'Chờ phản hồi', 'Đã nhận', 'Từ chối / Đã hủy']);
+      await expect(page.locator('.flow-tabs button')).toHaveText(['Tất cả', 'Đã nhận', 'Từ chối / Đã hủy']);
     }
   }
   await page.goto('/appeals');
@@ -32,18 +32,14 @@ test('Tutor topbar follows each route while the dashboard keeps its greeting', a
   await expect(page.locator('.tutor-header__nav svg')).toHaveCount(0);
 });
 
-test('incomplete accepted legacy request keeps its reason and creates no guessed class', async ({ page }) => {
+test('accepted legacy request stays accepted without reverse learner confirmation or Cần kiểm tra lớp status', async ({ page }) => {
   await resetDemo(page);
   await login(page, 'giabao', '/tutor/requests/demo-02');
-  await expect(page.locator('main .badge')).toContainText('Cần kiểm tra lớp');
-  await expect(page.getByRole('status')).toContainText('Thiếu hình thức học và ngày, giờ học cụ thể');
+  await expect(page.locator('main .badge')).toContainText('Đã nhận');
+  await expect(page.getByRole('status')).toContainText('Đã nhận lớp trong dữ liệu trình duyệt.');
   await expect(page.getByRole('button', { name: 'Chấp nhận và tạo lớp' })).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Xem lớp' })).toHaveCount(0);
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('tnm.demo.domain.v1')));
-  expect(saved.requests.find((item) => item.id === 'demo-02').legacyAcceptedStatus).toBe('accepted');
-  expect(saved.classes.filter((item) => item.requestId === 'demo-02')).toHaveLength(0);
   await page.reload();
-  await expect(page.locator('main .badge')).toContainText('Cần kiểm tra lớp');
+  await expect(page.locator('main .badge')).toContainText('Đã nhận');
 });
 
 test('Tutor UI V2 keeps one sidebar item and creates a class on tutor acceptance', async ({ page }) => {
@@ -66,8 +62,7 @@ test('Tutor UI V2 keeps one sidebar item and creates a class on tutor acceptance
   await expect(page.getByRole('link', { name: /Nguyễn Khánh Linh/ })).toBeVisible();
   await page.getByRole('link', { name: /Nguyễn Khánh Linh/ }).click();
   await expect(page.getByRole('heading', { name: 'Chi tiết lớp học' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Tiến độ học' })).toBeVisible();
-  await expect(page.getByText('Tổng số buổi')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Quản lý buổi học & Điểm danh/ })).toBeVisible();
   await expect(page.getByText('Thời lượng')).toBeVisible();
   await page.screenshot({ path: 'test-results/tutor-v2-class-detail.png' });
   await page.goto('/tutor/wallet');
@@ -89,7 +84,7 @@ test('two requests create two distinct classes, survive refresh and open their o
     expect(saved.requests.find((item) => item.id === id).classId).toBe(id);
   }
   await page.goto('/tutor/classes');
-  await expect(page.getByRole('status')).toContainText('2 lớp trong nhóm đang xem');
+  await expect(page.getByRole('status')).toContainText('3 lớp trong nhóm đang xem');
   await expect(page.getByRole('link', { name: /Phụ huynh bé An/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Nguyễn Khánh Linh/ })).toBeVisible();
   await page.getByRole('searchbox', { name: 'Tìm lớp học' }).fill('Khánh Linh');

@@ -1,5 +1,6 @@
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Search,
   Send,
@@ -20,12 +21,21 @@ function getLastMessage(conversation) {
 
 export default function TutorMessages() {
   const { conversations, unreadMessages, unreadConversations, markOpened, appendMessage } = useTutorMessagesState();
-  const [activeId, setActiveId] = useState(conversations[0]?.id ?? null);
+  const location = useLocation();
+  const requestedConversationId = location.state?.conversationId;
+  const [activeId, setActiveId] = useState(() => requestedConversationId || conversations[0]?.id || null);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [draft, setDraft] = useState('');
-  const [mobileChatOpen, setMobileChatOpen] = useState(false);
+  const [mobileChatOpen, setMobileChatOpen] = useState(Boolean(requestedConversationId));
   const [notice, setNotice] = useState('');
+
+  useEffect(() => {
+    if (requestedConversationId) {
+      setActiveId(requestedConversationId);
+      setMobileChatOpen(true);
+    }
+  }, [requestedConversationId]);
 
   const activeConversation = conversations.find(
     (item) => item.id === activeId
@@ -239,6 +249,7 @@ export default function TutorMessages() {
                 </label>
                 <input
                   id="tutor-message-input"
+                  maxLength={1000}
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   placeholder="Nhập tin nhắn..."

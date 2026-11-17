@@ -219,6 +219,7 @@
   font-size: 14px;
   line-height: 1.75;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .review-reply {
@@ -229,11 +230,18 @@
   border-radius: 12px;
   background: #f3f7ff;
   color: #3158a2;
+  min-width: 0;
 }
 
 .review-reply > svg {
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+.review-reply > div,
+.review-reply__content {
+  min-width: 0;
+  flex: 1;
 }
 
 .review-reply strong {
@@ -246,6 +254,12 @@
   font-size: 13px;
   line-height: 1.6;
   overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .review-reply-trigger {
@@ -271,9 +285,33 @@
 .review-reply-form textarea {
   padding: 12px;
   resize: vertical;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.review-reply-form > div {
+.review-reply-form__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-word-counter {
+  color: #71829d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.review-word-counter.is-over-limit,
+.review-reply-error {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.review-reply-form > div,
+.review-reply-form__actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;

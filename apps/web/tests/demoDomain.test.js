@@ -61,7 +61,7 @@ test('BUG-001 canonical seed clones immutable data and fixes proposals at seed t
 test('BUG-002 learner updates cannot complete requests or edit another owner', () => {
   const state = createDemoState(now);
   const result = updateLearnerRequest(state, 'demo-learner', 'demo-02', { status: 'completed' });
-  assert.equal(result.requests.find((r) => r.id === 'demo-02').status, 'needs_revision');
+  assert.equal(result.requests.find((r) => r.id === 'demo-02').status, 'accepted');
   assert.equal(updateLearnerRequest(state, 'other', 'demo-01', { status: 'cancelled' }).requests[0].status, 'pending');
   assert.equal(updateLearnerRequest(state, 'demo-learner', 'demo-01', { status: 'cancelled' }).requests[0].status, 'cancelled');
 });
@@ -77,10 +77,10 @@ test('BUG-001 legacy stores migrate once without deleting or becoming the active
   assert.ok(restoreDemoState(storage, now).requests.some((r) => r.id === 'legacy-created'));
 });
 
-test('BUG-003 incomplete legacy acceptance is flagged without inventing a class', () => {
+test('BUG-003 persisted requests use codes and completed lessons do not change accepted code', () => {
   const state = createDemoState(now);
-  assert.ok(state.requests.every((r) => ['pending','accepted','needs_revision','rejected','cancelled'].includes(r.status)));
-  assert.equal(state.requests.find((r) => r.id === 'demo-03').status, 'needs_revision');
+  assert.ok(state.requests.every((r) => ['pending','accepted','rejected','cancelled'].includes(r.status)));
+  assert.equal(state.requests.find((r) => r.id === 'demo-03').status, 'accepted');
   assert.equal(state.classes.some((item) => item.requestId === 'demo-03'), false);
 });
 

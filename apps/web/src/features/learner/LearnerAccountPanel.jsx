@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BadgeCheck, MapPin, Pencil, UserRound } from 'lucide-react';
+import { BadgeCheck, ChevronDown, MapPin, Pencil, UserRound } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import useDemoAuth from '../auth/DemoAuthContext.jsx';
 
@@ -27,7 +27,7 @@ export default function LearnerAccountPanel({ addressOnly = false, startEditingI
     {editing ? <form onSubmit={submit} noValidate className="learner-dashboard-form">
       {addressOnly ? <label>Địa chỉ đang sinh sống *<textarea autoFocus autoComplete="street-address" rows={3} maxLength={400} value={draft.address} onChange={(e) => change('address', e.target.value)} placeholder="Số nhà, đường, phường/xã, tỉnh/thành phố" /></label> : <div className="learner-dashboard-field-grid">
         <label>Họ và tên *<input autoFocus autoComplete="name" maxLength={100} value={draft.fullName} onChange={(e) => change('fullName', e.target.value)} /></label>
-        <label>Bạn là *<select value={draft.accountType} onChange={(e) => change('accountType', e.target.value)}><option value="learner">Người học</option><option value="parent">Phụ huynh</option></select></label>
+        <label>Bạn là *<span className="select-control"><select className="appearance-none pr-10" value={draft.accountType} onChange={(e) => change('accountType', e.target.value)}><option value="learner">Người học</option><option value="parent">Phụ huynh</option></select><ChevronDown size={16} className="select-control__icon" aria-hidden="true" /></span></label>
         <label>Email *<input type="email" autoComplete="email" value={draft.email} onChange={(e) => change('email', e.target.value)} />{user.verified?.email && draft.email !== user.email && <small>Email mới sẽ cần xác minh lại.</small>}</label>
         <label>Số điện thoại *<input type="tel" autoComplete="tel" value={draft.phone} onChange={(e) => change('phone', e.target.value)} />{user.verified?.phone && draft.phone !== user.phone && <small>Số mới sẽ cần xác minh lại.</small>}</label>
         <label>Địa chỉ đang sinh sống<textarea autoComplete="street-address" rows={3} maxLength={400} value={draft.address} onChange={(e) => change('address', e.target.value)} placeholder="Số nhà, đường, phường/xã, tỉnh/thành phố" /></label>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Save } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Check, Save } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { TutorShell } from './TutorPages.jsx';
 import useTutorWorkspace from './TutorWorkspaceState.jsx';
@@ -97,9 +97,12 @@ export function TimetableBoard() {
         {offset !== 0 && <Button variant="quiet" size="sm" onClick={() => setOffset(0)}>Trở về hiện tại</Button>}
       </div>
       <label className="teaching-timetable__duration">Thời lượng gợi ý khi chọn nhanh
-        <select value={draftDuration} onChange={(event) => { setDraftDuration(Number(event.target.value)); setCandidate(null); setFeedback({ kind: 'draft', text: 'Thời lượng mới sẽ được lưu cùng lịch.' }); }}>
-          <option value={45}>45 phút</option><option value={90}>90 phút</option>
-        </select>
+        <span className="select-control">
+          <select className="appearance-none pr-10" value={draftDuration} onChange={(event) => { setDraftDuration(Number(event.target.value)); setCandidate(null); setFeedback({ kind: 'draft', text: 'Thời lượng mới sẽ được lưu cùng lịch.' }); }}>
+            <option value={45}>45 phút</option><option value={90}>90 phút</option>
+          </select>
+          <ChevronDown size={16} className="select-control__icon" aria-hidden="true"/>
+        </span>
       </label>
     </div>
     <div className="teaching-timetable__legend"><span><i className="legend-unselected"/>Chưa chọn</span><span><i className="legend-available"/>Lịch rảnh</span><span><i className="legend-lesson"/>Lịch dạy</span><p>Mở chi tiết một giờ bằng dấu + ở trục giờ; chọn giờ để thêm nhanh, hoặc kéo khung rảnh để đổi ngày và giờ.</p></div>

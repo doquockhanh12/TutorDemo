@@ -28,7 +28,21 @@
   color-scheme: dark;
 }
 :root[data-theme='dark'] body, :root[data-theme='dark'] #root { background: var(--color-canvas); color: var(--color-ink); }
-:root[data-theme='dark'] input, :root[data-theme='dark'] select, :root[data-theme='dark'] textarea { background-color: var(--color-surface); border-color: var(--color-border); color: var(--color-ink); }
+:root[data-theme='dark'] input, :root[data-theme='dark'] select, :root[data-theme='dark'] textarea, :root[data-theme='dark'] input[type='date'], :root[data-theme='dark'] input[type='time'], :root[data-theme='dark'] input[type='number'] { color-scheme: dark; background-color: var(--color-surface); border-color: var(--color-border); color: var(--color-ink); }
+:root[data-theme='dark'] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b7c9e0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+}
+:root[data-theme='dark'] .select-control > select { background-image: none !important; }
+:root[data-theme='dark'] .select-control__icon { color: var(--color-text-secondary); }
+:root[data-theme='dark'] select option { background-color: #1c293b; color: #f8fafc; }
+:root[data-theme='dark'] input[type='date']::-webkit-calendar-picker-indicator,
+:root[data-theme='dark'] input[type='time']::-webkit-calendar-picker-indicator {
+  filter: invert(0.85) brightness(1.15);
+  cursor: pointer;
+}
 :root[data-theme='dark'] .setting-switch { background-color: #617590; border-color: #b9c8dd; }
 :root[data-theme='dark'] .setting-switch:checked { background-color: #285dba; border-color: #8bb7ff; }
 :root[data-theme='dark'] .setting-switch::after { background: #fff; }
@@ -160,3 +174,59 @@
 :root[data-theme='dark'] .messages-unread { background: #2563eb; color: #fff; }
 :root[data-theme='dark'] .messages-icon-button:hover, :root[data-theme='dark'] .messages-back:hover { background: #2b405d; color: var(--color-ink); }
 :root[data-theme='dark'] .messages-composer input:focus { border-color: var(--color-brand); box-shadow: 0 0 0 3px rgb(139 183 255 / 18%); }
+:root[data-theme='dark'] .lesson-detail-modal,
+:root[data-theme='dark'] .profile-modal,
+:root[data-theme='dark'] .booking-modal,
+:root[data-theme='dark'] .tutor-class-modal,
+:root[data-theme='dark'] .settings-modal,
+:root[data-theme='dark'] .schedule-confirm,
+:root[data-theme='dark'] .public-dialog,
+:root[data-theme='dark'] .auth-modal,
+:root[data-theme='dark'] .admin-slideover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+  scrollbar-color: var(--color-border-strong) var(--color-surface);
+}
+:root[data-theme='dark'] .booking-modal__header,
+:root[data-theme='dark'] .booking-modal__footer,
+:root[data-theme='dark'] .booking-modal__close {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+:root[data-theme='dark'] .profile-modal input,
+:root[data-theme='dark'] .profile-modal select,
+:root[data-theme='dark'] .profile-modal textarea,
+:root[data-theme='dark'] .lesson-detail-notes textarea,
+:root[data-theme='dark'] .tutor-class-modal input,
+:root[data-theme='dark'] .tutor-class-modal select,
+:root[data-theme='dark'] .tutor-class-modal textarea {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+:root[data-theme='dark'] .profile-modal__close,
+:root[data-theme='dark'] .settings-modal__close,
+:root[data-theme='dark'] .tutor-class-modal .icon-button,
+:root[data-theme='dark'] .public-dialog__close {
+  color: var(--color-text-secondary);
+}
+:root[data-theme='dark'] .profile-modal__close:hover,
+:root[data-theme='dark'] .settings-modal__close:hover,
+:root[data-theme='dark'] .tutor-class-modal .icon-button:hover,
+:root[data-theme='dark'] .public-dialog__close:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+}
+:root[data-theme='dark'] .tutor-find__filters,
+:root[data-theme='dark'] .tutor-find__class,
+:root[data-theme='dark'] .tutor-find__empty {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-ink);
+}
+:root[data-theme='dark'] .tutor-find__subject,
+:root[data-theme='dark'] .tutor-find__price {
+  color: var(--color-brand);
+}

@@ -1,6 +1,6 @@
 import { demoReferenceData } from '../../data/demoReferenceData.js';
 import { createContext, useContext, useMemo, useState } from 'react';
-import { identityKey, normalizePhone } from './authUtils.js';
+import { identityKey, normalizePhone, validateBirthDate } from './authUtils.js';
 import { normalizeSessionMinutes } from '../../data/tutorSchedule.js';
 
 const STORAGE_KEY = 'tutornearme.demo-auth.v1';
@@ -61,6 +61,10 @@ export function DemoAuthProvider({ children }) {
     if ('fullName' in fields && !fields.fullName) return { error: 'Vui lòng nhập họ và tên.' };
     if ('email' in fields && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) return { error: 'Email chưa đúng định dạng.' };
     if ('phone' in fields && !/^0\d{9,10}$/.test(fields.phone)) return { error: 'Số điện thoại cần bắt đầu bằng 0 và có 10–11 chữ số.' };
+    if ('birthDate' in fields && fields.birthDate) {
+      const birthDateError = validateBirthDate(fields.birthDate);
+      if (birthDateError) return { error: birthDateError };
+    }
     if ('accountType' in fields && !['learner', 'parent'].includes(fields.accountType)) return { error: 'Vui lòng chọn người học hoặc phụ huynh.' };
     if ('address' in fields && !fields.address) return { error: 'Vui lòng nhập địa chỉ đang sinh sống.' };
     const duplicate = allAccounts().some((account) => account.id !== state.user.id && ((fields.email && identityKey(account.email) === identityKey(fields.email)) || (fields.phone && normalizePhone(account.phone) === fields.phone)));

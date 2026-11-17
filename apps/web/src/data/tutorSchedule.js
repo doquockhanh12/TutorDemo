@@ -133,7 +133,7 @@ export function acceptanceResult(state, id) {
   if (existingClass) {
     if (!['pending', 'accepted'].includes(request.status)) return { error: 'Yêu cầu này không còn hợp lệ để nhận lớp.' };
     if (existingClass.tutorId !== request.tutorId) return { error: 'Lớp hiện có không thuộc gia sư của yêu cầu.' };
-    return { state: { ...state, requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId: existingClass.id, reconciliationError: null } : item) }, classId: existingClass.id };
+    return { state: { ...state, requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId: existingClass.id } : item) }, classId: existingClass.id };
   }
   if (request.status !== 'pending') return { error: 'Yêu cầu này đã được xử lý.' };
   if (state.lessons.some((lesson) => lesson.requestId === id)) return { error: 'Lớp học đã tồn tại cho yêu cầu này.' };
@@ -146,7 +146,7 @@ export function acceptanceResult(state, id) {
   const classId = request.classId || request.id;
   if ((state.classes || []).some((item) => item.id === classId)) return { error: 'Mã lớp đã được dùng cho yêu cầu khác.' };
   const classRecord = classFromRequest(request, lessons);
-  return { state: { ...state, classes: [...(state.classes || []), classRecord], requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId, reconciliationError: null } : item), lessons: [...state.lessons, ...lessons.map((lesson) => ({ ...lesson, classId }))], availability: subtractLessons(state.availability, lessons) }, classId };
+  return { state: { ...state, classes: [...(state.classes || []), classRecord], requests: state.requests.map((item) => item.id === id ? { ...item, status: 'accepted', classId } : item), lessons: [...state.lessons, ...lessons.map((lesson) => ({ ...lesson, classId }))], availability: subtractLessons(state.availability, lessons) }, classId };
 }
 export function seedLessons(dates = weekDates()) {
   return demoReferenceData.lessonTemplates.map(({day, ...lesson}) => ({...lesson, date: localDateKey(dates[day])}));

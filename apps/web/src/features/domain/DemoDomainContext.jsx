@@ -5,9 +5,15 @@ import {
   restoreDemoState,
   requestIsCompleted,
   decideRequest,
-  confirmLearnerRequest,
+  sortRequestsFifo,
   updateLearnerRequest,
   completeDomainLesson,
+  updateClassStatus as updateDomainClassStatus,
+  saveClassTutorNotes as saveDomainClassTutorNotes,
+  addClassSessionLog as addDomainClassSessionLog,
+  updateClassSessionAttendance as updateDomainClassSessionAttendance,
+  deleteClassSessionLog as deleteDomainClassSessionLog,
+  applyPublicClassPost as applyDomainPublicClassPost,
   addLearnerRequest,
   approveTutor,
   rejectTutor,
@@ -59,7 +65,6 @@ export function DemoDomainProvider({ children }) {
     setState(result.state);
     return '';
   };
-  const confirmRequest = (id) => { const result = confirmLearnerRequest(state, user?.id, id); if (result.state) setState(result.state); return result.error || ''; };
   const proposeSubject = (values) => {
     if (!tutorId || !values.name?.trim() || !values.categoryId) return false;
     setState((current) => ({ ...current, subjectRequests: [...(current.subjectRequests || []), { ...values, id: `subject-request-${Date.now()}-${(current.subjectRequests || []).length + 1}`, tutorId, status: 'PENDING' }] }));
@@ -94,6 +99,20 @@ export function DemoDomainProvider({ children }) {
   };
   const completeLesson = (id) => setState((current) => completeDomainLesson(current, tutorId, id));
   const saveLessonNotes = (id, notes) => setState((current) => ({ ...current, lessons: current.lessons.map((l) => l.id === id && l.tutorId === tutorId ? { ...l, notes } : l) }));
+  const updateClassStatus = (classId, nextStatus) => setState((current) => updateDomainClassStatus(current, tutorId, classId, nextStatus));
+  const saveClassTutorNotes = (classId, tutorNotes) => setState((current) => saveDomainClassTutorNotes(current, tutorId, classId, tutorNotes));
+  const addClassSession = (classId, values) => {
+    const result = addDomainClassSessionLog(state, tutorId, classId, values);
+    if (result.state) setState(result.state);
+    return result;
+  };
+  const updateClassSession = (lessonId, patch) => setState((current) => updateDomainClassSessionAttendance(current, tutorId, lessonId, patch));
+  const deleteClassSession = (lessonId) => setState((current) => deleteDomainClassSessionLog(current, tutorId, lessonId));
+  const applyPublicClass = (post) => {
+    const result = applyDomainPublicClassPost(state, tutorId, post);
+    if (result.state) setState(result.state);
+    return result;
+  };
 
   // Admin Domain Actions
   const approveTutorAction = (targetTutorId) => setState((current) => approveTutor(current, targetTutorId));
@@ -136,7 +155,6 @@ export function DemoDomainProvider({ children }) {
         anonymousSaved,
         createRequest,
         decide,
-        confirmRequest,
         proposeSubject,
         updateLearnerRequests,
         setSaved,
@@ -145,6 +163,12 @@ export function DemoDomainProvider({ children }) {
         saveTutorProfile,
         completeLesson,
         saveLessonNotes,
+        updateClassStatus,
+        saveClassTutorNotes,
+        addClassSession,
+        updateClassSession,
+        deleteClassSession,
+        applyPublicClass,
         // Admin Domain Actions
         approveTutor: approveTutorAction,
         rejectTutor: rejectTutorAction,
@@ -173,7 +197,7 @@ export function useTutorIncome(referenceDate = new Date()) {
 }
 export function useLearnerRequests() {
   const state = useDemoDomain(); const { user } = useDemoAuth();
-  return [state.requests.filter((r) => r.learnerId === user?.id).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests];
+  return [sortRequestsFifo(state.requests.filter((r) => r.learnerId === user?.id)).map((r) => ({ ...r, completed: requestIsCompleted(state, r) })), state.updateLearnerRequests];
 }
 export function useSavedTutors() { const state = useDemoDomain(); const { user } = useDemoAuth(); return [user?.role === 'learner' ? state.savedByAccount[user.id] || [] : state.anonymousSaved, state.setSaved]; }
 export function useTutorProfile() {

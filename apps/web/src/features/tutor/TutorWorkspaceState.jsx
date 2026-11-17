@@ -1,5 +1,6 @@
 import { normalizeSessionMinutes, selectPublicTutorSchedule, weekDates, isValidFlexibleProposal, availabilityLabels, rangesSummary } from '../../data/tutorSchedule.js';
 import useDemoDomain, { DemoDomainProvider } from '../domain/DemoDomainContext.jsx';
+import { sortRequestsFifo } from '../domain/demoDomain.js';
 import { useMemo } from 'react';
 import { isFutureSession } from '../../data/tutorSchedule.js';
 import { TutorMessagesProvider } from './TutorMessagesState.jsx';
@@ -8,7 +9,7 @@ export function TutorWorkspaceProvider({ children }) {
 }
 export default function useTutorWorkspace() {
   const state = useDemoDomain();
-  const requests = useMemo(() => state.requests.filter((r) => r.tutorId === state.tutorId), [state.requests, state.tutorId]);
+  const requests = useMemo(() => sortRequestsFifo(state.requests.filter((r) => r.tutorId === state.tutorId)), [state.requests, state.tutorId]);
   const lessons = useMemo(() => state.lessons.filter((l) => l.tutorId === state.tutorId), [state.lessons, state.tutorId]);
   const classes = useMemo(() => (state.classes || []).filter((item) => item.tutorId === state.tutorId), [state.classes, state.tutorId]);
   const availability = useMemo(() => state.availability.filter((r) => r.tutorId === state.tutorId), [state.availability, state.tutorId]);

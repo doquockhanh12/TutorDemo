@@ -10,6 +10,7 @@ import {
 
 import Button from '../../components/Button.jsx';
 import { formatFee } from '../../data/tutorClassSearch.js';
+import { sortRequestsFifo } from '../domain/demoDomain.js';
 import useTutorWorkspace from './TutorWorkspaceState.jsx';
 import {
   weekDates,
@@ -178,7 +179,7 @@ export default function TutorDashboard() {
     decide,
   } = useTutorWorkspace();
 
-  const requests = allRequests.filter((item) => item.status === 'pending').slice(0, 3);
+  const requests = sortRequestsFifo(allRequests.filter((item) => item.status === 'pending')).slice(0, 3);
 
   const [error, setError] =
     useState('');

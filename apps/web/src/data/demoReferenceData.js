@@ -1077,7 +1077,8 @@ const baseReferenceData = {
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 180000,
-      "status": "pending"
+      "status": "pending",
+      "createdAt": "2026-10-02T09:00:00+07:00"
     },
     {
       "id": "demo-02",
@@ -1088,7 +1089,8 @@ const baseReferenceData = {
       "learnerId": "demo-learner",
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 220000,
-      "status": "accepted"
+      "status": "accepted",
+      "createdAt": "2026-10-01T09:00:00+07:00"
     },
     {
       "id": "demo-03",
@@ -1100,7 +1102,8 @@ const baseReferenceData = {
       "learner": "Nguyễn Minh Anh",
       "sessionFee": 160000,
       "status": "accepted",
-      "legacyLessonStatus": "completed"
+      "legacyLessonStatus": "completed",
+      "createdAt": "2026-09-25T09:00:00+07:00"
     },
 
     {
@@ -1112,6 +1115,7 @@ const baseReferenceData = {
       "schedule": "Tối thứ 3, 5",
       "note": "Muốn củng cố kiến thức học kỳ I.",
       "received": "2 giờ trước",
+      "createdAt": "2026-10-04T16:00:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
@@ -1134,6 +1138,7 @@ const baseReferenceData = {
       "schedule": "Chiều cuối tuần",
       "note": "Cần hỗ trợ phần điện học.",
       "received": "5 giờ trước",
+      "createdAt": "2026-10-04T13:00:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
@@ -1156,6 +1161,7 @@ const baseReferenceData = {
       "schedule": "Tối thứ 2, 4",
       "note": "Ôn tập trước kỳ thi chuyển cấp.",
       "received": "Hôm qua",
+      "createdAt": "2026-10-03T10:00:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
@@ -1181,10 +1187,12 @@ const baseReferenceData = {
       "schedule": "Thứ 2, 4, 6 (19:00 - 21:00)",
       "parent": "Nguyễn Văn Nam",
       "received": "2 giờ trước",
+      "createdAt": "2026-10-04T16:30:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 200000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [0, 2, 4],
         "start": 1140,
@@ -1204,10 +1212,12 @@ const baseReferenceData = {
       "schedule": "Thứ 3, 5 (18:00 - 20:00)",
       "parent": "Lê Phương Anh",
       "received": "4 giờ trước",
+      "createdAt": "2026-10-04T14:00:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 180000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [1, 3],
         "start": 1095,
@@ -1227,10 +1237,12 @@ const baseReferenceData = {
       "schedule": "Thứ 7, Chủ nhật (14:00 - 16:00)",
       "parent": "Trần Minh Đức",
       "received": "6 giờ trước",
+      "createdAt": "2026-10-04T12:00:00+07:00",
       "status": "pending",
       "tutorId": "quoc-bao",
       "learnerId": null,
       "sessionFee": 220000,
+      "format": "Tại nhà",
       "proposalTemplate": {
         "days": [5, 6],
         "start": 870,
